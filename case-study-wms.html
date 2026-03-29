@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WMS仓储管理系统 产品/UX/UI DESIGN</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@800&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'PingFang SC', 'PingFang-SC-Regular', 'Helvetica Neue', Arial, sans-serif; background: #fff; }
+
+/* ── Portfolio Nav ── */
+:root { --orange: #F59E0B; --orange-light: #FEF3C7; --navy-dark: #0F172A; --text-muted: #475569; --border: rgba(30,41,59,0.08); }
+.pf-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 60px;
+  position: sticky; top: 0; z-index: 300;
+  background: rgba(240,244,255,0.92);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255,255,255,0.7);
+}
+.pf-nav-logo {
+  font-family: 'Archivo', sans-serif; font-weight: 800; font-size: 18px;
+  color: var(--navy-dark); text-decoration: none; letter-spacing: -0.5px;
+}
+.pf-nav-logo span { color: var(--orange); }
+.pf-nav-back {
+  display: flex; align-items: center; gap: 8px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px; font-weight: 600; color: var(--text-muted);
+  text-decoration: none; padding: 8px 16px; border-radius: 50px;
+  border: 1.5px solid var(--border);
+  background: rgba(255,255,255,0.7);
+  transition: all 0.2s;
+}
+.pf-nav-back:hover { color: var(--orange); border-color: var(--orange); background: var(--orange-light); }
+.pf-nav-back svg { width: 15px; height: 15px; }
+
+/* ── Lang Toggle ── */
+.lang-toggle { display:flex; align-items:center; background:rgba(15,23,42,0.06); border:1px solid rgba(15,23,42,0.1); border-radius:20px; padding:3px; }
+.lang-toggle button { background:none; border:none; cursor:pointer; padding:3px 10px; border-radius:16px; font-size:12px; font-weight:700; color:rgba(15,23,42,0.35); font-family:'Space Grotesk',sans-serif; }
+.lang-toggle button.active { background:#F59E0B; color:#fff; }
+
+.page-wrapper { width: 1395px; margin: 0 auto; }
+
+/* ─── Shared: center badge heading ─── */
+.center-heading {
+  display: inline-grid; place-items: start; position: relative;
+}
+.center-heading .badge {
+  background: #f0f5ff; height: 32px; border-radius: 94px; width: 290px; margin-top: 34.5px;
+}
+.center-heading .title {
+  position: absolute; top: 0; left: 21px;
+  font-size: 48px; white-space: nowrap; line-height: normal;
+}
+
+/* ─── Bullet icon row ─── */
+.bullet-row { display: flex; align-items: center; gap: 14px; padding: 16px 0; }
+.bullet-icon { position: relative; width: 34px; height: 34px; flex-shrink: 0; }
+.bullet-icon img { position: absolute; inset: 0; width: 100%; height: 100%; }
+.bullet-label { font-size: 40px; font-weight: 500; color: #000; white-space: nowrap; line-height: normal; }
+
+/* ─── persona cards ─── */
+.persona-pair { display: flex; gap: 32px; margin-bottom: 80px; }
+.persona-profile {
+  background: #fff; border-radius: 25px; padding: 36px 20px;
+  box-shadow: 4px 4px 30px 0 rgba(0,0,0,0.1);
+  width: 474px; flex-shrink: 0;
+  display: flex; flex-direction: column; align-items: center; gap: 28px;
+}
+.persona-right { flex: 1; display: flex; flex-direction: column; gap: 32px; }
+.persona-card {
+  background: #f0f5ff; border-radius: 25px; padding: 42px 28px;
+  box-shadow: 0 2px 10px 0 rgba(0,0,0,0.1); flex: 1;
+}
+.persona-card-title { font-size: 34px; font-weight: 600; color: #4096ff; margin-bottom: 22px; }
+.persona-card ul { padding-left: 36px; }
+.persona-card li { font-size: 24px; color: #242424; font-weight: 500; line-height: 40px; list-style: disc; }
+
+/* ─── card sort ─── */
+.card-sort-grid { display: flex; gap: 60px; margin-bottom: 60px; }
+.card-sort-item { flex: 1; display: flex; flex-direction: column; }
+.card-sort-header {
+  background: #0958d9; color: #fff; font-size: 32px; font-weight: 600;
+  height: 83px; display: flex; align-items: center; justify-content: center;
+  border-radius: 25px 25px 0 0;
+}
+.card-sort-body {
+  background: #dbe8ff; flex: 1; padding: 20px 42px;
+  border-radius: 0 0 25px 25px;
+  display: flex; flex-direction: column; gap: 16px;
+  align-items: center; justify-content: center;
+}
+.card-sort-body p { font-size: 25px; color: #000; line-height: 1.48; white-space: nowrap; }
+
+/* ─── proto labels ─── */
+.proto-label {
+  position: absolute; background: #0958d9; color: #fff;
+  font-size: 16px; font-weight: 600; padding: 8px 16px;
+  border-radius: 8px; box-shadow: 0 6px 10px rgba(0,0,0,0.15), 0 2px 3px rgba(0,0,0,0.3);
+  z-index: 2; line-height: 1.5;
+}
+.pda-label {
+  position: relative; background: #0958d9; color: #fff;
+  font-size: 16px; font-weight: 600; padding: 8px 16px;
+  border-radius: 8px; box-shadow: 0 6px 10px rgba(0,0,0,0.15), 0 2px 3px rgba(0,0,0,0.3);
+  z-index: 2; line-height: 1.6;
+}
+
+/* ─── phone mockup ─── */
+.phone-mockup { position: relative; width: 257px; height: 532px; overflow: hidden; flex-shrink: 0; }
+.phone-mockup .phone-frame { position: absolute; top: -0.03%; left: 0; right: 0; bottom: 13.56%; object-fit: fill; z-index: 2; pointer-events: none; width: 100%; height: 86.47%; }
+.phone-mockup .phone-screen {
+  position: absolute; top: 3.73%; left: 5.84%; right: 5.84%; bottom: 22.4%; z-index: 3;
+  border-radius: 4px; overflow: hidden;
+}
+.phone-mockup .phone-screen img { width: 100%; height: 100%; object-fit: cover; }
+.phone-mockup.offset { margin-top: 80px; }
+
+.section-divider { height: 32px; background: #f2f2f2; }
+</style>
+</head>
+<body>
+<nav class="pf-nav">
+  <a href="index.html" class="pf-nav-logo">You<span>.</span>Ran</a>
+  <div style="display:flex;align-items:center;gap:16px;">
+    <a href="index.html" class="pf-nav-back">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      <span data-i18n="nav.back">Back to Portfolio</span>
+    </a>
+    <div class="lang-toggle" id="langToggle">
+      <button class="active" onclick="setLang('en')">EN</button>
+      <button onclick="setLang('zh')">中</button>
+    </div>
+  </div>
+</nav>
+<div class="page-wrapper">
+
+<!-- ═══════════════════════════════════════════════════════
+     1 · COVER
+═══════════════════════════════════════════════════════ -->
+<section style="width:1395px;line-height:0;">
+  <img src="wms-cover.jpg" alt="WMS Cover" style="width:1395px;display:block;">
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     2 · OVERVIEW / BACKGROUND
+═══════════════════════════════════════════════════════ -->
+<section style="background:#f0f5ff;padding:60px 80px 70px;">
+
+  <!-- ── 项目概述 ── -->
+  <div style="text-align:center;margin-bottom:36px;">
+    <span style="font-size:40px;font-weight:500;color:#2b394a;" data-i18n="s.overview.1">项目</span><span style="font-size:40px;font-weight:600;color:#0958d9;" data-i18n="s.overview.2">概述</span>
+    <div style="width:180px;height:10px;background:#dbe8ff;border-radius:10px;margin:8px auto 0;"></div>
+  </div>
+
+  <div style="background:#fff;border-radius:25px;padding:48px 56px 52px;box-shadow:0 2px 16px rgba(0,0,0,0.07);">
+    <!-- 项目背景 -->
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:18px;">
+      <span style="width:18px;height:18px;border-radius:50%;background:#0958d9;display:inline-block;flex-shrink:0;"></span>
+      <span style="font-size:32px;font-weight:600;color:#1a1a1a;" data-i18n="s.bg.title">项目背景</span>
+    </div>
+    <p style="font-size:22px;color:#333;line-height:1.8;margin-bottom:36px;padding-left:34px;" data-i18n="s.bg.body">
+      为应对业务扩张后收发货的数量激增，但已有的传统仓库模式无法应对，公司需要开发一套全新的WMS（仓储管理系统），以提升仓储管理效率，优化库存管理流程。
+    </p>
+
+    <!-- 项目目标 -->
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:18px;">
+      <span style="width:18px;height:18px;border-radius:50%;background:#0958d9;display:inline-block;flex-shrink:0;"></span>
+      <span style="font-size:32px;font-weight:600;color:#1a1a1a;" data-i18n="s.goal.title">项目目标</span>
+    </div>
+    <p style="font-size:22px;color:#333;line-height:1.8;padding-left:34px;" data-i18n="s.goal.body">
+      8个月内完成WMS系统开发，实现仓储作业数字化，提升出库效率至300单/日，错误率降至3%以下
+    </p>
+  </div>
+</section>
+
+<!-- ── 我的职责 ── -->
+<section style="background:#f0f5ff;padding:0 0 0;">
+  <div style="text-align:center;padding-top:60px;margin-bottom:36px;">
+    <span style="font-size:40px;font-weight:500;color:#2b394a;" data-i18n="s.role.1">我的</span><span style="font-size:40px;font-weight:600;color:#0958d9;" data-i18n="s.role.2">职责</span>
+    <div style="width:140px;height:10px;background:#dbe8ff;border-radius:10px;margin:8px auto 0;"></div>
+  </div>
+
+  <div style="background:#2b394a;padding:52px 80px 52px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px 60px;max-width:1000px;margin:0 auto;">
+      <div style="background:rgba(255,255,255,0.15);border-radius:16px;padding:18px 0;text-align:center;font-size:24px;color:#fff;font-weight:500;" data-i18n="role.r1">用户研究</div>
+      <div style="background:rgba(255,255,255,0.15);border-radius:16px;padding:18px 0;text-align:center;font-size:24px;color:#fff;font-weight:500;" data-i18n="role.r2">用户访谈</div>
+      <div style="background:rgba(255,255,255,0.15);border-radius:16px;padding:18px 0;text-align:center;font-size:24px;color:#fff;font-weight:500;" data-i18n="role.r3">用户流程</div>
+      <div style="background:rgba(255,255,255,0.15);border-radius:16px;padding:18px 0;text-align:center;font-size:24px;color:#fff;font-weight:500;" data-i18n="role.r4">需求分析</div>
+      <div style="background:rgba(255,255,255,0.15);border-radius:16px;padding:18px 0;text-align:center;font-size:24px;color:#fff;font-weight:500;" data-i18n="role.r5">竞品分析</div>
+      <div style="background:rgba(255,255,255,0.15);border-radius:16px;padding:18px 0;text-align:center;font-size:24px;color:#fff;font-weight:500;" data-i18n="role.r6">用户画像</div>
+      <div style="background:rgba(255,255,255,0.15);border-radius:16px;padding:18px 0;text-align:center;font-size:24px;color:#fff;font-weight:500;" data-i18n="role.r7">UI设计</div>
+      <div style="background:rgba(255,255,255,0.15);border-radius:16px;padding:18px 0;text-align:center;font-size:24px;color:#fff;font-weight:500;" data-i18n="role.r8">交互设计</div>
+      <div style="background:rgba(255,255,255,0.15);border-radius:16px;padding:18px 0;text-align:center;font-size:24px;color:#fff;font-weight:500;" data-i18n="role.r9">需求管理</div>
+      <!-- last row: 2 items centered across 3 cols -->
+      <div style="grid-column:3/4;background:rgba(255,255,255,0.15);border-radius:16px;padding:18px 0;text-align:center;font-size:24px;color:#fff;font-weight:500;" data-i18n="role.r10">可用性测试</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 设计流程（研究方法与过程） ── -->
+<section style="background:#f0f5ff;padding:60px 80px 80px;">
+  <div style="text-align:center;margin-bottom:56px;">
+    <span style="font-size:40px;font-weight:500;color:#2b394a;" data-i18n="s.process.1">设计</span><span style="font-size:40px;font-weight:600;color:#0958d9;" data-i18n="s.process.2">流程</span>
+    <div style="width:140px;height:10px;background:#dbe8ff;border-radius:10px;margin:8px auto 0;"></div>
+  </div>
+
+  <div style="display:flex;gap:40px;align-items:center;padding:40px 48px;background:#fff;border-radius:25px;box-shadow:0 2px 10px rgba(0,0,0,0.08);">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:12px;flex:1;">
+      <img src="wms-assets/5ef54d47-c085-4520-801f-31cc46e8109a.svg" alt="" style="width:80px;height:80px;object-fit:contain;">
+      <span style="font-size:22px;color:#2b394a;font-weight:500;" data-i18n="proc.1">调研分析</span>
+    </div>
+    <img src="wms-assets/12f9a37b-8d35-47db-af00-6c19201543ca.svg" alt="→" style="width:28px;opacity:0.5;flex-shrink:0;">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:12px;flex:1;">
+      <img src="wms-assets/480660ad-4bf8-4960-baed-e23233e2aee8.svg" alt="" style="width:80px;height:80px;object-fit:contain;">
+      <span style="font-size:22px;color:#2b394a;font-weight:500;" data-i18n="proc.2">实地观察</span>
+    </div>
+    <img src="wms-assets/12f9a37b-8d35-47db-af00-6c19201543ca.svg" alt="→" style="width:28px;opacity:0.5;flex-shrink:0;">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:12px;flex:1;">
+      <img src="wms-assets/b44114af-8469-439c-91f8-7d1aa4788689.svg" alt="" style="width:80px;height:80px;object-fit:contain;">
+      <span style="font-size:22px;color:#2b394a;font-weight:500;" data-i18n="proc.3">用户访谈</span>
+    </div>
+    <img src="wms-assets/12f9a37b-8d35-47db-af00-6c19201543ca.svg" alt="→" style="width:28px;opacity:0.5;flex-shrink:0;">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:12px;flex:1;">
+      <img src="wms-assets/78518ffd-c196-428d-899f-9b4f4d9f3f94.svg" alt="" style="width:80px;height:80px;object-fit:contain;">
+      <span style="font-size:22px;color:#2b394a;font-weight:500;" data-i18n="proc.4">设计方案</span>
+    </div>
+    <img src="wms-assets/12f9a37b-8d35-47db-af00-6c19201543ca.svg" alt="→" style="width:28px;opacity:0.5;flex-shrink:0;">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:12px;flex:1;">
+      <img src="wms-assets/0b113905-ccd0-4a6c-89de-3fae458ecef1.svg" alt="" style="width:80px;height:80px;object-fit:contain;">
+      <span style="font-size:22px;color:#2b394a;font-weight:500;" data-i18n="proc.5">可用性测试</span>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     3 · USER RESEARCH
+═══════════════════════════════════════════════════════ -->
+
+<!-- 3a: 标题 + 实地调研 header (white, rounded top-right) -->
+<section style="background:#fff;padding:32px 0 0;border-radius:0 160px 0 0;">
+  <div style="display:flex;justify-content:center;margin-bottom:32px;">
+    <div class="center-heading">
+      <div class="badge"></div>
+      <div class="title"><span style="color:#2b394a;font-weight:500;" data-i18n="s.research.1">用户调研</span><span style="color:#0958d9;font-weight:600;" data-i18n="s.research.2">阶段</span></div>
+    </div>
+  </div>
+  <div style="padding:0 78px 32px;">
+    <div class="bullet-row">
+      <div class="bullet-icon"><img src="wms-assets/26a26137-f4b4-40a9-9293-78f64d014d92.svg" alt=""></div>
+      <span class="bullet-label" data-i18n="bl.fieldresearch">实地调研</span>
+    </div>
+    <p style="font-size:26px;color:#000;line-height:1.6;text-align:justify;" data-i18n="p.fieldresearch">前往仓库观察作业流程及阻碍 查看实际作业场景与交互障碍</p>
+  </div>
+</section>
+
+<!-- 3b: 实地调研 图片墙 (白底 + 背景装饰) -->
+<section style="background:#fff;position:relative;height:807px;overflow:hidden;">
+  <!-- decorative vectors (from Figma) -->
+  <div style="position:absolute;right:0;top:0;width:66%;height:100%;opacity:0.97;pointer-events:none;">
+    <img src="wms-assets/ed04cc43-5bc7-4b4e-a685-6a09c126c28d.jpg" alt="" style="position:absolute;right:0;top:0;height:100%;object-fit:cover;">
+  </div>
+  <div style="position:absolute;right:-108px;top:-66px;width:66%;height:100%;opacity:0.55;pointer-events:none;">
+    <img src="wms-assets/6e20b918-2acf-4399-9d7a-e5559ae0fb12.png" alt="" style="position:absolute;right:0;top:0;height:100%;object-fit:cover;">
+  </div>
+
+  <!-- Card 1: top-left — 备忘录 (photo + blue label) -->
+  <div style="position:absolute;left:7px;top:0;width:588px;
+              background:rgba(255,255,255,0.55);backdrop-filter:blur(10px);
+              border-radius:0 0 20px 20px;
+              box-shadow:inset 0 0 6px rgba(255,255,255,0.55);
+              display:flex;gap:16px;align-items:stretch;padding:32px 16px;">
+    <img src="wms-assets/e70b7eda-fa58-474d-b3c7-141ab02767d0.jpg" alt="备忘录" style="width:244px;height:325px;object-fit:cover;border-radius:8px;flex-shrink:0;">
+    <div style="background:#337df5;border-radius:8px;flex:1;display:flex;align-items:center;justify-content:center;padding:9px 16px;">
+      <p style="font-size:28px;color:#fff;font-weight:500;line-height:1.5;" data-i18n="obs.1">备忘录记录发货需求，每次发货前需对照查看</p>
+    </div>
+  </div>
+
+  <!-- Card 2: top-right — 手动记录快递单号 -->
+  <div style="position:absolute;left:645px;top:0;width:628px;
+              background:rgba(255,255,255,0.55);backdrop-filter:blur(10px);
+              border-radius:0 0 20px 20px;
+              box-shadow:inset 0 0 6px rgba(255,255,255,0.55);
+              display:flex;gap:16px;align-items:stretch;padding:32px 16px;">
+    <img src="wms-assets/3a12f58d-84e6-451f-9e36-53b92f1838a8.jpg" alt="快递单" style="width:283px;height:240px;object-fit:cover;border-radius:8px;flex-shrink:0;">
+    <div style="background:#337df5;border-radius:8px;width:296px;flex-shrink:0;display:flex;align-items:center;justify-content:center;padding:9px 16px;">
+      <p style="font-size:28px;color:#fff;font-weight:500;line-height:1.5;" data-i18n="obs.2">手动记录快递单号提供给销售人员，会出现丢件现象</p>
+    </div>
+  </div>
+
+  <!-- Card 3: bottom-left — 没有实际货位 -->
+  <div style="position:absolute;left:0;top:414px;width:628px;
+              background:rgba(255,255,255,0.55);backdrop-filter:blur(10px);
+              border-radius:16px 16px 0 0;
+              box-shadow:inset 0 0 6px rgba(255,255,255,0.55);
+              display:flex;gap:16px;align-items:stretch;padding:32px 16px;">
+    <img src="wms-assets/19971d6a-21cc-4fbb-934e-162efe695288.jpg" alt="货位" style="width:283px;height:277px;object-fit:cover;border-radius:8px;flex-shrink:0;">
+    <div style="background:#337df5;border-radius:8px;width:296px;flex-shrink:0;display:flex;align-items:center;justify-content:center;padding:9px 16px;">
+      <p style="font-size:28px;color:#fff;font-weight:500;line-height:1.5;" data-i18n="obs.3">没有实际货位，仅靠手写贴标签形式（订单号中间编码）</p>
+    </div>
+  </div>
+
+  <!-- Card 4: bottom-right — 货品摆放无序 (2 photos + label) -->
+  <div style="position:absolute;left:644px;top:330px;width:728px;
+              background:rgba(255,255,255,0.55);backdrop-filter:blur(10px);
+              border-radius:16px 16px 0 0;
+              box-shadow:inset 0 0 6px rgba(255,255,255,0.55);
+              display:flex;gap:16px;align-items:flex-start;padding:32px 16px;">
+    <img src="wms-assets/ee349ff6-ce0d-436b-8e33-76e1a8955c74.jpg" alt="货架1" style="width:271px;height:361px;object-fit:cover;border-radius:8px;flex-shrink:0;">
+    <img src="wms-assets/eeb603a9-a4e2-44db-83c0-5101b81ccb96.jpg" alt="货架2" style="width:224px;height:299px;object-fit:cover;border-radius:8px;flex-shrink:0;">
+    <div style="background:#337df5;border-radius:8px;flex:1;height:361px;display:flex;align-items:center;justify-content:center;padding:9px 16px;">
+      <p style="font-size:28px;color:#fff;font-weight:500;line-height:1.5;" data-i18n="obs.4">货品摆放无序<br>货架无明显编号，管理混乱</p>
+    </div>
+  </div>
+</section>
+
+<!-- 3c: 用户访谈 (white, rounded bottom-left) -->
+<section style="background:#fff;border-radius:0 0 0 80px;padding:24px 78px 48px;">
+  <!-- bullet heading -->
+  <div class="bullet-row" style="margin-bottom:16px;">
+    <div class="bullet-icon"><img src="wms-assets/26a26137-f4b4-40a9-9293-78f64d014d92.svg" alt=""></div>
+    <span class="bullet-label" data-i18n="bl.interview">用户访谈</span>
+  </div>
+  <p style="font-size:26px;color:#000;line-height:1.6;text-align:justify;margin-bottom:48px;" data-i18n="p.interview">
+    为进一步了解仓库人员的工作流程和需求痛点，我设置了结构化访谈，分为基本情况、操作流程、痛点难点、系统需求、场景模拟等部分，包含了开放性和封闭性提问。考虑仓库人员的不同角色，不同角色的职责不同，我们设置了不同的访谈问题
+  </p>
+
+  <!-- Row 1: illustration left + 通用问题 right -->
+  <div style="display:flex;gap:60px;align-items:flex-start;margin-bottom:48px;">
+    <!-- podcaster illustration (assembled from parts) -->
+    <div style="position:relative;width:500px;height:500px;flex-shrink:0;">
+      <img src="wms-assets/d096265c-b7b9-4c6b-85c1-31dc6a9f9ceb.svg" alt="" style="position:absolute;left:28.07%;top:8.84%;width:43.88%;object-fit:contain;">
+      <img src="wms-assets/767b146e-add9-4a3b-8af0-531b1b8a1a52.svg" alt="" style="position:absolute;left:5.69%;top:30.73%;width:46.13%;object-fit:contain;">
+      <img src="wms-assets/87a5febc-5639-442f-ae75-5a3b0f38b3e2.svg" alt="" style="position:absolute;left:55.01%;top:31.71%;width:39.17%;object-fit:contain;">
+      <img src="wms-assets/047fa7ea-399f-4a2d-a1d7-c9bd3589623b.svg" alt="" style="position:absolute;left:4.37%;top:68.56%;width:91.26%;object-fit:contain;">
+    </div>
+    <!-- 通用问题 card -->
+    <div style="flex:1;background:#f0f5ff;border-radius:25px;padding:32px 28px;box-shadow:0 2px 10px rgba(0,0,0,0.1);align-self:stretch;">
+      <p style="font-size:34px;font-weight:600;color:#4096ff;margin-bottom:20px;" data-i18n="card.general.title">通用问题</p>
+      <ul style="padding-left:36px;font-size:24px;color:#242424;font-weight:500;">
+        <li style="line-height:40px;" data-i18n="iq.1">"请描述您典型工作日的时间分配比例"</li>
+        <li style="line-height:40px;" data-i18n="iq.2">"哪些环节需要频繁与采购部/销售部同事沟通？通常通过什么方式沟通？"</li>
+        <li style="line-height:40px;" data-i18n="iq.3">"目前工作中最依赖哪些工具或系统？纸质单据和数字系统的使用比例如何？"</li>
+        <li style="line-height:40px;" data-i18n="iq.4">"请回忆最近一次因系统或流程问题导致的重大错误，当时如何解决的？"</li>
+        <li style="line-height:40px;" data-i18n="iq.5">"哪些环节需要反复确认数据？为什么无法一次确认成功？"</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Row 2: 分角色问题 left + reminder illustration right -->
+  <div style="display:flex;gap:60px;align-items:flex-start;">
+    <!-- 分角色问题 card -->
+    <div style="flex:1;background:#f0f5ff;border-radius:25px;padding:32px 28px;box-shadow:0 2px 10px rgba(0,0,0,0.1);align-self:stretch;">
+      <p style="font-size:34px;font-weight:600;color:#4096ff;margin-bottom:20px;" data-i18n="card.role.title">分角色问题</p>
+      <p style="font-size:24px;color:#24285b;font-weight:500;line-height:30px;margin-bottom:12px;" data-i18n="card.mgr.label">仓库管理员：</p>
+      <ul style="padding-left:36px;font-size:24px;color:#242424;font-weight:500;margin-bottom:20px;">
+        <li style="line-height:40px;" data-i18n="iq.6">"遇到采购到货延迟与订单急需发货冲突时，您的应急处理流程是什么？"</li>
+        <li style="line-height:40px;" data-i18n="iq.7">"采购单信息与实物入库差异的常见类型有哪些？如何追溯责任方？"</li>
+      </ul>
+      <p style="font-size:24px;color:#24285b;font-weight:500;line-height:30px;margin-bottom:12px;" data-i18n="card.op.label">仓库操作员：</p>
+      <ul style="padding-left:36px;font-size:24px;color:#242424;font-weight:500;">
+        <li style="line-height:40px;" data-i18n="iq.8">"拣货时遇到系统显示有库存但实际找不到的情况，通常如何处理？"</li>
+        <li style="line-height:40px;" data-i18n="iq.9">"哪些品类的拣选错误率最高？为什么？（例如：包装相似/组合商品）"</li>
+      </ul>
+    </div>
+    <!-- reminder-note illustration -->
+    <div style="width:500px;height:500px;flex-shrink:0;position:relative;">
+      <img src="wms-assets/ef4a6166-583f-427c-a314-7738097dca0a.svg" alt="备忘录插画" style="width:100%;height:100%;object-fit:contain;">
+    </div>
+  </div>
+</section>
+
+<!-- 3d: 需求转化总结 (light blue) -->
+<section style="background:#f0f5ff;border-radius:15px;padding:49px 118px;margin:0;">
+  <p style="font-size:34px;font-weight:600;color:#4096ff;margin-bottom:24px;" data-i18n="card.summary.title">需求转化总结</p>
+  <ul style="padding-left:39px;font-size:26px;color:#000;font-weight:500;">
+    <li style="line-height:1.7;" data-i18n="ns.1">发货需求在线化，提前备注无需中断提醒</li>
+    <li style="line-height:1.7;" data-i18n="ns.2">货位、货品条码化记录，方便匹配识别</li>
+    <li style="line-height:1.7;" data-i18n="ns.3">物流对接线上操作，明确时间和状态</li>
+    <li style="line-height:1.7;" data-i18n="ns.4">拣货希望有波次功能 提升拣货效率</li>
+    <li style="line-height:1.7;" data-i18n="ns.5">库存盘点智能化，可以识别当日动过的货位进行盘点</li>
+    <li style="line-height:1.7;" data-i18n="ns.6">集中收货到货量过大，希望可以有预告知到货信息提前安排资源</li>
+    <li style="line-height:1.7;" data-i18n="ns.7">......</li>
+  </ul>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     4 · NEEDS DEFINITION (需求定义阶段)
+═══════════════════════════════════════════════════════ -->
+<section style="background:#fff;padding:48px 80px;border-radius:80px 0 0 80px;">
+  <div style="display:flex;justify-content:center;margin-bottom:40px;">
+    <div class="center-heading">
+      <div class="badge"></div>
+      <div class="title"><span style="color:#2b394a;font-weight:500;" data-i18n="s.needs.1">需求定义</span><span style="color:#0958d9;font-weight:600;" data-i18n="s.phase.stage">阶段</span></div>
+    </div>
+  </div>
+
+  <!-- UX Map -->
+  <div class="bullet-row">
+    <div class="bullet-icon"><img src="wms-assets/f96ba9a6-cd3d-4242-90c4-ec116a2bd647.svg" alt=""></div>
+    <span class="bullet-label" data-i18n="bl.uxmap">用户体验地图</span>
+  </div>
+  <p style="font-size:26px;color:#000;line-height:1.7;text-align:justify;margin-bottom:24px;" data-i18n="p.uxmap">
+    根据实地观察用户作业时流程的观察记录，我利用用户体验地图来分析用户在每个流程节点中的痛点并寻找设计的机会点
+  </p>
+
+  <!-- UX Map – use the full vector background as the image -->
+  <div style="width:100%;overflow:hidden;border-radius:16px;margin-bottom:60px;box-shadow:0 4px 20px rgba(0,0,0,0.08);">
+    <img src="wms-assets/frame-26.png"
+         alt="用户体验地图" style="width:100%;display:block;">
+  </div>
+
+  <!-- Persona heading -->
+  <div class="bullet-row">
+    <div class="bullet-icon"><img src="wms-assets/f96ba9a6-cd3d-4242-90c4-ec116a2bd647.svg" alt=""></div>
+    <span class="bullet-label" data-i18n="bl.persona">用户画像</span>
+  </div>
+  <p style="font-size:26px;color:#000;line-height:1.7;text-align:justify;margin-bottom:40px;" data-i18n="p.persona">
+    根据实地与仓库人员的访谈以及用户作业时流程的观察记录，我们发现仓库管理员和仓库操作员的需求存在差异，
+    需要针对不同角色设计不同的系统功能。分角色绘制了不同的用户画像
+  </p>
+
+  <!-- Persona 1: 林志刚 -->
+  <div class="persona-pair" style="min-height:1270px;">
+    <div class="persona-profile">
+      <div style="position:relative;width:224px;height:224px;border-radius:50%;overflow:hidden;flex-shrink:0;">
+        <img src="wms-assets/ad715733-0516-4b0b-a2f9-dd8b568cd336.png"
+             alt="林志刚" style="width:100%;height:100%;object-fit:cover;">
+      </div>
+      <div style="font-size:34px;font-weight:600;color:#0958d9;text-align:center;" data-i18n="persona1.name">林志刚</div>
+      <div style="width:310px;display:flex;flex-direction:column;gap:8px;font-size:25px;color:#000;">
+        <div style="display:flex;justify-content:space-between;"><span data-i18n="meta.age">年龄</span><span>38</span></div>
+        <div style="display:flex;justify-content:space-between;"><span data-i18n="meta.edu">教育程度</span><span data-i18n="meta.edu1">大专</span></div>
+        <div style="display:flex;justify-content:space-between;"><span data-i18n="meta.role">职位</span><span data-i18n="meta.mgr">仓库管理员</span></div>
+        <div style="display:flex;justify-content:space-between;"><span data-i18n="meta.city">城市</span><span data-i18n="meta.shanghai">上海</span></div>
+      </div>
+      <div style="width:100%;">
+        <p style="font-size:34px;font-weight:600;color:#4096ff;text-align:center;margin-bottom:16px;" data-i18n="pct.story">用户故事</p>
+        <p style="font-size:26px;color:#000;line-height:1.7;text-align:justify;" data-i18n="p1.story">
+          老林是一家电商仓库的管理员，每天一大早就开始接受大批量的包裹快递。老林需要调配仓库人员进行收货。
+          同时他肩负与采购、销售人员沟通的责任。而这一天需要发出的订单也会在信息轰炸中涌向他。他需要凭借记忆和经验，
+          同时查看备忘录去分辨给不同客户的订单应该如何发送，是否要发货单？需要发什么快递？是否需要掩密？
+          这些信息都由他告知仓库人员因为这些繁杂的信息只有他记得最清楚这样可以减少一定的错误率和投诉。
+          同时在拣货时他需要帮助找货，因为上架的时候更多也是凭借经验没有很多的规律。这样的混乱让他非常困扰
+        </p>
+      </div>
+    </div>
+    <div class="persona-right">
+      <div class="persona-card">
+        <div class="persona-card-title" data-i18n="pct.goals">用户目标</div>
+        <ul>
+          <li data-i18n="p1.goal.1"><strong>提高仓库运营效率</strong>：实现仓库作业流程的自动化和智能化，提高收货拣货工作效率及正确率。将人员利用率最大化</li>
+          <li data-i18n="p1.goal.2"><strong>降低库存记录错误率：</strong>通过实时监控库存情况和盘库，实时确认库存数量，清楚溯源，减少库存找不到等情况。</li>
+          <li data-i18n="p1.goal.3"><strong>提升和业务人员的沟通效率：</strong>可以通过系统信息同步，不要因为太多电话、微信备注影响作业</li>
+        </ul>
+      </div>
+      <div class="persona-card">
+        <div class="persona-card-title" data-i18n="pct.pains">用户痛点</div>
+        <ul>
+          <li data-i18n="p1.pain.1">需要实时掌握仓库库存情况，但传统方式效率低下</li>
+          <li data-i18n="p1.pain.2">采购销售人员随时电话、微信沟通发货收货需求，打断作业</li>
+          <li data-i18n="p1.pain.3">发货方式多为手写记录，货品位置也纯靠大脑记忆</li>
+          <li data-i18n="p1.pain.4">仓库人员流动大，无法快速上手仓库作业，培训成本很高</li>
+        </ul>
+      </div>
+      <div class="persona-card">
+        <div class="persona-card-title" data-i18n="pct.scenarios">用户场景</div>
+        <ul>
+          <li data-i18n="p1.scene.1">负责仓库整体运营管理，包括入库、出库、库存管理等</li>
+          <li data-i18n="p1.scene.2">制定和执行仓库管理制度和流程</li>
+          <li data-i18n="p1.scene.3">监督和指导仓库操作员的工作</li>
+          <li data-i18n="p1.scene.4">处理仓库日常事务和突发事件</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Persona 2: 李娜 -->
+  <div class="persona-pair" style="min-height:1136px;">
+    <div class="persona-profile">
+      <div style="position:relative;width:224px;height:224px;border-radius:50%;overflow:hidden;flex-shrink:0;">
+        <img src="wms-assets/90ca5ac4-39a1-4420-a27c-156cd8784987.png"
+             alt="李娜" style="width:100%;height:100%;object-fit:cover;">
+      </div>
+      <div style="font-size:34px;font-weight:600;color:#0958d9;text-align:center;" data-i18n="persona2.name">李娜</div>
+      <div style="width:310px;display:flex;flex-direction:column;gap:8px;font-size:25px;color:#000;">
+        <div style="display:flex;justify-content:space-between;"><span data-i18n="meta.age">年龄</span><span>32</span></div>
+        <div style="display:flex;justify-content:space-between;"><span data-i18n="meta.edu">教育程度</span><span data-i18n="meta.edu2">中专</span></div>
+        <div style="display:flex;justify-content:space-between;"><span data-i18n="meta.role">职位</span><span data-i18n="meta.op">仓库操作员</span></div>
+        <div style="display:flex;justify-content:space-between;"><span data-i18n="meta.city">城市</span><span data-i18n="meta.shanghai">上海</span></div>
+      </div>
+      <div style="width:100%;">
+        <p style="font-size:34px;font-weight:600;color:#4096ff;text-align:center;margin-bottom:16px;" data-i18n="pct.story">用户故事</p>
+        <p style="font-size:26px;color:#000;line-height:1.7;text-align:justify;" data-i18n="p2.story">
+          李娜是一家电商仓库的仓库操作员。她上岗不久，所以还没能记住具体的SKU摆放位置以及这些SKU型号对应的商品长什么样。<br><br>
+          她在拣货时经常会出现不知道货品放在哪里的情况，此时就需要向仓库管理员询问，两人一同寻找，所以很浪费时间。<br><br>
+          收货时她也经常收到采购同时的消息，询问货品是否入库。她需要在收每箱货时拆开通知采购人员货已到库
+        </p>
+      </div>
+    </div>
+    <div class="persona-right">
+      <div class="persona-card">
+        <div class="persona-card-title" data-i18n="pct.goals">用户目标</div>
+        <ul>
+          <li data-i18n="p2.goal.1">简单易用的作业流程，可以快速上手</li>
+          <li data-i18n="p2.goal.2">清晰的货物信息和操作指引</li>
+          <li data-i18n="p2.goal.3">错误信息的即时告知和可逆操作</li>
+        </ul>
+      </div>
+      <div class="persona-card">
+        <div class="persona-card-title" data-i18n="pct.pains">用户痛点</div>
+        <ul>
+          <li data-i18n="p2.pain.1">操作流程繁琐，容易出错</li>
+          <li data-i18n="p2.pain.2">需要记忆大量货物信息，工作压力大</li>
+          <li data-i18n="p2.pain.3">缺乏系统指导，难以快速上手新任务</li>
+        </ul>
+      </div>
+      <div class="persona-card">
+        <div class="persona-card-title" data-i18n="pct.scenarios">用户场景</div>
+        <ul>
+          <li data-i18n="p2.scene.1">负责货物的入库、出库、盘点等操作</li>
+          <li data-i18n="p2.scene.2">通知业务部门其负责的货品情况</li>
+          <li data-i18n="p2.scene.3">按照指令完成货物的搬运和摆放</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     5 · SOLUTION (问题解决阶段)
+═══════════════════════════════════════════════════════ -->
+<section style="background:#fff;padding:48px 80px;border-radius:0 80px 80px 0;">
+  <div style="display:flex;justify-content:center;margin-bottom:40px;">
+    <div class="center-heading">
+      <div class="badge"></div>
+      <div class="title"><span style="color:#2b394a;font-weight:500;" data-i18n="s.solution.1">问题解决</span><span style="color:#0958d9;font-weight:600;">阶段</span></div>
+    </div>
+  </div>
+
+  <p style="font-size:26px;color:#000;line-height:1.7;text-align:justify;margin-bottom:40px;" data-i18n="p.solution">
+    经过需求的梳理和分析，我们基本明确了WMS系统+手持PDA的方案，并将所有SKU、货位规范化电子化管理。
+    与此同时，对于基本的出入库流程结合了现有的ERP、订单系统，明确了系统之间的交互流程。在这个阶段，我开始进行需求文档的输出
+  </p>
+
+  <!-- Business flow diagram -->
+  <div class="bullet-row">
+    <div class="bullet-icon"><img src="wms-assets/24d05d5f-b92f-4e6a-898b-d444b8779bae.svg" alt=""></div>
+    <span class="bullet-label" data-i18n="bl.bizflow">业务流程图</span>
+  </div>
+  <div style="padding:16px 0 32px;">
+    <img src="wms-assets/be747518-fc73-4558-9add-a4515605f437.png"
+         alt="业务流程图" style="width:100%;display:block;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.08);">
+  </div>
+
+  <!-- PDA flow diagram -->
+  <div class="bullet-row">
+    <div class="bullet-icon"><img src="wms-assets/24d05d5f-b92f-4e6a-898b-d444b8779bae.svg" alt=""></div>
+    <span class="bullet-label" data-i18n="bl.pdaflow">PDA作业流程图</span>
+  </div>
+  <div style="padding:16px 0 40px;">
+    <img src="wms-assets/7ebb8ba4-e400-43fc-baf8-4f2720816535.png"
+         alt="PDA作业流程图" style="width:100%;display:block;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.08);">
+  </div>
+
+  <!-- Card sort -->
+  <div class="bullet-row">
+    <div class="bullet-icon"><img src="wms-assets/24d05d5f-b92f-4e6a-898b-d444b8779bae.svg" alt=""></div>
+    <span class="bullet-label" data-i18n="bl.cardsort">卡片分类法</span>
+  </div>
+  <p style="font-size:26px;color:#000;line-height:1.7;text-align:justify;margin-bottom:40px;" data-i18n="p.cardsort">
+    根据需求对应的功能板块，使用卡片分类法推演出合理的信息架构
+  </p>
+
+  <div class="card-sort-grid">
+    <div class="card-sort-item">
+      <div class="card-sort-header" data-i18n="cs.h1">收货管理</div>
+      <div class="card-sort-body"><p data-i18n="csb.1">预约到货通知</p><p data-i18n="csb.2">入库单</p></div>
+    </div>
+    <div class="card-sort-item">
+      <div class="card-sort-header" data-i18n="cs.h2">发货管理</div>
+      <div class="card-sort-body"><p data-i18n="csb.3">提货单</p><p data-i18n="csb.4">出库单</p></div>
+    </div>
+    <div class="card-sort-item">
+      <div class="card-sort-header" data-i18n="cs.h3">商品配置</div>
+      <div class="card-sort-body"><p data-i18n="csb.5">商品管理</p><p data-i18n="csb.6">品牌管理</p><p data-i18n="csb.7">分类管理</p></div>
+    </div>
+    <div class="card-sort-item">
+      <div class="card-sort-header" data-i18n="cs.h4">库存管理</div>
+      <div class="card-sort-body"><p data-i18n="csb.8">库存控制</p><p data-i18n="csb.9">移库管理</p><p data-i18n="csb.10">盘库管理</p><p data-i18n="csb.11">批次管理</p></div>
+    </div>
+  </div>
+  <div class="card-sort-grid">
+    <div class="card-sort-item">
+      <div class="card-sort-header" data-i18n="cs.h5">报表统计</div>
+      <div class="card-sort-body"><p data-i18n="csb.12">库存成本</p><p data-i18n="csb.13">数据看板</p></div>
+    </div>
+    <div class="card-sort-item">
+      <div class="card-sort-header" data-i18n="cs.h6">仓库管理</div>
+      <div class="card-sort-body"><p data-i18n="csb.14">货位管理</p><p data-i18n="csb.15">库区管理</p></div>
+    </div>
+    <div class="card-sort-item">
+      <div class="card-sort-header" data-i18n="cs.h7">系统设置</div>
+      <div class="card-sort-body"><p data-i18n="csb.16">成员配置</p><p data-i18n="csb.17">权限设置</p><p data-i18n="csb.18">字典配置</p></div>
+    </div>
+    <div class="card-sort-item">
+      <div class="card-sort-header" data-i18n="cs.h8">个人设置</div>
+      <div class="card-sort-body"><p data-i18n="csb.19">个人信息</p><p data-i18n="csb.20">安全设置</p></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     6 · DESIGN (设计阶段)
+═══════════════════════════════════════════════════════ -->
+<section style="background:#fff;padding:48px 0;border-radius:0 80px 80px 0;">
+  <div style="display:flex;justify-content:center;margin-bottom:40px;padding:0 80px;">
+    <div class="center-heading">
+      <div class="badge"></div>
+      <div class="title"><span style="color:#2b394a;font-weight:500;" data-i18n="s.design.1">设计</span><span style="color:#0958d9;font-weight:600;" data-i18n="s.design.2">阶段</span></div>
+    </div>
+  </div>
+
+  <p style="font-size:26px;color:#000;line-height:1.7;text-align:justify;padding:0 80px;margin-bottom:40px;" data-i18n="p.design">
+    在搭建此系统的B端组件库后，输出了PC端和PDA端的所有原型设计
+  </p>
+
+  <!-- PC heading -->
+  <div style="padding:0 80px;">
+    <div class="bullet-row">
+      <div class="bullet-icon"><img src="wms-assets/ab5999bf-edf8-4491-ad00-0342645ff41a.svg" alt=""></div>
+      <span class="bullet-label" data-i18n="bl.hifi.pc">高保真原型图-PC</span>
+    </div>
+  </div>
+
+  <!-- PC row 1 -->
+  <div style="display:flex;align-items:flex-start;padding:0 80px;gap:0;margin-bottom:0;">
+    <div style="width:665px;height:451px;overflow:hidden;border-radius:40px;position:relative;flex-shrink:0;">
+      <img src="wms-assets/246f1903-3197-4e02-9b84-326931fce2a7.png"
+           alt="工作台" style="position:absolute;top:0;left:0;width:580px;border-radius:20px;">
+      <div class="proto-label" style="bottom:32px;right:16px;" data-i18n="proto.1">工作台-分角色展示快捷入口</div>
+    </div>
+    <div style="width:606px;height:581px;overflow:hidden;border-radius:40px;position:relative;flex-shrink:0;">
+      <img src="wms-assets/adbd440e-0c5a-4be8-a6f7-0e5c3651e952.png"
+           alt="列表左" style="position:absolute;top:0;left:0;width:283px;height:581px;object-fit:cover;">
+      <img src="wms-assets/336f8fdd-5667-4ae2-b462-1f0aa5eb3d01.png"
+           alt="筛选" style="position:absolute;top:0;left:283px;width:264px;height:362px;object-fit:cover;">
+      <img src="wms-assets/108ddb0f-7684-469f-a167-8ca4eb12d330.png"
+           alt="入库详情" style="position:absolute;top:362px;left:0;width:372px;height:508px;object-fit:cover;">
+      <div class="proto-label" style="bottom:80px;right:8px;max-width:269px;" data-i18n="proto.2">视图适应性强-支持视图、表格列、筛选项自定义</div>
+    </div>
+  </div>
+
+  <!-- PC row 2 -->
+  <div style="display:flex;align-items:flex-start;padding:0 80px;gap:0;margin-top:0;">
+    <div style="width:665px;height:451px;overflow:hidden;position:relative;flex-shrink:0;">
+      <img src="wms-assets/b80fa393-fc38-4508-83ce-e1bbea2d4ef8.png"
+           alt="单据跟踪" style="position:absolute;top:0;left:-13px;width:580px;object-fit:cover;">
+      <div class="proto-label" style="bottom:100px;right:16px;" data-i18n="proto.3">单据跟踪-方便多部门信息沟通<br>处理记录留痕</div>
+    </div>
+    <div style="width:606px;overflow:hidden;border-radius:40px;position:relative;flex-shrink:0;align-self:stretch;">
+      <img src="wms-assets/4d8f364a-9916-4fc0-9f59-c828cce71637.png"
+           alt="出库单" style="position:absolute;top:0;left:39px;width:523px;">
+      <div class="proto-label" style="top:18px;left:16px;max-width:269px;" data-i18n="proto.4">PC端管理出库单，打印、生成波次，处理异常场景</div>
+    </div>
+  </div>
+
+  <!-- PC row 3 -->
+  <div style="display:flex;align-items:flex-start;padding:0 80px;gap:0;margin-top:0;margin-bottom:32px;">
+    <div style="width:665px;height:451px;overflow:hidden;position:relative;flex-shrink:0;">
+      <img src="wms-assets/0c5fef18-1db5-4a88-80d0-faf192f19ff0.png"
+           alt="库存管理" style="position:absolute;top:0;left:-13px;width:587px;object-fit:cover;">
+      <div class="proto-label" style="bottom:40px;right:16px;" data-i18n="proto.5">库存管理-库存分类清晰<br>分配去向清晰可查</div>
+    </div>
+    <div style="width:606px;overflow:hidden;border-radius:40px;position:relative;flex-shrink:0;align-self:stretch;">
+      <img src="wms-assets/0382f99d-0065-477b-9f0a-623c5a31f676.png"
+           alt="看板分析" style="position:absolute;top:0;left:41px;width:497px;">
+      <div class="proto-label" style="top:10px;left:33px;" data-i18n="proto.6">看板分析-辅助运营决策</div>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- PDA heading -->
+  <div style="padding:32px 80px 0;">
+    <div class="bullet-row">
+      <div class="bullet-icon"><img src="wms-assets/ab5999bf-edf8-4491-ad00-0342645ff41a.svg" alt=""></div>
+      <span class="bullet-label" data-i18n="bl.hifi.pda">高保真原型图-PDA</span>
+    </div>
+  </div>
+
+  <!-- PDA panel 1 (full width, blue tint) -->
+  <div style="background:rgba(178,192,247,0.22);width:100%;display:flex;align-items:center;justify-content:flex-end;padding:115px 41px;position:relative;min-height:1145px;">
+    <img src="wms-assets/b2b2211a-bb52-4b0c-a142-d0130870db3d.jpg"
+         alt="PDA扫码" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;">
+    <div class="pda-label" style="max-width:249px;" data-i18n="pda.1">PDA快捷扫码，区分不同状态下用户的下一步操作<br>导航至不同页面</div>
+  </div>
+
+  <!-- PDA panel row 2 (two columns) -->
+  <div style="display:flex;gap:24px;">
+    <div style="flex:1;background:#eaedf9;display:flex;align-items:flex-end;justify-content:flex-end;padding:115px 41px;position:relative;min-height:786px;">
+      <img src="wms-assets/cc823e9d-2b23-4837-ad1f-ab018dd1208e.png"
+           alt="子母单" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;">
+      <div class="pda-label" data-i18n="pda.2">考虑子母单多箱场景，可以一键登记全部<br>到货登记后快捷入口可直接收货</div>
+    </div>
+    <div style="flex:1;background:rgba(247,240,254,0.5);display:flex;align-items:flex-end;justify-content:flex-end;padding:115px 41px;position:relative;min-height:786px;">
+      <img src="wms-assets/fcb7c1c5-c7e1-4113-963f-a81955339e4e.jpg"
+           alt="复盘" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;">
+      <div class="pda-label" data-i18n="pda.3">初盘结束后进入页面自动定位至复盘<br>复盘数字预填写，节省用户时间</div>
+    </div>
+  </div>
+
+  <!-- PDA panel row 3 -->
+  <div style="display:flex;gap:24px;">
+    <div style="flex:1;background:rgba(178,192,247,0.22);display:flex;align-items:flex-end;justify-content:flex-end;padding:100px 41px;position:relative;min-height:786px;">
+      <img src="wms-assets/8d65aaf7-8aff-4595-a8b7-e8f39a99f04d.jpg"
+           alt="上架提示" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;">
+      <div class="pda-label" style="max-width:274px;" data-i18n="pda.4">上架时不可逆提示给出二次确认<br>最后一项完成时自动告知确认完成<br>错误提示清晰告知错误原因</div>
+    </div>
+    <div style="flex:1;background:rgba(247,240,254,0.5);display:flex;align-items:center;justify-content:flex-end;padding:115px 41px;position:relative;min-height:786px;">
+      <img src="wms-assets/e6dbf3e6-b492-4b35-a4d4-7d96236f7772.png"
+           alt="拣货异常" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;">
+      <div class="pda-label" data-i18n="pda.5">拣货时考虑扫码异常场景支持手动补全<br>拣货数量异常时增加二次确认提示</div>
+    </div>
+  </div>
+
+  <!-- PDA panel 4 (full width) -->
+  <div style="background:rgba(178,192,247,0.22);width:100%;display:flex;align-items:center;justify-content:flex-end;padding:115px 41px;position:relative;min-height:1197px;">
+    <img src="wms-assets/ef7e5e91-41c3-4928-9e3d-923bd72bc35f.jpg"
+         alt="移库" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;">
+    <div class="pda-label" style="max-width:179px;" data-i18n="pda.6">移库时根据实际场景精简流程，省去多次扫码和填写数量</div>
+  </div>
+
+  <!-- Phone mockup rows -->
+  <div style="padding:32px 80px 0;">
+    <!-- Row 1 -->
+    <div style="display:flex;align-items:flex-start;gap:56px;margin-bottom:32px;">
+      <div class="phone-mockup">
+        <div class="phone-screen"><img src="wms-assets/28e5e475-359a-4478-bf22-011d02f66f51.png" alt="登录"></div>
+        <img class="phone-frame" src="wms-assets/1e3a2b5f-f162-4744-9818-e711cb10a69d.svg" alt="">
+      </div>
+      <div class="phone-mockup offset">
+        <div class="phone-screen"><img src="wms-assets/d8942330-ff68-4c73-94f7-5445decb6d80.png" alt="主页"></div>
+        <img class="phone-frame" src="wms-assets/1e3a2b5f-f162-4744-9818-e711cb10a69d.svg" alt="">
+      </div>
+      <div class="phone-mockup">
+        <div class="phone-screen"><img src="wms-assets/84784d9f-73c7-460c-906c-a194ad7ffbe3.png" alt="主页2"></div>
+        <img class="phone-frame" src="wms-assets/1e3a2b5f-f162-4744-9818-e711cb10a69d.svg" alt="">
+      </div>
+      <div class="phone-mockup offset">
+        <div class="phone-screen"><img src="wms-assets/38345144-8ad1-419a-a1b1-823511f96cd9.png" alt="主页3"></div>
+        <img class="phone-frame" src="wms-assets/1e3a2b5f-f162-4744-9818-e711cb10a69d.svg" alt="">
+      </div>
+    </div>
+    <!-- Row 2 -->
+    <div style="display:flex;align-items:flex-start;gap:56px;margin-bottom:32px;">
+      <div class="phone-mockup">
+        <div class="phone-screen"><img src="wms-assets/7e68ffd5-acb6-4cef-aa8b-f612030ae408.png" alt="收货"></div>
+        <img class="phone-frame" src="wms-assets/1e3a2b5f-f162-4744-9818-e711cb10a69d.svg" alt="">
+      </div>
+      <div class="phone-mockup offset">
+        <div class="phone-screen"><img src="wms-assets/0e56a386-7ca4-4cb1-8888-1c95e0331f8b.png" alt="收货2"></div>
+        <img class="phone-frame" src="wms-assets/1e3a2b5f-f162-4744-9818-e711cb10a69d.svg" alt="">
+      </div>
+      <div class="phone-mockup">
+        <div class="phone-screen"><img src="wms-assets/16962d7f-dc62-4b02-a8cf-e9ba92cc3347.png" alt="上架"></div>
+        <img class="phone-frame" src="wms-assets/1e3a2b5f-f162-4744-9818-e711cb10a69d.svg" alt="">
+      </div>
+      <div class="phone-mockup offset">
+        <div class="phone-screen"><img src="wms-assets/ebc58833-01a9-47ba-b898-300241ca12fb.png" alt="上架2"></div>
+        <img class="phone-frame" src="wms-assets/1e3a2b5f-f162-4744-9818-e711cb10a69d.svg" alt="">
+      </div>
+    </div>
+    <!-- Row 3 -->
+    <div style="display:flex;align-items:flex-start;gap:56px;margin-bottom:32px;">
+      <div class="phone-mockup">
+        <div class="phone-screen"><img src="wms-assets/8e6ab215-1ebe-4b3a-8344-a2d880e9d15f.png" alt="拣货"></div>
+        <img class="phone-frame" src="wms-assets/1e3a2b5f-f162-4744-9818-e711cb10a69d.svg" alt="">
+      </div>
+      <div class="phone-mockup offset">
+        <div class="phone-screen"><img src="wms-assets/edbffc5a-97c1-4551-adb5-1b0322ac3ae6.png" alt="拣货2"></div>
+        <img class="phone-frame" src="wms-assets/1e3a2b5f-f162-4744-9818-e711cb10a69d.svg" alt="">
+      </div>
+      <div class="phone-mockup">
+        <div class="phone-screen"><img src="wms-assets/537f37e7-9fd4-400c-9d16-bc60038648d5.png" alt="移库"></div>
+        <img class="phone-frame" src="wms-assets/1e3a2b5f-f162-4744-9818-e711cb10a69d.svg" alt="">
+      </div>
+      <div class="phone-mockup offset">
+        <div class="phone-screen"><img src="wms-assets/04760d21-2ce1-4b74-b63d-b5ccdac217d0.png" alt="盘点"></div>
+        <img class="phone-frame" src="wms-assets/1e3a2b5f-f162-4744-9818-e711cb10a69d.svg" alt="">
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     CONNECTOR: Test optimizations
+═══════════════════════════════════════════════════════ -->
+<div style="background:#f0f5ff;padding:48px 80px;">
+  <h3 style="font-size:28px;font-weight:600;color:#0958d9;margin-bottom:24px;" data-i18n="h.testopt">测试后优化点总结</h3>
+  <div style="font-size:24px;color:#242424;font-weight:500;line-height:1.8;">
+    <p data-i18n="opt.1">• 包裹在已到货后，收货时难以和包裹对应 → 入库单与物流单号对接，扫描可识别</p>
+    <p data-i18n="opt.2">• 收货时多收货品上架暂存库，但排序过于靠后 → 附加入库项时默认选择暂存库</p>
+    <p data-i18n="opt.3">• 小屏幕展示不下看不到必填提示以为是卡住 → 提交时聚焦至未填位置</p>
+    <p data-i18n="opt.4">• 收货时和打印标签分为两步，容易忘记 → 收货时直接给出打印标签的操作</p>
+    <p data-i18n="opt.5">• 上架时货位类型不明确 → 视觉效果加深</p>
+    <p data-i18n="opt.6">• 盘点结束后需要手动确认完成 → 自动弹出确认弹窗</p>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     7 · TESTING (测试阶段)
+═══════════════════════════════════════════════════════ -->
+<section style="background:#fff;padding:48px 80px;border-radius:80px 0 0 80px;">
+  <div style="display:flex;justify-content:center;margin-bottom:40px;">
+    <div class="center-heading">
+      <div class="badge"></div>
+      <div class="title"><span style="color:#2b394a;font-weight:500;" data-i18n="s.test.1">测试</span><span style="color:#0958d9;font-weight:600;" data-i18n="s.test.2">阶段</span></div>
+    </div>
+  </div>
+
+  <p style="font-size:26px;color:#000;line-height:1.7;text-align:justify;margin-bottom:40px;" data-i18n="p.testing">
+    完成了基础库内作业功能的开发后，我们率先使用测试版本进行了实地演练。
+    并使用可用性测试法，交由仓库人员完成出库、入库、盘点等任务，在此过程中记录卡顿点、用户疑问以及用户表达
+  </p>
+
+  <div class="bullet-row">
+    <div class="bullet-icon"><img src="wms-assets/1b31a3b4-55ee-480c-978b-5a42fc1c2200.svg" alt=""></div>
+    <span class="bullet-label" data-i18n="bl.usability">可用性测试</span>
+  </div>
+
+  <!-- Photos row 1 -->
+  <div style="display:flex;gap:10px;height:560px;padding:16px 0;">
+    <div style="flex:1;border-radius:12px;overflow:hidden;">
+      <img src="wms-assets/4d78c0cb-671f-4072-8651-89d6ec60e9da.jpg" alt="测试1" style="width:100%;height:100%;object-fit:cover;display:block;">
+    </div>
+    <div style="flex:1;border-radius:12px;overflow:hidden;">
+      <img src="wms-assets/45ea2bc6-72ff-4741-b7ca-43c2d0734a8c.jpg" alt="测试2" style="width:100%;height:100%;object-fit:cover;display:block;object-position:top;">
+    </div>
+    <div style="flex:0 0 auto;aspect-ratio:1080/1440;height:100%;border-radius:12px;overflow:hidden;">
+      <img src="wms-assets/df6d5442-5c5b-4725-a952-b31d91202389.jpg" alt="测试3" style="width:100%;height:100%;object-fit:cover;display:block;">
+    </div>
+  </div>
+
+  <!-- Photos row 2 -->
+  <div style="display:flex;gap:10px;height:560px;padding:16px 0;">
+    <div style="flex:1;border-radius:12px;overflow:hidden;">
+      <img src="wms-assets/1dcdde1c-6778-4ab1-898d-b2659c2f7c44.jpg" alt="测试4" style="width:100%;height:100%;object-fit:cover;display:block;">
+    </div>
+    <div style="flex:1;border-radius:12px;overflow:hidden;">
+      <img src="wms-assets/fdf2a0ae-1a6e-454b-9552-539ffd91717f.jpg" alt="测试5" style="width:100%;height:100%;object-fit:cover;display:block;">
+    </div>
+    <div style="flex:1;border-radius:12px;overflow:hidden;">
+      <img src="wms-assets/0c88009f-271a-463a-a8e5-e6770bb9aca6.jpg" alt="测试6" style="width:100%;height:100%;object-fit:cover;display:block;">
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     8 · POST-LAUNCH (上线后)
+═══════════════════════════════════════════════════════ -->
+<section style="background:#fff;padding:48px 80px;border-radius:0 80px 80px 0;">
+  <div style="display:flex;justify-content:center;margin-bottom:40px;">
+    <div class="center-heading">
+      <div class="badge" style="margin-left:57px;"></div>
+      <div class="title" style="left:78.5px;"><span style="color:#0958d9;font-weight:600;" data-i18n="s.postlaunch.title">上线后</span></div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:10px;align-items:flex-start;padding:0 80px;">
+    <!-- Illustration: 500×500 composite assembly -->
+    <div style="width:500px;height:500px;position:relative;flex-shrink:0;">
+      <!-- Background layer (54.95%→401.46% vertical = 55px top, ~346px height) -->
+      <div style="position:absolute;left:0;top:10.99%;right:0;bottom:19.71%;">
+        <img src="wms-assets/5af161ba-599f-4e9f-9361-e5dc996a8775.svg" alt="" style="width:100%;height:100%;display:block;">
+      </div>
+      <!-- Group 1 (center-top boxes) -->
+      <div style="position:absolute;left:39.27%;top:15.94%;right:40.08%;bottom:40.86%;">
+        <img src="wms-assets/a55dc904-89e4-4e0a-a060-40da0b508340.svg" alt="" style="width:100%;height:100%;display:block;">
+      </div>
+      <!-- Group 2 (left boxes) -->
+      <div style="position:absolute;left:13.04%;top:15.94%;right:66.32%;bottom:40.86%;">
+        <img src="wms-assets/2e6cb597-37de-43e2-9221-f6aef0346330.svg" alt="" style="width:100%;height:100%;display:block;">
+      </div>
+      <!-- Group 3 (right boxes) -->
+      <div style="position:absolute;left:65.5%;top:15.94%;right:13.85%;bottom:40.86%;">
+        <img src="wms-assets/e2b8a617-ed04-4a2d-8325-c69ddb5fa91a.svg" alt="" style="width:100%;height:100%;display:block;">
+      </div>
+      <!-- Group 4 (bottom-left) -->
+      <div style="position:absolute;left:9.53%;top:63.27%;right:49.1%;bottom:23.52%;">
+        <img src="wms-assets/524bf79a-fe4b-45d1-b85c-148389bc7110.svg" alt="" style="width:100%;height:100%;display:block;">
+      </div>
+      <!-- Group 5 (bottom-right) -->
+      <div style="position:absolute;left:46.52%;top:63.27%;right:12.11%;bottom:23.52%;">
+        <img src="wms-assets/24b755c6-7abf-451c-8197-e8236e4190d4.svg" alt="" style="width:100%;height:100%;display:block;">
+      </div>
+      <!-- Shadow -->
+      <div style="position:absolute;left:11.22%;top:80.98%;right:11.22%;bottom:14.49%;">
+        <img src="wms-assets/19dd9f66-7bf7-486c-a6a2-72a6f704b2aa.svg" alt="" style="width:100%;height:100%;display:block;">
+      </div>
+      <!-- Character -->
+      <div style="position:absolute;left:49.96%;top:21.17%;right:27.92%;bottom:16.75%;">
+        <img src="wms-assets/a3530816-ebc3-4dbc-9c5a-ed4148225742.svg" alt="" style="width:100%;height:100%;display:block;">
+      </div>
+      <!-- Thoughts bubble parts -->
+      <div style="position:absolute;left:45.92%;top:28.19%;right:47.49%;bottom:65.22%;">
+        <img src="wms-assets/4d89aa20-cc04-4373-adbf-3731b99bdd79.svg" alt="" style="width:100%;height:100%;display:block;">
+      </div>
+      <div style="position:absolute;left:54.54%;top:27.25%;right:42.43%;bottom:69.71%;">
+        <img src="wms-assets/eb445358-5f7a-4e37-9efe-1ab2f761eff9.svg" alt="" style="width:100%;height:100%;display:block;">
+      </div>
+      <div style="position:absolute;left:58.69%;top:24.75%;right:39.96%;bottom:73.89%;">
+        <img src="wms-assets/6305c095-3a52-47aa-84ce-d178216f3927.svg" alt="" style="width:100%;height:100%;display:block;">
+      </div>
+      <div style="position:absolute;left:13.04%;top:8.14%;right:51.2%;bottom:66.8%;">
+        <img src="wms-assets/2bdeafbd-17ba-4086-b49c-b987977fedfa.svg" alt="" style="width:100%;height:100%;display:block;">
+      </div>
+      <div style="position:absolute;left:27.23%;top:18.82%;right:65.69%;bottom:71.68%;">
+        <img src="wms-assets/0bee667d-38af-468e-bdfa-5cb42cf5193c.svg" alt="" style="width:100%;height:100%;display:block;">
+      </div>
+      <div style="position:absolute;left:24.18%;top:12.38%;right:63.65%;bottom:70.47%;">
+        <img src="wms-assets/8883b8e8-5725-4fdd-9d07-fc573dcce700.svg" alt="" style="width:100%;height:100%;display:block;">
+      </div>
+    </div>
+    <!-- Text + screenshots -->
+    <div style="flex:1;display:flex;flex-direction:column;gap:32px;align-self:center;">
+      <p style="font-size:26px;color:#000;line-height:1.7;text-align:justify;" data-i18n="p.postlaunch">
+        在产品上线后，我收集多方反馈，整理需求并快速分析需求给出设计方案，推动两天一次的快速迭代，
+        保证新系统的使用体验和运行质量。同时开始规划大版本迭代
+      </p>
+      <img src="wms-assets/0fbf316a-b98e-40b3-a6e8-0e97851a6d3d.png"
+           alt="需求列表" style="width:100%;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.1);">
+      <img src="wms-assets/a04b5a50-b86b-4518-a042-9d21c9fc8ceb.png"
+           alt="需求统计" style="width:100%;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.1);">
+    </div>
+  </div>
+</section>
+
+
+<!-- Footer -->
+<div style="background:#2b394a;padding:48px 80px;text-align:center;">
+  <p style="font-size:28px;font-weight:600;color:#fff;margin-bottom:8px;" data-i18n="footer.title">WMS仓储管理系统</p>
+  <p style="font-size:20px;color:rgba(255,255,255,0.6);" data-i18n="footer.sub">产品 / UX / UI DESIGN &nbsp;·&nbsp; PC &amp; PDA &nbsp;·&nbsp; 链动云仓</p>
+</div>
+
+</div><!-- end .page-wrapper -->
+
+<script>
+const ZH = {
+  'nav.back': '返回作品集',
+  's.overview.1': '项目',
+  's.overview.2': '概述',
+  's.bg.title': '项目背景',
+  's.bg.body': '为应对业务扩张后收发货的数量激增，但已有的传统仓库模式无法应对，公司需要开发一套全新的WMS（仓储管理系统），以提升仓储管理效率，优化库存管理流程。',
+  's.goal.title': '项目目标',
+  's.goal.body': '8个月内完成WMS系统开发，实现仓储作业数字化，提升出库效率至300单/日，错误率降至3%以下',
+  's.role.1': '我的',
+  's.role.2': '职责',
+  'role.r1': '用户研究',
+  'role.r2': '用户访谈',
+  'role.r3': '用户流程',
+  'role.r4': '需求分析',
+  'role.r5': '竞品分析',
+  'role.r6': '用户画像',
+  'role.r7': 'UI设计',
+  'role.r8': '交互设计',
+  'role.r9': '需求管理',
+  'role.r10': '可用性测试',
+  's.process.1': '设计',
+  's.process.2': '流程',
+  'proc.1': '调研分析',
+  'proc.2': '实地观察',
+  'proc.3': '用户访谈',
+  'proc.4': '设计方案',
+  'proc.5': '可用性测试',
+  's.research.1': '用户调研',
+  's.research.2': '阶段',
+  'bl.fieldresearch': '实地调研',
+  'p.fieldresearch': '前往仓库观察作业流程及阻碍 查看实际作业场景与交互障碍',
+  'obs.1': '备忘录记录发货需求，每次发货前需对照查看',
+  'obs.2': '手动记录快递单号提供给销售人员，会出现丢件现象',
+  'obs.3': '没有实际货位，仅靠手写贴标签形式（订单号中间编码）',
+  'obs.4': '货品摆放无序<br>货架无明显编号，管理混乱',
+  'bl.interview': '用户访谈',
+  'p.interview': '为进一步了解仓库人员的工作流程和需求痛点，我设置了结构化访谈，分为基本情况、操作流程、痛点难点、系统需求、场景模拟等部分，包含了开放性和封闭性提问。考虑仓库人员的不同角色，不同角色的职责不同，我们设置了不同的访谈问题',
+  'card.general.title': '通用问题',
+  'iq.1': '"请描述您典型工作日的时间分配比例"',
+  'iq.2': '"哪些环节需要频繁与采购部/销售部同事沟通？通常通过什么方式沟通？"',
+  'iq.3': '"目前工作中最依赖哪些工具或系统？纸质单据和数字系统的使用比例如何？"',
+  'iq.4': '"请回忆最近一次因系统或流程问题导致的重大错误，当时如何解决的？"',
+  'iq.5': '"哪些环节需要反复确认数据？为什么无法一次确认成功？"',
+  'card.role.title': '分角色问题',
+  'card.mgr.label': '仓库管理员：',
+  'iq.6': '"遇到采购到货延迟与订单急需发货冲突时，您的应急处理流程是什么？"',
+  'iq.7': '"采购单信息与实物入库差异的常见类型有哪些？如何追溯责任方？"',
+  'card.op.label': '仓库操作员：',
+  'iq.8': '"拣货时遇到系统显示有库存但实际找不到的情况，通常如何处理？"',
+  'iq.9': '"哪些品类的拣选错误率最高？为什么？（例如：包装相似/组合商品）"',
+  'card.summary.title': '需求转化总结',
+  'ns.1': '发货需求在线化，提前备注无需中断提醒',
+  'ns.2': '货位、货品条码化记录，方便匹配识别',
+  'ns.3': '物流对接线上操作，明确时间和状态',
+  'ns.4': '拣货希望有波次功能 提升拣货效率',
+  'ns.5': '库存盘点智能化，可以识别当日动过的货位进行盘点',
+  'ns.6': '集中收货到货量过大，希望可以有预告知到货信息提前安排资源',
+  'ns.7': '......',
+  's.needs.1': '需求定义',
+  's.phase.stage': '阶段',
+  'bl.uxmap': '用户体验地图',
+  'p.uxmap': '根据实地观察用户作业时流程的观察记录，我利用用户体验地图来分析用户在每个流程节点中的痛点并寻找设计的机会点',
+  'bl.persona': '用户画像',
+  'p.persona': '根据实地与仓库人员的访谈以及用户作业时流程的观察记录，我们发现仓库管理员和仓库操作员的需求存在差异，需要针对不同角色设计不同的系统功能。分角色绘制了不同的用户画像',
+  'persona1.name': '林志刚',
+  'meta.age': '年龄',
+  'meta.edu': '教育程度',
+  'meta.edu1': '大专',
+  'meta.edu2': '中专',
+  'meta.role': '职位',
+  'meta.mgr': '仓库管理员',
+  'meta.op': '仓库操作员',
+  'meta.city': '城市',
+  'meta.shanghai': '上海',
+  'pct.story': '用户故事',
+  'p1.story': '老林是一家电商仓库的管理员，每天一大早就开始接受大批量的包裹快递。老林需要调配仓库人员进行收货。同时他肩负与采购、销售人员沟通的责任。而这一天需要发出的订单也会在信息轰炸中涌向他。他需要凭借记忆和经验，同时查看备忘录去分辨给不同客户的订单应该如何发送，是否要发货单？需要发什么快递？是否需要掩密？这些信息都由他告知仓库人员因为这些繁杂的信息只有他记得最清楚这样可以减少一定的错误率和投诉。同时在拣货时他需要帮助找货，因为上架的时候更多也是凭借经验没有很多的规律。这样的混乱让他非常困扰',
+  'pct.goals': '用户目标',
+  'p1.goal.1': '<strong>提高仓库运营效率</strong>：实现仓库作业流程的自动化和智能化，提高收货拣货工作效率及正确率。将人员利用率最大化',
+  'p1.goal.2': '<strong>降低库存记录错误率：</strong>通过实时监控库存情况和盘库，实时确认库存数量，清楚溯源，减少库存找不到等情况。',
+  'p1.goal.3': '<strong>提升和业务人员的沟通效率：</strong>可以通过系统信息同步，不要因为太多电话、微信备注影响作业',
+  'pct.pains': '用户痛点',
+  'p1.pain.1': '需要实时掌握仓库库存情况，但传统方式效率低下',
+  'p1.pain.2': '采购销售人员随时电话、微信沟通发货收货需求，打断作业',
+  'p1.pain.3': '发货方式多为手写记录，货品位置也纯靠大脑记忆',
+  'p1.pain.4': '仓库人员流动大，无法快速上手仓库作业，培训成本很高',
+  'pct.scenarios': '用户场景',
+  'p1.scene.1': '负责仓库整体运营管理，包括入库、出库、库存管理等',
+  'p1.scene.2': '制定和执行仓库管理制度和流程',
+  'p1.scene.3': '监督和指导仓库操作员的工作',
+  'p1.scene.4': '处理仓库日常事务和突发事件',
+  'persona2.name': '李娜',
+  'p2.story': '李娜是一家电商仓库的仓库操作员。她上岗不久，所以还没能记住具体的SKU摆放位置以及这些SKU型号对应的商品长什么样。<br><br>她在拣货时经常会出现不知道货品放在哪里的情况，此时就需要向仓库管理员询问，两人一同寻找，所以很浪费时间。<br><br>收货时她也经常收到采购同时的消息，询问货品是否入库。她需要在收每箱货时拆开通知采购人员货已到库',
+  'p2.goal.1': '简单易用的作业流程，可以快速上手',
+  'p2.goal.2': '清晰的货物信息和操作指引',
+  'p2.goal.3': '错误信息的即时告知和可逆操作',
+  'p2.pain.1': '操作流程繁琐，容易出错',
+  'p2.pain.2': '需要记忆大量货物信息，工作压力大',
+  'p2.pain.3': '缺乏系统指导，难以快速上手新任务',
+  'p2.scene.1': '负责货物的入库、出库、盘点等操作',
+  'p2.scene.2': '通知业务部门其负责的货品情况',
+  'p2.scene.3': '按照指令完成货物的搬运和摆放',
+  's.solution.1': '问题解决',
+  'p.solution': '经过需求的梳理和分析，我们基本明确了WMS系统+手持PDA的方案，并将所有SKU、货位规范化电子化管理。与此同时，对于基本的出入库流程结合了现有的ERP、订单系统，明确了系统之间的交互流程。在这个阶段，我开始进行需求文档的输出',
+  'bl.bizflow': '业务流程图',
+  'bl.pdaflow': 'PDA作业流程图',
+  'bl.cardsort': '卡片分类法',
+  'p.cardsort': '根据需求对应的功能板块，使用卡片分类法推演出合理的信息架构',
+  'cs.h1': '收货管理',
+  'csb.1': '预约到货通知',
+  'csb.2': '入库单',
+  'cs.h2': '发货管理',
+  'csb.3': '提货单',
+  'csb.4': '出库单',
+  'cs.h3': '商品配置',
+  'csb.5': '商品管理',
+  'csb.6': '品牌管理',
+  'csb.7': '分类管理',
+  'cs.h4': '库存管理',
+  'csb.8': '库存控制',
+  'csb.9': '移库管理',
+  'csb.10': '盘库管理',
+  'csb.11': '批次管理',
+  'cs.h5': '报表统计',
+  'csb.12': '库存成本',
+  'csb.13': '数据看板',
+  'cs.h6': '仓库管理',
+  'csb.14': '货位管理',
+  'csb.15': '库区管理',
+  'cs.h7': '系统设置',
+  'csb.16': '成员配置',
+  'csb.17': '权限设置',
+  'csb.18': '字典配置',
+  'cs.h8': '个人设置',
+  'csb.19': '个人信息',
+  'csb.20': '安全设置',
+  's.design.1': '设计',
+  's.design.2': '阶段',
+  'p.design': '在搭建此系统的B端组件库后，输出了PC端和PDA端的所有原型设计',
+  'bl.hifi.pc': '高保真原型图-PC',
+  'proto.1': '工作台-分角色展示快捷入口',
+  'proto.2': '视图适应性强-支持视图、表格列、筛选项自定义',
+  'proto.3': '单据跟踪-方便多部门信息沟通<br>处理记录留痕',
+  'proto.4': 'PC端管理出库单，打印、生成波次，处理异常场景',
+  'proto.5': '库存管理-库存分类清晰<br>分配去向清晰可查',
+  'proto.6': '看板分析-辅助运营决策',
+  'bl.hifi.pda': '高保真原型图-PDA',
+  'pda.1': 'PDA快捷扫码，区分不同状态下用户的下一步操作<br>导航至不同页面',
+  'pda.2': '考虑子母单多箱场景，可以一键登记全部<br>到货登记后快捷入口可直接收货',
+  'pda.3': '初盘结束后进入页面自动定位至复盘<br>复盘数字预填写，节省用户时间',
+  'pda.4': '上架时不可逆提示给出二次确认<br>最后一项完成时自动告知确认完成<br>错误提示清晰告知错误原因',
+  'pda.5': '拣货时考虑扫码异常场景支持手动补全<br>拣货数量异常时增加二次确认提示',
+  'pda.6': '移库时根据实际场景精简流程，省去多次扫码和填写数量',
+  'h.testopt': '测试后优化点总结',
+  'opt.1': '• 包裹在已到货后，收货时难以和包裹对应 → 入库单与物流单号对接，扫描可识别',
+  'opt.2': '• 收货时多收货品上架暂存库，但排序过于靠后 → 附加入库项时默认选择暂存库',
+  'opt.3': '• 小屏幕展示不下看不到必填提示以为是卡住 → 提交时聚焦至未填位置',
+  'opt.4': '• 收货时和打印标签分为两步，容易忘记 → 收货时直接给出打印标签的操作',
+  'opt.5': '• 上架时货位类型不明确 → 视觉效果加深',
+  'opt.6': '• 盘点结束后需要手动确认完成 → 自动弹出确认弹窗',
+  's.test.1': '测试',
+  's.test.2': '阶段',
+  'p.testing': '完成了基础库内作业功能的开发后，我们率先使用测试版本进行了实地演练。并使用可用性测试法，交由仓库人员完成出库、入库、盘点等任务，在此过程中记录卡顿点、用户疑问以及用户表达',
+  'bl.usability': '可用性测试',
+  's.postlaunch.title': '上线后',
+  'p.postlaunch': '在产品上线后，我收集多方反馈，整理需求并快速分析需求给出设计方案，推动两天一次的快速迭代，保证新系统的使用体验和运行质量。同时开始规划大版本迭代',
+  'footer.title': 'WMS仓储管理系统',
+  'footer.sub': '产品 / UX / UI DESIGN &nbsp;·&nbsp; PC &amp; PDA &nbsp;·&nbsp; 链动云仓',
+};
+
+const EN = {
+  'nav.back': 'Back to Portfolio',
+  's.overview.1': 'Project',
+  's.overview.2': 'Overview',
+  's.bg.title': 'Background',
+  's.bg.body': 'Following rapid business expansion, the surge in inbound and outbound shipments overwhelmed the existing manual warehouse processes. The company needed to develop a brand-new WMS (Warehouse Management System) to improve operational efficiency and optimize inventory management.',
+  's.goal.title': 'Project Goals',
+  's.goal.body': 'Complete WMS development within 8 months, digitize all warehouse operations, increase outbound capacity to 300 orders/day, and reduce error rate to below 3%.',
+  's.role.1': 'My',
+  's.role.2': 'Role',
+  'role.r1': 'User Research',
+  'role.r2': 'User Interviews',
+  'role.r3': 'User Flows',
+  'role.r4': 'Requirements Analysis',
+  'role.r5': 'Competitor Analysis',
+  'role.r6': 'User Personas',
+  'role.r7': 'UI Design',
+  'role.r8': 'Interaction Design',
+  'role.r9': 'Requirements Management',
+  'role.r10': 'Usability Testing',
+  's.process.1': 'Design',
+  's.process.2': 'Process',
+  'proc.1': 'Research & Analysis',
+  'proc.2': 'Field Observation',
+  'proc.3': 'User Interviews',
+  'proc.4': 'Design Solution',
+  'proc.5': 'Usability Testing',
+  's.research.1': 'User Research',
+  's.research.2': 'Phase',
+  'bl.fieldresearch': 'Field Research',
+  'p.fieldresearch': 'Visited the warehouse to observe operations and identify friction points, examining real-world task flows and interaction barriers.',
+  'obs.1': 'Shipping requirements recorded on notepad — checked manually before every dispatch',
+  'obs.2': 'Courier tracking numbers recorded by hand for sales team — prone to lost-parcel incidents',
+  'obs.3': 'No formal bin locations — only handwritten label tags using partial order numbers',
+  'obs.4': 'Goods stored with no clear order<br>Shelves have no visible numbering, leading to management chaos',
+  'bl.interview': 'User Interviews',
+  'p.interview': 'To better understand warehouse staff workflows and pain points, I conducted structured interviews covering background, operational procedures, pain points, system requirements, and scenario simulations — with both open and closed questions. Different interview guides were prepared for each role.',
+  'card.general.title': 'General Questions',
+  'iq.1': '"How do you typically split your time across different tasks in a workday?"',
+  'iq.2': '"Which parts of your job require frequent coordination with purchasing or sales? How do you usually communicate?"',
+  'iq.3': '"Which tools or systems do you rely on most? What\'s the ratio of paper-based vs. digital workflows?"',
+  'iq.4': '"Can you recall a recent significant error caused by a system or process issue? How did you resolve it?"',
+  'iq.5': '"Which steps require repeated data verification? Why can\'t they be confirmed in one pass?"',
+  'card.role.title': 'Role-Specific Questions',
+  'card.mgr.label': 'Warehouse Manager:',
+  'iq.6': '"When inbound delays conflict with urgent outbound orders, what is your contingency process?"',
+  'iq.7': '"What are the most common discrepancies between purchase orders and physical inbound goods? How do you trace responsibility?"',
+  'card.op.label': 'Warehouse Operator:',
+  'iq.8': '"When the system shows stock but you can\'t physically locate items during picking, what do you do?"',
+  'iq.9': '"Which product categories have the highest picking error rates, and why? (e.g. similar packaging, bundle items)"',
+  'card.summary.title': 'Needs Summary',
+  'ns.1': 'Move shipping requests online — pre-enter notes without interrupting ongoing operations',
+  'ns.2': 'Barcode-based bin and item tracking for easy matching and identification',
+  'ns.3': 'Digital logistics handoff to track timing and status clearly',
+  'ns.4': 'Wave picking feature requested to improve picking efficiency',
+  'ns.5': 'Smart cycle counting — automatically identify bins touched that day for targeted counting',
+  'ns.6': 'Advance arrival notifications to pre-allocate resources for large inbound volumes',
+  'ns.7': '......',
+  's.needs.1': 'Needs Definition',
+  's.phase.stage': 'Phase',
+  'bl.uxmap': 'User Experience Map',
+  'p.uxmap': 'Based on field observation notes, I created a user experience map to analyze pain points at each process step and identify design opportunities.',
+  'bl.persona': 'User Personas',
+  'p.persona': 'Through interviews and field observation, we found that warehouse managers and operators have distinct needs requiring different system features. Separate personas were developed for each role.',
+  'persona1.name': 'Lin Zhigang',
+  'meta.age': 'Age',
+  'meta.edu': 'Education',
+  'meta.edu1': 'Associate Degree',
+  'meta.edu2': 'Vocational Diploma',
+  'meta.role': 'Role',
+  'meta.mgr': 'Warehouse Manager',
+  'meta.op': 'Warehouse Operator',
+  'meta.city': 'City',
+  'meta.shanghai': 'Shanghai',
+  'pct.story': 'User Story',
+  'p1.story': 'Lin Zhigang is a warehouse manager at an e-commerce warehouse. He starts early every day receiving large volumes of parcels and coordinating staff for receiving. He also handles all communication with purchasing and sales teams, while simultaneously managing outbound orders flooding in from various channels. He relies on memory and a notebook to determine shipping methods, couriers, and packaging requirements for each customer — information only he fully understands, which minimizes errors but creates a single point of failure. During picking, he also helps locate goods, since stocking is largely experience-based with no systematic organization. This chaos is a constant frustration.',
+  'pct.goals': 'User Goals',
+  'p1.goal.1': '<strong>Increase warehouse operational efficiency</strong>: Automate and digitize warehouse workflows to improve picking accuracy and receiving throughput. Maximize staff utilization.',
+  'p1.goal.2': '<strong>Reduce inventory recording errors:</strong> Enable real-time stock monitoring and cycle counting, with clear traceability to minimize lost inventory situations.',
+  'p1.goal.3': '<strong>Improve communication efficiency with business teams:</strong> Enable system-driven information sync to reduce interruptions from phone calls and WeChat messages.',
+  'pct.pains': 'Pain Points',
+  'p1.pain.1': 'Needs real-time inventory visibility, but traditional methods are too slow',
+  'p1.pain.2': 'Constant phone/WeChat interruptions from purchasing and sales teams disrupt operations',
+  'p1.pain.3': 'Shipping instructions recorded by hand, item locations stored only in memory',
+  'p1.pain.4': 'High staff turnover means new hires can\'t onboard quickly — training costs are significant',
+  'pct.scenarios': 'Usage Scenarios',
+  'p1.scene.1': 'Manages overall warehouse operations including inbound, outbound, and inventory',
+  'p1.scene.2': 'Establishes and enforces warehouse policies and workflows',
+  'p1.scene.3': 'Supervises and guides warehouse operators',
+  'p1.scene.4': 'Handles daily warehouse affairs and unexpected incidents',
+  'persona2.name': 'Li Na',
+  'p2.story': 'Li Na is a warehouse operator at an e-commerce warehouse. She\'s relatively new, so she hasn\'t yet memorized where all SKUs are stored or what each product looks like.<br><br>During picking, she frequently needs to ask the warehouse manager for help locating items — wasting time for both of them.<br><br>During receiving, she\'s constantly interrupted by messages from purchasing colleagues asking if their goods have arrived, forcing her to stop unpacking boxes to notify them.',
+  'p2.goal.1': 'Simple, intuitive workflows that are easy to learn quickly',
+  'p2.goal.2': 'Clear item information and step-by-step operational guidance',
+  'p2.goal.3': 'Instant error feedback with reversible operations',
+  'p2.pain.1': 'Overly complex processes make errors easy to make',
+  'p2.pain.2': 'Must memorize large amounts of inventory data — high cognitive load',
+  'p2.pain.3': 'Lack of system guidance makes it hard to pick up new tasks quickly',
+  'p2.scene.1': 'Handles inbound receiving, outbound picking, and cycle counting',
+  'p2.scene.2': 'Notifies business departments about inventory status of their goods',
+  'p2.scene.3': 'Moves and shelves goods according to instructions',
+  's.solution.1': 'Solution',
+  'p.solution': 'After mapping and analyzing requirements, we aligned on a WMS + handheld PDA solution with standardized, digitized management of all SKUs and bin locations. The outbound/inbound flows were designed in coordination with the existing ERP and order systems, with clear inter-system interaction flows defined. I began producing the requirements documentation at this stage.',
+  'bl.bizflow': 'Business Flow Diagram',
+  'bl.pdaflow': 'PDA Workflow Diagram',
+  'bl.cardsort': 'Card Sorting',
+  'p.cardsort': 'Used card sorting to derive a logical information architecture aligned with the identified functional modules.',
+  'cs.h1': 'Receiving',
+  'csb.1': 'Arrival Notification',
+  'csb.2': 'Inbound Order',
+  'cs.h2': 'Shipping',
+  'csb.3': 'Pickup Order',
+  'csb.4': 'Outbound Order',
+  'cs.h3': 'Product Config',
+  'csb.5': 'Product Management',
+  'csb.6': 'Brand Management',
+  'csb.7': 'Category Management',
+  'cs.h4': 'Inventory',
+  'csb.8': 'Stock Control',
+  'csb.9': 'Transfer Management',
+  'csb.10': 'Cycle Count',
+  'csb.11': 'Batch Management',
+  'cs.h5': 'Reports',
+  'csb.12': 'Inventory Cost',
+  'csb.13': 'Data Dashboard',
+  'cs.h6': 'Warehouse Config',
+  'csb.14': 'Bin Management',
+  'csb.15': 'Zone Management',
+  'cs.h7': 'System Settings',
+  'csb.16': 'Member Config',
+  'csb.17': 'Permission Settings',
+  'csb.18': 'Dictionary Config',
+  'cs.h8': 'Personal Settings',
+  'csb.19': 'Personal Info',
+  'csb.20': 'Security Settings',
+  's.design.1': 'Design',
+  's.design.2': 'Phase',
+  'p.design': 'After building the B-side component library, I produced all high-fidelity prototypes for both the PC and PDA interfaces.',
+  'bl.hifi.pc': 'Hi-Fi Prototypes — PC',
+  'proto.1': 'Dashboard — role-based quick-access shortcuts',
+  'proto.2': 'Highly adaptable views — supports customizable view modes, table columns, and filter options',
+  'proto.3': 'Order tracking — facilitates cross-department communication<br>with a complete action history trail',
+  'proto.4': 'PC-side outbound order management — printing, wave generation, exception handling',
+  'proto.5': 'Inventory management — clear stock categorization<br>with transparent allocation tracking',
+  'proto.6': 'Analytics dashboard — supports operational decision-making',
+  'bl.hifi.pda': 'Hi-Fi Prototypes — PDA',
+  'pda.1': 'PDA quick-scan distinguishes next steps by current item status<br>and navigates to the appropriate page',
+  'pda.2': 'Handles multi-box parent/child orders — one-tap registration for all boxes<br>Quick-access shortcut for immediate receiving after arrival registration',
+  'pda.3': 'After initial count, page auto-scrolls to recount section<br>Recount quantity pre-filled to save time',
+  'pda.4': 'Irreversible shelving actions trigger confirmation dialogs<br>Auto-confirms completion when the last item is done<br>Error messages clearly explain what went wrong',
+  'pda.5': 'Picking supports manual entry fallback for scan failures<br>Quantity discrepancies trigger a secondary confirmation prompt',
+  'pda.6': 'Transfer flow streamlined to match real-world scenarios — eliminates redundant scans and quantity entries',
+  'h.testopt': 'Post-Testing Optimization Summary',
+  'opt.1': '• Parcels hard to match during receiving after arrival → Linked inbound orders with logistics tracking numbers for scan-based identification',
+  'opt.2': '• Overflow items shelved to temp storage but option ranked too low → Default to temp storage when adding extra inbound line items',
+  'opt.3': '• Required field prompts invisible on small screens, mistaken for freeze → Scroll to first unfilled field on submit',
+  'opt.4': '• Receiving and label printing were two separate steps — easy to forget → Offer label printing directly within the receiving flow',
+  'opt.5': '• Bin type was unclear during shelving → Strengthen visual differentiation',
+  'opt.6': '• Cycle count required manual completion confirmation → Auto-show confirmation dialog on count completion',
+  's.test.1': 'Testing',
+  's.test.2': 'Phase',
+  'p.testing': 'After completing core warehouse operation features, we conducted a live field trial using the test build. Using usability testing methodology, warehouse staff completed outbound, inbound, and cycle count tasks while we recorded friction points, questions, and verbal feedback.',
+  'bl.usability': 'Usability Testing',
+  's.postlaunch.title': 'Post-Launch',
+  'p.postlaunch': 'After launch, I collected feedback from multiple stakeholders, triaged and analyzed requests, and proposed design solutions — driving rapid two-day iteration cycles to maintain system quality and user experience. Concurrent planning for major version updates also began.',
+  'footer.title': 'Liandong Cloud WMS',
+  'footer.sub': 'Product / UX / UI DESIGN &nbsp;·&nbsp; PC &amp; PDA &nbsp;·&nbsp; Liandong Cloud',
+};
+
+function setLang(lang) {
+  const dict = lang === 'zh' ? ZH : EN;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (dict[key] !== undefined) el.innerHTML = dict[key];
+  });
+  document.querySelectorAll('#langToggle button').forEach(btn => {
+    btn.classList.toggle('active',
+      (lang === 'en' && btn.textContent === 'EN') ||
+      (lang === 'zh' && btn.textContent === '中')
+    );
+  });
+  localStorage.setItem('portfolio-lang', lang);
+}
+
+// Init: default to ZH (Chinese-first document)
+const savedLang = localStorage.getItem('portfolio-lang') || 'zh';
+setLang(savedLang);
+</script>
+</body>
+</html>

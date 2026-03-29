@@ -1,0 +1,2092 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Physical Inventory App — Case Study</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --orange:      #F59E0B;
+    --orange-dark: #D97706;
+    --orange-light:#FEF3C7;
+    --navy:        #1E293B;
+    --navy-dark:   #0F172A;
+    --blue:        #3B82F6;
+    --blue-dark:   #1D4ED8;
+    --blue-light:  #EFF6FF;
+    --purple:      #8B5CF6;
+    --green:       #10B981;
+    --red:         #EF4444;
+    --teal:        #0D9488;
+    --yellow:      #FDE047;
+    --bg:          #F0F4FF;
+    --text:        #0F172A;
+    --text-muted:  #475569;
+    --border:      rgba(30,41,59,0.08);
+    --card-bg:     rgba(255,255,255,0.92);
+    --radius:      18px;
+    --shadow:      0 4px 20px rgba(30,41,59,0.08);
+    --shadow-md:   0 8px 32px rgba(30,41,59,0.12);
+    --shadow-lg:   0 20px 60px rgba(30,41,59,0.16);
+  }
+
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Space Grotesk', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+
+  /* ── GLOBAL BACKGROUND ── */
+  .bg-wrap {
+    position: fixed; inset: 0; z-index: 0;
+    overflow: hidden; pointer-events: none;
+  }
+  .bg-blob {
+    position: absolute; border-radius: 50%;
+    filter: blur(90px); opacity: 0.5;
+  }
+  .bg-blob-1 { width: 700px; height: 700px; background: #BAE6FD; top: -250px; left: -200px; }
+  .bg-blob-2 { width: 500px; height: 500px; background: #DDD6FE; top: 30%; right: -150px; }
+  .bg-blob-3 { width: 450px; height: 450px; background: #FDE68A; bottom: -100px; left: 25%; opacity: 0.4; }
+  .bg-blob-4 { width: 300px; height: 300px; background: #A7F3D0; top: 60%; left: -80px; opacity: 0.35; }
+
+  /* ── DECORATIVE GEOMETRY (fixed, behind everything) ── */
+  .geo { position: fixed; pointer-events: none; z-index: 0; }
+  .geo-ring {
+    border-radius: 50%;
+    border-style: solid;
+    border-color: rgba(245,158,11,0.18);
+    background: transparent;
+  }
+  .geo-r1 { width: 300px; height: 300px; border-width: 2px; top: 10%; right: -80px; }
+  .geo-r2 { width: 180px; height: 180px; border-width: 1.5px; bottom: 25%; left: -50px; border-color: rgba(59,130,246,0.2); }
+  .geo-r3 { width: 80px;  height: 80px;  border-width: 2px; top: 45%; right: 4%; border-color: rgba(139,92,246,0.25); }
+  .geo-dot-grid {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background-image: radial-gradient(circle, rgba(30,41,59,0.06) 1px, transparent 1px);
+    background-size: 28px 28px;
+    pointer-events: none; z-index: 0;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+  }
+
+  /* ── NAV ── */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 60px;
+    position: sticky; top: 0; z-index: 300;
+    background: rgba(240,244,255,0.82);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255,255,255,0.7);
+  }
+  .nav-logo {
+    font-family: 'Archivo', sans-serif; font-weight: 800; font-size: 18px;
+    color: var(--navy-dark); text-decoration: none; letter-spacing: -0.5px;
+  }
+  .nav-logo span { color: var(--orange); }
+  .nav-back {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; font-weight: 600; color: var(--text-muted);
+    text-decoration: none; padding: 8px 16px; border-radius: 50px;
+    border: 1.5px solid var(--border);
+    background: rgba(255,255,255,0.7);
+    transition: all 0.2s;
+  }
+  .nav-back:hover { color: var(--orange); border-color: var(--orange); background: var(--orange-light); }
+  .nav-back svg { width: 15px; height: 15px; }
+
+  /* ── LAYOUT ── */
+  .layout { display: flex; align-items: flex-start; }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: 228px; flex-shrink: 0;
+    position: sticky; top: 61px;
+    height: calc(100vh - 61px); overflow-y: auto;
+    padding: 36px 0;
+    background: rgba(255,255,255,0.72);
+    backdrop-filter: blur(12px);
+    border-right: 1px solid rgba(255,255,255,0.85);
+    z-index: 10;
+  }
+  /* Extend sidebar background the full page height */
+  .layout::before {
+    content: ''; position: fixed; top: 61px; left: 0;
+    width: 228px; height: 100vh;
+    background: rgba(255,255,255,0.72);
+    backdrop-filter: blur(12px);
+    border-right: 1px solid rgba(255,255,255,0.85);
+    z-index: 9; pointer-events: none;
+  }
+  .sidebar-label {
+    font-size: 9px; text-transform: uppercase; letter-spacing: 2.5px;
+    color: #94A3B8; padding: 0 24px 18px; font-weight: 700;
+  }
+  .tl-item {
+    display: flex; align-items: flex-start;
+    padding: 11px 24px; cursor: pointer;
+    text-decoration: none; color: inherit;
+    transition: background 0.2s; position: relative;
+  }
+  .tl-item::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 3px; border-radius: 0 3px 3px 0;
+    background: transparent; transition: background 0.2s;
+  }
+  .tl-item:hover { background: rgba(245,158,11,0.05); }
+  .tl-item.active { background: rgba(245,158,11,0.07); }
+  .tl-item.active::before { background: var(--orange); }
+  .tl-item.active .tl-dot { background: var(--orange); border-color: var(--orange); box-shadow: 0 0 0 3px rgba(245,158,11,0.2); }
+  .tl-item.active .tl-name { color: var(--orange); font-weight: 700; }
+  .tl-col { display: flex; flex-direction: column; align-items: center; margin-right: 12px; padding-top: 3px; }
+  .tl-dot { width: 9px; height: 9px; border-radius: 50%; border: 2px solid #CBD5E1; background: #fff; flex-shrink: 0; transition: all 0.25s; }
+  .tl-connector { width: 1px; height: 30px; background: linear-gradient(to bottom, #E2E8F0, transparent); margin-top: 4px; }
+  .tl-item:last-child .tl-connector { display: none; }
+  .tl-name { font-size: 12px; font-weight: 600; color: var(--text-muted); line-height: 1.3; }
+  .tl-sub { font-size: 10px; color: #94A3B8; margin-top: 2px; line-height: 1.4; }
+
+  /* ── MAIN ── */
+  main { flex: 1; min-width: 0; }
+
+  /* ── HERO ── */
+  .case-hero {
+    background: var(--navy-dark);
+    padding: 56px 72px 0;
+    position: relative; overflow: hidden;
+  }
+  .case-hero-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: flex-end;
+    position: relative; z-index: 1;
+  }
+  .case-hero-left { padding-bottom: 56px; }
+  .case-hero-right {
+    display: flex; align-items: flex-end; justify-content: center;
+  }
+  /* Hero geometric decorations */
+  .hero-geo {
+    position: absolute; pointer-events: none;
+  }
+  .hero-circle-1 {
+    width: 480px; height: 480px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(245,158,11,0.25) 0%, transparent 70%);
+    top: -180px; right: -100px;
+  }
+  .hero-circle-2 {
+    width: 280px; height: 280px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(59,130,246,0.2) 0%, transparent 70%);
+    bottom: -100px; left: 8%;
+  }
+  .hero-ring-1 {
+    width: 220px; height: 220px; border-radius: 50%;
+    border: 1.5px solid rgba(245,158,11,0.25);
+    top: 20px; right: 180px; background: transparent;
+  }
+  .hero-ring-2 {
+    width: 100px; height: 100px; border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.1);
+    bottom: 40px; right: 60px; background: transparent;
+  }
+  .hero-dot-1 {
+    width: 12px; height: 12px; border-radius: 50%;
+    background: var(--orange); opacity: 0.7;
+    top: 80px; right: 100px;
+  }
+  .hero-dot-2 {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: #60A5FA; opacity: 0.8;
+    bottom: 60px; right: 240px;
+  }
+  .hero-tri {
+    width: 0; height: 0;
+    border-left: 18px solid transparent;
+    border-right: 18px solid transparent;
+    border-bottom: 30px solid rgba(245,158,11,0.15);
+    bottom: 80px; left: 45%;
+  }
+
+  .case-hero-inner { position: relative; z-index: 1; }
+  /* ── MONITOR MOCKUP ── */
+  .monitor-wrap {
+    width: 100%; max-width: 520px;
+    display: flex; flex-direction: column; align-items: center;
+    filter: drop-shadow(0 32px 64px rgba(0,0,0,0.55));
+  }
+  .monitor-screen {
+    width: 100%;
+    background: #1a1f2e;
+    border-radius: 12px 12px 0 0;
+    border: 2.5px solid #2d3748;
+    border-bottom: none;
+    padding: 10px 10px 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .monitor-screen::before {
+    content: '';
+    display: block;
+    height: 8px;
+    background: #2d3748;
+    border-radius: 6px 6px 0 0;
+    margin: -10px -10px 8px;
+    padding: 0 12px;
+    position: relative;
+  }
+  .monitor-screen::after {
+    content: '● ● ●';
+    font-size: 7px; letter-spacing: 3px;
+    color: rgba(255,255,255,0.25);
+    position: absolute; top: 2px; left: 12px;
+    line-height: 1;
+  }
+  .monitor-inner-screen {
+    border-radius: 4px 4px 0 0;
+    overflow: hidden;
+    background: #f8faff;
+    line-height: 0;
+  }
+  .monitor-inner-screen img {
+    width: 100%; display: block;
+    object-fit: cover; object-position: top;
+    max-height: 340px;
+  }
+  .monitor-stand-neck {
+    width: 18%; height: 28px;
+    background: linear-gradient(to bottom, #2d3748, #1e2535);
+    margin: 0 auto;
+    clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
+  }
+  .monitor-stand-base {
+    width: 55%; height: 10px;
+    background: linear-gradient(to bottom, #2d3748, #1a2030);
+    border-radius: 0 0 8px 8px;
+    margin: 0 auto;
+  }
+  /* reflective glare overlay */
+  .monitor-glare {
+    position: absolute; top: 18px; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(135deg,
+      rgba(255,255,255,0.04) 0%,
+      rgba(255,255,255,0.01) 40%,
+      transparent 60%);
+    pointer-events: none; border-radius: 4px;
+    z-index: 2;
+  }
+  .case-hero-back {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11px; color: #64748B; text-decoration: none;
+    margin-bottom: 28px; transition: color 0.2s; font-weight: 600;
+    letter-spacing: 0.5px; text-transform: uppercase;
+  }
+  .case-hero-back:hover { color: var(--orange); }
+  .case-hero-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+  .case-tag {
+    font-size: 11px; font-weight: 700; padding: 5px 14px;
+    border-radius: 50px; border: 1px solid; letter-spacing: 0.3px;
+  }
+  .case-tag.orange { background: rgba(245,158,11,0.15); color: var(--orange); border-color: rgba(245,158,11,0.35); }
+  .case-tag.blue   { background: rgba(59,130,246,0.15); color: #60A5FA; border-color: rgba(59,130,246,0.35); }
+  .case-tag.purple { background: rgba(139,92,246,0.15); color: #A78BFA; border-color: rgba(139,92,246,0.35); }
+  .case-hero-brand {
+    display: flex; align-items: center; gap: 20px; margin-bottom: 18px;
+  }
+  .case-hero-icon {
+    width: 80px; height: 80px; border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 1.5px rgba(255,255,255,0.15), 0 0 40px rgba(59,130,246,0.3);
+    flex-shrink: 0;
+  }
+  .case-hero-brand-text { display: flex; flex-direction: column; gap: 6px; }
+  .case-hero-project-name {
+    font-family: 'Archivo', sans-serif;
+    font-size: 22px; font-weight: 900; letter-spacing: -0.5px;
+    background: linear-gradient(90deg, #ffffff 0%, #93C5FD 60%, #818CF8 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .case-hero-project-name::before {
+    content: 'SAP';
+    font-size: 10px; font-weight: 900; letter-spacing: 1.5px;
+    background: linear-gradient(135deg, #1D4ED8, #3B82F6);
+    -webkit-background-clip: initial; -webkit-text-fill-color: initial;
+    background-clip: initial;
+    color: #fff; padding: 3px 8px; border-radius: 5px;
+    box-shadow: 0 2px 8px rgba(29,78,216,0.6);
+    flex-shrink: 0;
+  }
+  .case-hero-title {
+    font-family: 'Archivo', sans-serif;
+    font-size: clamp(22px, 3vw, 38px);
+    font-weight: 700; letter-spacing: -1px;
+    line-height: 1.1; color: rgba(255,255,255,0.65); margin-bottom: 0;
+  }
+  .case-hero-title em { color: var(--orange); font-style: normal; }
+  .case-hero-desc {
+    font-size: 15px; color: #94A3B8; line-height: 1.75;
+    max-width: 560px; margin-bottom: 36px; font-weight: 400;
+  }
+  .case-hero-desc strong { color: #E2E8F0; font-weight: 600; }
+  .case-meta-row { display: flex; gap: 0; flex-wrap: wrap; }
+  .case-meta-item {
+    padding: 0 32px 0 0;
+    border-right: 1px solid rgba(255,255,255,0.08);
+    margin-right: 32px;
+  }
+  .case-meta-item:last-child { border-right: none; margin-right: 0; }
+  .case-meta-item label {
+    font-size: 9px; text-transform: uppercase; letter-spacing: 2px;
+    color: #475569; display: block; margin-bottom: 5px; font-weight: 700;
+  }
+  .case-meta-item span { font-size: 13px; color: #CBD5E1; font-weight: 600; }
+
+  /* ── SECTION SHELL ── */
+  .cs-section {
+    padding: 72px 72px 64px;
+    border-bottom: 1px solid rgba(255,255,255,0.6);
+    scroll-margin-top: 80px;
+    position: relative; overflow: hidden;
+  }
+  .cs-section:last-child { border-bottom: none; padding-bottom: 120px; }
+
+  /* Section-level geometric accents */
+  .sec-geo { position: absolute; pointer-events: none; z-index: 0; }
+  .sec-geo-content { position: relative; z-index: 1; }
+
+  /* Phase accent strip */
+  .phase-research  { border-top: 3px solid var(--blue); }
+  .phase-ideation  { border-top: 3px solid var(--green); }
+  .phase-prototype { border-top: 3px solid var(--orange); }
+  .phase-midfi     { border-top: 3px solid var(--purple); }
+  .phase-hifi      { border-top: 3px solid var(--blue); }
+  .phase-test      { border-top: 3px solid var(--red); }
+
+  /* ── EYEBROW + TITLE ── */
+  .section-eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    margin-bottom: 14px;
+  }
+  .eyebrow-badge {
+    height: 32px; padding: 0 16px; border-radius: 50px;
+    display: flex; align-items: center; gap: 7px;
+    font-size: 11px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 1.5px; color: #fff;
+  }
+  .badge-blue   { background: linear-gradient(90deg, var(--blue-dark), var(--blue)); }
+  .badge-green  { background: linear-gradient(90deg, #059669, var(--green)); }
+  .badge-orange { background: linear-gradient(90deg, var(--orange-dark), var(--orange)); }
+  .badge-purple { background: linear-gradient(90deg, #6D28D9, var(--purple)); }
+  .badge-teal   { background: linear-gradient(90deg, #0F766E, var(--teal)); }
+  .badge-red    { background: linear-gradient(90deg, #B91C1C, var(--red)); }
+  .badge-dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,0.7); }
+
+  .cs-title {
+    font-family: 'Archivo', sans-serif;
+    font-size: clamp(34px, 3.5vw, 52px);
+    font-weight: 900; letter-spacing: -2px;
+    line-height: 1.08; color: var(--navy-dark); margin-bottom: 16px;
+  }
+  .cs-title em { color: var(--orange); font-style: normal; }
+  .cs-lead {
+    font-size: 15.5px; color: var(--text-muted); line-height: 1.8;
+    max-width: 700px; margin-bottom: 40px; font-weight: 400;
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    display: flex; align-items: center; gap: 12px;
+    margin: 36px 0 22px;
+  }
+  .divider-label {
+    font-size: 24px; font-weight: 800;
+    letter-spacing: -0.5px; color: var(--navy-dark); white-space: nowrap;
+  }
+  .divider-line { flex: 1; height: 1px; background: linear-gradient(to right, var(--border), transparent); }
+  .divider-shape {
+    width: 8px; height: 8px;
+    background: var(--orange); opacity: 0.5;
+    transform: rotate(45deg); flex-shrink: 0;
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.95);
+    border-radius: var(--radius);
+    padding: 22px 24px;
+    box-shadow: var(--shadow);
+    position: relative; overflow: hidden;
+  }
+  .card-accent {
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+  .accent-blue   { background: linear-gradient(90deg, var(--blue), #60A5FA); }
+  .accent-orange { background: linear-gradient(90deg, var(--orange-dark), var(--orange)); }
+  .accent-green  { background: linear-gradient(90deg, #059669, var(--green)); }
+  .accent-purple { background: linear-gradient(90deg, #6D28D9, var(--purple)); }
+  .accent-teal   { background: linear-gradient(90deg, #0F766E, var(--teal)); }
+
+  .card-label {
+    font-size: 9px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 2px; margin-bottom: 8px;
+  }
+  .card-title { font-size: 15px; font-weight: 700; color: var(--navy-dark); margin-bottom: 8px; line-height: 1.3; }
+  .card-body  { font-size: 13.5px; color: var(--text-muted); line-height: 1.7; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 18px; }
+
+  /* ── SCREEN FLOW ── */
+  .screen-flow {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    margin-bottom: 40px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+  .screen-flow-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+  }
+  .screen-flow-img {
+    width: 100%;
+    border-radius: 10px;
+    border: 1px solid rgba(0,0,0,0.08);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    display: block;
+  }
+  .screen-flow-label {
+    margin-top: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-align: center;
+    line-height: 1.4;
+  }
+  .screen-flow-arrow {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    margin-top: 60px;
+    color: var(--orange);
+  }
+  .screen-flow-arrow svg { width: 20px; height: 20px; }
+
+  /* ── PAGE STRUCTURE LAYOUT ── */
+  .page-struct-row {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    gap: 24px;
+    align-items: center;
+  }
+  .page-struct-secondary {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .page-struct-card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 8px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  }
+  .page-struct-connector--left,
+  .page-struct-connector--right {
+    display: flex;
+    align-items: center;
+    padding: 4px 0;
+  }
+  .page-struct-connector--left svg,
+  .page-struct-connector--right svg {
+    width: 100%;
+    height: 24px;
+  }
+
+  /* ── PLACEHOLDER ── */
+  .ph {
+    background: linear-gradient(135deg, #F8FAFC, #EEF2FF);
+    border: 1.5px dashed #C7D2FE;
+    border-radius: var(--radius);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 24px;
+    color: #94A3B8; font-size: 12px; line-height: 1.7;
+  }
+  .ph svg { margin-bottom: 10px; color: #A5B4FC; }
+  .ph strong { color: #6366F1; font-size: 13px; }
+  .ph-h1 { height: 160px; }
+  .ph-h2 { height: 220px; }
+  .ph-h3 { height: 300px; }
+  .ph-h4 { height: 380px; }
+
+  /* ── QUOTE ── */
+  .quote {
+    background: linear-gradient(135deg, rgba(245,158,11,0.05), rgba(59,130,246,0.04));
+    border-left: 3px solid var(--orange);
+    border-radius: 0 14px 14px 0;
+    padding: 20px 24px; margin: 20px 0;
+    position: relative;
+  }
+  .quote::before {
+    content: '"';
+    position: absolute; top: -8px; left: 20px;
+    font-size: 72px; font-family: Georgia, serif;
+    color: var(--orange); opacity: 0.15; line-height: 1;
+    pointer-events: none;
+  }
+  .quote-text { font-size: 14.5px; color: var(--navy); font-style: italic; line-height: 1.75; font-weight: 500; }
+  .quote-src  { font-size: 11px; color: var(--text-muted); margin-top: 10px; font-weight: 700; letter-spacing: 0.5px; }
+
+  /* ── TAGS ── */
+  .tag-row { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; }
+  .tag { font-size: 11px; font-weight: 700; padding: 5px 13px; border-radius: 50px; border: 1px solid; letter-spacing: 0.3px; }
+  .tag-pain    { background: #FFF7ED; color: #EA580C; border-color: #FED7AA; }
+  .tag-insight { background: #F0FDF4; color: #15803D; border-color: #86EFAC; }
+  .tag-need    { background: #EFF6FF; color: #1D4ED8; border-color: #93C5FD; }
+
+  /* ── FLOW STRIP ── */
+  .flow {
+    display: flex; align-items: center;
+    overflow-x: auto; padding: 4px 0 12px; margin: 24px 0;
+    gap: 0;
+  }
+  .flow-step {
+    flex-shrink: 0;
+    background: #fff;
+    border: 1.5px solid rgba(255,255,255,0.9);
+    border-radius: 12px;
+    padding: 10px 18px;
+    font-size: 12px; font-weight: 700; color: var(--navy);
+    box-shadow: var(--shadow); white-space: nowrap;
+    position: relative;
+  }
+  .flow-step::before {
+    content: '';
+    position: absolute; bottom: -1px; left: 50%; transform: translateX(-50%);
+    width: 60%; height: 2px; border-radius: 2px;
+    background: var(--orange); opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .flow-step:hover::before { opacity: 1; }
+  .flow-arrow { flex-shrink: 0; padding: 0 8px; color: var(--orange); font-size: 16px; font-weight: 700; }
+
+  /* ── INTERVIEW TOPIC CARD (colored) ── */
+  .topic-card {
+    border-radius: var(--radius);
+    padding: 22px 24px;
+    position: relative; overflow: hidden;
+  }
+  .topic-card-num {
+    font-family: 'Archivo', sans-serif;
+    font-size: 48px; font-weight: 900;
+    position: absolute; top: 8px; right: 16px;
+    opacity: 0.12; line-height: 1;
+  }
+  .topic-card-label { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; opacity: 0.8; }
+  .topic-card-title { font-size: 16px; font-weight: 800; margin-bottom: 12px; line-height: 1.2; }
+  .topic-card-qs { font-size: 13px; line-height: 1.8; opacity: 0.85; }
+  .topic-card-qs li { margin-left: 16px; margin-bottom: 2px; }
+
+  .tc-blue   { background: linear-gradient(135deg, #1E40AF, #3B82F6); color: #fff; }
+  .tc-orange { background: linear-gradient(135deg, #B45309, #F59E0B); color: #fff; }
+  .tc-green  { background: linear-gradient(135deg, #065F46, #10B981); color: #fff; }
+  .tc-purple { background: linear-gradient(135deg, #5B21B6, #8B5CF6); color: #fff; }
+
+  /* ── PERSONA (redesigned) ── */
+  .persona-card {
+    background: var(--card-bg);
+    border: 1px solid rgba(255,255,255,0.95);
+    border-radius: var(--radius);
+    padding: 28px;
+    box-shadow: var(--shadow-md);
+    position: relative; overflow: hidden;
+  }
+  .persona-bg-shape {
+    position: absolute; border-radius: 50%;
+    opacity: 0.08; pointer-events: none;
+  }
+  .persona-top { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 18px; }
+  .persona-avatar {
+    width: 68px; height: 68px; border-radius: 18px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; overflow: hidden;
+  }
+  .persona-avatar img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+  }
+  .av-blue   { background: linear-gradient(135deg, #BFDBFE, #3B82F6); }
+  .av-purple { background: linear-gradient(135deg, #DDD6FE, #8B5CF6); }
+  .persona-name { font-family: 'Archivo', sans-serif; font-size: 20px; font-weight: 900; color: var(--navy-dark); letter-spacing: -0.5px; }
+  .persona-role-tag {
+    display: inline-block; margin-top: 4px;
+    font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 50px;
+    background: var(--orange-light); color: var(--orange-dark); border: 1px solid #FCD34D;
+  }
+  .persona-quote-box {
+    background: linear-gradient(135deg, #FFFBEB, #FFF7ED);
+    border-left: 3px solid var(--orange);
+    border-radius: 0 10px 10px 0;
+    padding: 12px 16px; margin-bottom: 16px;
+    font-size: 13.5px; color: var(--navy); font-style: italic; line-height: 1.7;
+  }
+  .persona-goals-title {
+    font-size: 9px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 2px; color: var(--text-muted); margin-bottom: 8px;
+  }
+  .persona-goal {
+    display: flex; align-items: flex-start; gap: 8px;
+    font-size: 12.5px; color: var(--text-muted); padding: 4px 0; line-height: 1.5;
+  }
+  .goal-dot {
+    width: 18px; height: 18px; border-radius: 6px;
+    background: var(--orange-light); flex-shrink: 0; margin-top: 1px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .goal-dot svg { width: 10px; height: 10px; color: var(--orange-dark); }
+
+  /* ── HMW CARDS ── */
+  .hmw-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 0 0 32px; }
+  .hmw-card {
+    background: linear-gradient(135deg, #FFFDE7, #FFFBEB);
+    border: 1px solid #FDE68A;
+    border-radius: 14px; padding: 18px 20px;
+    position: relative; overflow: hidden;
+  }
+  .hmw-card::after {
+    content: '?';
+    position: absolute; bottom: -10px; right: 12px;
+    font-family: 'Archivo', sans-serif;
+    font-size: 72px; font-weight: 900;
+    color: var(--orange); opacity: 0.07; line-height: 1; pointer-events: none;
+  }
+  .hmw-label {
+    display: inline-block; font-size: 9px; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 2px;
+    color: var(--orange-dark); margin-bottom: 8px;
+    background: rgba(245,158,11,0.12); padding: 3px 10px; border-radius: 50px;
+  }
+  .hmw-text { font-size: 13.5px; color: #44403C; line-height: 1.7; font-weight: 500; }
+  .hmw-text strong { color: var(--navy-dark); }
+
+  /* ── USER STORY CARDS ── */
+  .story-card {
+    background: var(--card-bg);
+    border: 1px solid rgba(255,255,255,0.95);
+    border-radius: var(--radius);
+    padding: 22px 24px;
+    box-shadow: var(--shadow);
+    position: relative;
+  }
+  .story-role-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 10px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 1.5px; padding: 5px 12px; border-radius: 50px;
+    margin-bottom: 14px;
+  }
+  .srb-blue   { background: #EFF6FF; color: var(--blue-dark); border: 1px solid #BFDBFE; }
+  .srb-orange { background: #FFF7ED; color: #C2410C; border: 1px solid #FED7AA; }
+  .srb-purple { background: #F5F3FF; color: #5B21B6; border: 1px solid #DDD6FE; }
+  .srb-teal   { background: #F0FDFA; color: #0F766E; border: 1px solid #99F6E4; }
+  .story-text { font-size: 13.5px; color: var(--text-muted); line-height: 1.8; }
+  .story-text strong { color: var(--navy-dark); }
+
+  /* ── STEP CARD ── */
+  .step-card {
+    background: var(--card-bg);
+    border: 1px solid rgba(255,255,255,0.95);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    box-shadow: var(--shadow);
+  }
+  .step-num-badge {
+    width: 34px; height: 34px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Archivo', sans-serif; font-size: 14px; font-weight: 900;
+    color: #fff; margin-bottom: 12px;
+  }
+
+  /* ── ITERATION BEFORE/AFTER ── */
+  .iter-block { margin-bottom: 32px; }
+  .iter-issue-header {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 16px;
+  }
+  .iter-issue-num {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--orange-dark), var(--orange));
+    color: #fff; font-size: 11px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .iter-issue-title { font-size: 14px; font-weight: 700; color: var(--navy-dark); }
+  .iter-wrap { display: grid; grid-template-columns: 1fr 56px 1fr; gap: 16px; align-items: center; }
+  .iter-label { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; }
+  .iter-before { color: var(--red); }
+  .iter-after  { color: var(--green); }
+  .iter-arrow-box {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--orange-dark), var(--orange));
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto; box-shadow: 0 4px 12px rgba(245,158,11,0.4);
+    color: #fff; font-size: 18px; font-weight: 700;
+  }
+  .iter-note { font-size: 12.5px; color: var(--text-muted); margin-top: 10px; line-height: 1.6; }
+
+  /* ── OUTCOMES ── */
+  .outcomes-bar {
+    background: var(--navy-dark);
+    border-radius: 22px;
+    padding: 40px 48px;
+    display: grid; grid-template-columns: repeat(4,1fr); gap: 24px;
+    position: relative; overflow: hidden;
+    margin-top: 8px;
+  }
+  .ob-geo { position: absolute; pointer-events: none; }
+  .ob-circle-1 {
+    width: 320px; height: 320px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(245,158,11,0.2) 0%, transparent 70%);
+    top: -120px; right: -80px;
+  }
+  .ob-circle-2 {
+    width: 200px; height: 200px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(59,130,246,0.18) 0%, transparent 70%);
+    bottom: -80px; left: 15%;
+  }
+  .ob-ring {
+    width: 160px; height: 160px; border-radius: 50%;
+    border: 1px solid rgba(245,158,11,0.15);
+    top: 10px; left: -40px; background: transparent;
+  }
+  .outcome-item { text-align: center; position: relative; z-index: 1; }
+  .outcome-num {
+    font-family: 'Archivo', sans-serif; font-size: 40px; font-weight: 900;
+    background: linear-gradient(135deg, var(--yellow), var(--orange));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text; letter-spacing: -2px; line-height: 1;
+  }
+  .outcome-label { font-size: 12px; color: #64748B; margin-top: 8px; line-height: 1.5; }
+
+  /* ── NEXT STEPS ── */
+  .next-card {
+    background: var(--card-bg);
+    border: 1px solid rgba(255,255,255,0.95);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: var(--shadow);
+    position: relative; overflow: hidden;
+  }
+  .next-card-icon {
+    width: 44px; height: 44px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 14px;
+  }
+  .next-card-icon svg { width: 22px; height: 22px; }
+  .next-card-label { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px; }
+  .next-card-title { font-size: 15px; font-weight: 700; color: var(--navy-dark); margin-bottom: 8px; }
+  .next-card-body  { font-size: 13px; color: var(--text-muted); line-height: 1.7; }
+
+  /* ── JOURNEY MAP ── */
+  .jm-outer {
+    border-radius: 20px;
+    background: #F8FAFF;
+    border: 1px solid #E2E8F0;
+    box-shadow: 0 4px 32px rgba(30,41,59,0.08);
+    overflow: hidden;
+    padding: 32px 28px 36px;
+  }
+  .jm-header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 28px; flex-wrap: wrap; gap: 12px;
+    padding-bottom: 20px; border-bottom: 1.5px solid #E2E8F0;
+  }
+  .jm-title {
+    font-family: 'Archivo', sans-serif; font-size: 18px; font-weight: 900;
+    color: #0F172A; letter-spacing: -0.5px;
+  }
+  .jm-subtitle { font-size: 12px; color: #64748B; font-weight: 500; margin-top: 3px; }
+  .jm-legend { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .jm-legend-item {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 11px; color: #475569; font-weight: 600;
+  }
+  .jm-legend-dot { width: 11px; height: 11px; border-radius: 3px; flex-shrink: 0; }
+
+  /* ── Phase steps row ── */
+  .jm-scroll { overflow-x: auto; }
+  .jm-steps-row {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 0;
+    min-width: 780px;
+    margin-bottom: 0;
+  }
+  .jm-step-col { display: flex; flex-direction: column; align-items: stretch; }
+  .jm-phase-btn {
+    display: flex; align-items: center; justify-content: center;
+    background: #ffffff;
+    border: 2px solid #E2E8F0;
+    border-radius: 14px;
+    padding: 13px 10px;
+    font-family: 'Archivo', sans-serif; font-size: 12.5px; font-weight: 800;
+    color: #1E293B; text-align: center; line-height: 1.3;
+    margin: 0 5px;
+    box-shadow: 0 2px 8px rgba(30,41,59,0.06);
+    position: relative;
+  }
+  .jm-phase-btn.active {
+    border-color: #F59E0B;
+    box-shadow: 0 2px 12px rgba(245,158,11,0.2);
+  }
+  .jm-phase-btn.active::after {
+    content: ''; position: absolute; bottom: -3px; left: 20%; right: 20%;
+    height: 3px; background: #F59E0B; border-radius: 2px;
+  }
+  /* arrow between steps */
+  .jm-arrow {
+    display: flex; align-items: center; justify-content: center;
+    color: #F59E0B; font-size: 18px; font-weight: 900;
+    flex-shrink: 0; padding-top: 4px;
+  }
+  .jm-steps-wrap {
+    display: flex; align-items: center;
+    min-width: 780px; margin-bottom: 24px;
+  }
+  .jm-steps-wrap .jm-step-col { flex: 1; }
+  .jm-steps-wrap .jm-arrow-col {
+    flex-shrink: 0; width: 28px;
+    display: flex; align-items: center; justify-content: center;
+    padding-top: 4px;
+  }
+
+  /* ── Cards below ── */
+  .jm-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+    min-width: 780px;
+  }
+  .jm-col-cards { display: flex; flex-direction: column; gap: 6px; }
+  /* Card types — matching Figma colors */
+  .jm-card {
+    border-radius: 8px; padding: 8px 10px;
+    font-size: 10.5px; font-weight: 500; line-height: 1.5;
+    border-left: 3px solid transparent;
+    position: relative;
+  }
+  /* Yellow — User Needs */
+  .jm-card.c-need {
+    background: #FFFBEB; color: #78350F;
+    border-left-color: #F59E0B;
+    border: 1px solid #FDE68A; border-left: 3px solid #F59E0B;
+  }
+  /* Orange — Open Points / Pain */
+  .jm-card.c-open {
+    background: #FFF7ED; color: #7C2D12;
+    border: 1px solid #FDBA74; border-left: 3px solid #EA580C;
+  }
+  /* Gray — Actions / Tasks */
+  .jm-card.c-action {
+    background: #F8FAFC; color: #334155;
+    border: 1px solid #CBD5E1; border-left: 3px solid #94A3B8;
+  }
+  /* Blue — AI / System */
+  .jm-card.c-ai {
+    background: #EFF6FF; color: #1E3A8A;
+    border: 1px solid #BFDBFE; border-left: 3px solid #3B82F6;
+  }
+  /* Green — Opportunity */
+  .jm-card.c-opp {
+    background: #F0FDF4; color: #14532D;
+    border: 1px solid #BBF7D0; border-left: 3px solid #16A34A;
+  }
+  .jm-card-tag {
+    font-size: 9px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 0.8px; margin-bottom: 3px; opacity: 0.75;
+  }
+
+  /* Wrap */
+  .jm-wrap { position: relative; border-radius: var(--radius); overflow: hidden; }
+  .jm-corner-tl {
+    position: absolute; top: 0; left: 0; width: 80px; height: 80px;
+    border-radius: 0 0 80px 0;
+    background: linear-gradient(135deg, rgba(245,158,11,0.10), transparent);
+    pointer-events: none; z-index: 1;
+  }
+  .jm-corner-br {
+    position: absolute; bottom: 0; right: 0; width: 80px; height: 80px;
+    border-radius: 80px 0 0 0;
+    background: linear-gradient(315deg, rgba(59,130,246,0.08), transparent);
+    pointer-events: none; z-index: 1;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 1100px) {
+    main { margin-left: 0; width: 100%; }
+    .sidebar { display: none; }
+    .cs-section { padding: 52px 40px; }
+    .case-hero { padding: 52px 40px 0; }
+    .case-hero-layout { grid-template-columns: 1fr; }
+    .case-hero-left { padding-bottom: 36px; }
+    .case-hero-right { display: none; }
+    .grid-4 { grid-template-columns: 1fr 1fr; }
+    .grid-3 { grid-template-columns: 1fr 1fr; }
+    .hmw-grid { grid-template-columns: 1fr; }
+    .outcomes-bar { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 640px) {
+    nav { padding: 14px 20px; }
+    .cs-section { padding: 40px 20px; }
+    .case-hero { padding: 36px 20px; }
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    .hmw-grid { grid-template-columns: 1fr; }
+    .outcomes-bar { grid-template-columns: 1fr 1fr; padding: 28px 20px; }
+    .iter-wrap { grid-template-columns: 1fr; }
+    .iter-arrow-box { display: none; }
+    .case-meta-row { flex-direction: column; gap: 16px; }
+    .case-meta-item { border-right: none; margin-right: 0; padding: 0; }
+  }
+  /* ── LANG TOGGLE ── */
+  .lang-toggle {
+    display: flex; align-items: center; gap: 0;
+    background: rgba(15,23,42,0.06);
+    border: 1px solid rgba(15,23,42,0.12); border-radius: 20px;
+    padding: 3px; font-family: 'Space Grotesk', sans-serif;
+  }
+  .lang-toggle button {
+    background: none; border: none; cursor: pointer;
+    padding: 3px 10px; border-radius: 16px;
+    font-size: 12px; font-weight: 700; letter-spacing: 0.05em;
+    color: rgba(15,23,42,0.45); transition: all 0.2s;
+  }
+  .lang-toggle button.active { background: var(--orange); color: #fff; }
+</style>
+</head>
+<body>
+
+<!-- GLOBAL BG -->
+<div class="bg-wrap">
+  <div class="bg-blob bg-blob-1"></div>
+  <div class="bg-blob bg-blob-2"></div>
+  <div class="bg-blob bg-blob-3"></div>
+  <div class="bg-blob bg-blob-4"></div>
+</div>
+<div class="geo-dot-grid"></div>
+<div class="geo geo-ring geo-r1"></div>
+<div class="geo geo-ring geo-r2"></div>
+<div class="geo geo-ring geo-r3"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">You<span>.</span>Ran</a>
+  <div style="display:flex;align-items:center;gap:20px;">
+    <a href="index.html" class="nav-back">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      <span data-i18n="nav.back">Back to Portfolio</span>
+    </a>
+    <div class="lang-toggle" id="langToggle">
+      <button class="active" onclick="setLang('en')">EN</button>
+      <button onclick="setLang('zh')">中</button>
+    </div>
+  </div>
+</nav>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-label" data-i18n="sidebar.label">Design Process</div>
+    <a href="#research"   class="tl-item active">
+      <div class="tl-col"><div class="tl-dot"></div><div class="tl-connector"></div></div>
+      <div><div class="tl-name" data-i18n="sidebar.s1.name">01 Research</div><div class="tl-sub" data-i18n="sidebar.s1.sub">Interviews · Journey Map</div></div>
+    </a>
+    <a href="#ideation"   class="tl-item">
+      <div class="tl-col"><div class="tl-dot"></div><div class="tl-connector"></div></div>
+      <div><div class="tl-name" data-i18n="sidebar.s2.name">02 Ideation</div><div class="tl-sub" data-i18n="sidebar.s2.sub">HMW · Persona · Stories</div></div>
+    </a>
+    <a href="#prototype"  class="tl-item">
+      <div class="tl-col"><div class="tl-dot"></div><div class="tl-connector"></div></div>
+      <div><div class="tl-name" data-i18n="sidebar.s3.name">03 Prototype</div><div class="tl-sub" data-i18n="sidebar.s3.sub">Lo-fi Wireframes</div></div>
+    </a>
+    <a href="#validation" class="tl-item">
+      <div class="tl-col"><div class="tl-dot"></div><div class="tl-connector"></div></div>
+      <div><div class="tl-name" data-i18n="sidebar.s4.name">04 Validation</div><div class="tl-sub" data-i18n="sidebar.s4.sub">Usability Testing · Findings</div></div>
+    </a>
+    <a href="#hifi"       class="tl-item">
+      <div class="tl-col"><div class="tl-dot"></div><div class="tl-connector"></div></div>
+      <div><div class="tl-name" data-i18n="sidebar.s5.name">05 Hi-Fi</div><div class="tl-sub" data-i18n="sidebar.s5.sub">Final Prototype</div></div>
+    </a>
+    <a href="#test"       class="tl-item">
+      <div class="tl-col"><div class="tl-dot"></div></div>
+      <div><div class="tl-name" data-i18n="sidebar.s6.name">06 Test</div><div class="tl-sub" data-i18n="sidebar.s6.sub">Usability · Outcomes</div></div>
+    </a>
+  </aside>
+
+  <!-- MAIN -->
+  <main>
+
+    <!-- ═══════════ HERO ═══════════ -->
+    <div class="case-hero">
+      <div class="hero-geo hero-circle-1"></div>
+      <div class="hero-geo hero-circle-2"></div>
+      <div class="hero-geo hero-ring-1"></div>
+      <div class="hero-geo hero-ring-2"></div>
+      <div class="hero-geo hero-dot-1"></div>
+      <div class="hero-geo hero-dot-2"></div>
+      <div class="hero-geo hero-tri"></div>
+      <div class="case-hero-layout">
+        <!-- LEFT: text content -->
+        <div class="case-hero-left">
+          <div class="case-hero-inner">
+            <a href="index.html" class="case-hero-back">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+              <span data-i18n="hero.back">All Projects</span>
+            </a>
+            <div class="case-hero-tags">
+              <span class="case-tag orange">WMS</span>
+              <span class="case-tag blue" data-i18n="hero.tag.ai">AI-Assisted</span>
+              <span class="case-tag purple" data-i18n="hero.tag.eux">Enterprise UX</span>
+              <span class="case-tag blue" data-i18n="hero.tag.dt">Design Thinking</span>
+            </div>
+            <div class="case-hero-brand">
+              <img src="icon-sap-lgm.png" alt="SAP LGM Icon" class="case-hero-icon">
+              <div class="case-hero-brand-text">
+                <div class="case-hero-project-name" data-i18n="hero.brand">SAP Logistical Management</div>
+                <h1 class="case-hero-title"><em data-i18n="hero.title.em">Physical Inventory</em> <span data-i18n="hero.title.app">App</span></h1>
+              </div>
+            </div>
+            <p class="case-hero-desc" data-i18n="hero.desc">A 0→1 product design for SAP's new physical inventory module — built for two roles: <strong>Operatives</strong> executing on-floor counting tasks, and <strong>Clerks</strong> managing counting plans and confirming final results. Designed from scratch to simplify the end-to-end workflow across both roles. UI has been redesigned from the original for portfolio presentation purposes.</p>
+            <div class="case-meta-row">
+              <div class="case-meta-item"><label data-i18n="hero.meta.role.label">My Role</label><span data-i18n="hero.meta.role.val">Lead UX Designer</span></div>
+              <div class="case-meta-item"><label data-i18n="hero.meta.timeline.label">Timeline</label><span data-i18n="hero.meta.timeline.val">Oct 2025 – Apr 2026</span></div>
+              <div class="case-meta-item"><label data-i18n="hero.meta.platform.label">Platform</label><span data-i18n="hero.meta.platform.val">Web · Tablet</span></div>
+              <div class="case-meta-item"><label data-i18n="hero.meta.users.label">Users</label><span data-i18n="hero.meta.users.val">Operatives · Clerks/Managers</span></div>
+            </div>
+          </div>
+        </div>
+        <!-- RIGHT: monitor mockup -->
+        <div class="case-hero-right">
+          <div class="monitor-wrap">
+            <div class="monitor-screen">
+              <div class="monitor-inner-screen">
+                <div class="monitor-glare"></div>
+                <img src="mockup-dashboard.jpg" alt="Physical Inventory Dashboard — Hi-Fi Mockup">
+              </div>
+            </div>
+            <div class="monitor-stand-neck"></div>
+            <div class="monitor-stand-base"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════ 01 RESEARCH ═══════════ -->
+    <section class="cs-section phase-research" id="research">
+      <!-- Section geo decorations -->
+      <div class="sec-geo" style="width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(59,130,246,0.1) 0%,transparent 70%);top:-60px;right:40px;"></div>
+      <div class="sec-geo" style="width:60px;height:60px;border-radius:50%;border:2px solid rgba(59,130,246,0.15);top:40px;right:180px;background:transparent;"></div>
+      <div class="sec-geo" style="width:14px;height:14px;border-radius:3px;background:rgba(245,158,11,0.3);transform:rotate(45deg);bottom:60px;left:40px;"></div>
+
+      <div class="sec-geo-content">
+        <div class="section-eyebrow">
+          <div class="eyebrow-badge badge-blue"><span class="badge-dot"></span>01 Research</div>
+        </div>
+        <h2 class="cs-title">Understanding the <em>real users</em><br>behind warehouse counting</h2>
+        <p class="cs-lead">Before touching any design tool, we needed to deeply understand how physical inventory was actually done and who was doing it. We ran semi-structured interviews with warehouse operatives and logistics clerks, then distilled the findings into personas and a To-Be journey map.</p>
+
+        <div class="divider"><span class="divider-label">Interview Setup</span><div class="divider-shape"></div><div class="divider-line"></div></div>
+        <div class="grid-2" style="margin-bottom:24px;">
+          <div class="card">
+            <div class="card-accent accent-blue"></div>
+            <div class="card-label" style="color:var(--blue);">Method</div>
+            <div class="card-title">Semi-structured User Interviews</div>
+            <div class="card-body">Each session covered 4 topic areas: Timing &amp; Planning, Counting Process, Review &amp; Validation, and a "Magic Button" open question — designed to surface functional needs and latent frustrations.</div>
+          </div>
+          <img src="interview-session.jpg" alt="Interview Session — Video call with 3 participants" style="width:100%;border-radius:12px;display:block;">
+        </div>
+
+        <div class="divider"><span class="divider-label">Interview Questions — 4 Topic Areas</span><div class="divider-shape"></div><div class="divider-line"></div></div>
+        <div class="grid-2" style="margin-bottom:32px;">
+          <div class="topic-card tc-blue">
+            <div class="topic-card-num">01</div>
+            <div class="topic-card-label">Timing &amp; Planning</div>
+            <div class="topic-card-title">How do you plan and assign counting tasks?</div>
+            <ul class="topic-card-qs">
+              <li>How do you assign tasks to the right operatives?</li>
+              <li>Which exception cases trigger an ad-hoc count?</li>
+              <li>How strict are planned count deadlines?</li>
+            </ul>
+          </div>
+          <div class="topic-card tc-orange">
+            <div class="topic-card-num">02</div>
+            <div class="topic-card-label">Counting Process</div>
+            <div class="topic-card-title">What happens on the warehouse floor?</div>
+            <ul class="topic-card-qs">
+              <li>What could block you mid-count and interrupt the process?</li>
+              <li>How do you transmit results to the system?</li>
+              <li>What happens when there are zero items at a location?</li>
+            </ul>
+          </div>
+          <div class="topic-card tc-green">
+            <div class="topic-card-num">03</div>
+            <div class="topic-card-label">Review &amp; Validation</div>
+            <div class="topic-card-title">How do you handle discrepancies?</div>
+            <ul class="topic-card-qs">
+              <li>What happens when the count doesn't match the system?</li>
+              <li>How is a recount decision triggered?</li>
+              <li>What are consequences of inventory corrections?</li>
+            </ul>
+          </div>
+          <div class="topic-card tc-purple">
+            <div class="topic-card-num">04</div>
+            <div class="topic-card-label">"Magic Button"</div>
+            <div class="topic-card-title">What would you fix first?</div>
+            <div class="topic-card-qs" style="font-style:italic;font-size:14px;margin-top:8px;opacity:0.9;">
+              "If you had a magic button that could solve any issue in the current physical inventory process, what would it do?"
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"><span class="divider-label">Personas</span><div class="divider-shape"></div><div class="divider-line"></div></div>
+        <div class="grid-2" style="margin-bottom:32px;">
+          <div class="persona-card">
+            <div class="persona-bg-shape" style="width:200px;height:200px;background:#3B82F6;bottom:-80px;right:-60px;"></div>
+            <div class="persona-top">
+              <div class="persona-avatar av-blue">
+                <img src="data:image/jpeg;base64,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" alt="Marco — Warehouse Operative">
+              </div>
+              <div>
+                <div class="persona-name">Marco</div>
+                <div class="persona-role-tag">Warehouse Operative · 5 yrs</div>
+              </div>
+            </div>
+            <div class="persona-quote-box">"Just tell me what to count and where. I don't want to figure things out on the floor — I want to focus and finish fast."</div>
+            <div class="persona-goals-title">Goals</div>
+            <div class="persona-goal"><div class="goal-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg></div>Clear task list with precise location guidance</div>
+            <div class="persona-goal"><div class="goal-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg></div>Fast count entry — no manual re-typing</div>
+            <div class="persona-goal"><div class="goal-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg></div>Know immediately if a discrepancy needs action</div>
+            <div class="tag-row" style="margin-top:14px;"><span class="tag tag-pain">Ambiguous assignments</span><span class="tag tag-pain">Paper re-entry errors</span></div>
+          </div>
+          <div class="persona-card">
+            <div class="persona-bg-shape" style="width:200px;height:200px;background:#8B5CF6;bottom:-80px;right:-60px;"></div>
+            <div class="persona-top">
+              <div class="persona-avatar av-purple">
+                <img src="data:image/jpeg;base64,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" alt="Sarah — Logistics Clerk">
+              </div>
+              <div>
+                <div class="persona-name">Sarah</div>
+                <div class="persona-role-tag" style="background:#F5F3FF;color:#5B21B6;border-color:#DDD6FE;">Logistics Clerk / Manager</div>
+              </div>
+            </div>
+            <div class="persona-quote-box">"I need the full picture — who's done, what's flagged, where are we on accuracy — without chasing people or waiting until end of day."</div>
+            <div class="persona-goals-title">Goals</div>
+            <div class="persona-goal"><div class="goal-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg></div>Real-time KPI dashboard (accuracy %, backlog)</div>
+            <div class="persona-goal"><div class="goal-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg></div>Instant alerts on critical discrepancies</div>
+            <div class="persona-goal"><div class="goal-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg></div>Historical trends for continuous improvement</div>
+            <div class="tag-row" style="margin-top:14px;"><span class="tag tag-pain">No real-time view</span><span class="tag tag-pain">Manual KPI reporting</span></div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ═══════════ 02 IDEATION ═══════════ -->
+    <section class="cs-section phase-ideation" id="ideation">
+      <div class="sec-geo" style="width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(16,185,129,0.1) 0%,transparent 70%);top:-60px;right:60px;"></div>
+      <div class="sec-geo" style="width:40px;height:40px;background:rgba(245,158,11,0.12);transform:rotate(45deg);border-radius:6px;bottom:80px;right:80px;"></div>
+      <div class="sec-geo" style="width:100px;height:100px;border-radius:50%;border:2px solid rgba(16,185,129,0.12);top:100px;right:180px;background:transparent;"></div>
+
+      <div class="sec-geo-content">
+        <div class="section-eyebrow">
+          <div class="eyebrow-badge badge-green"><span class="badge-dot"></span>02 Ideation</div>
+        </div>
+        <h2 class="cs-title">Turning insights into<br><em>design opportunities</em></h2>
+        <p class="cs-lead">With research complete and our personas defined, we synthesised the journey map findings into "How Might We" questions — reframing each pain point as a concrete design challenge before moving into solutions.</p>
+
+        <div class="divider"><span class="divider-label">How Might We Questions</span><div class="divider-shape"></div><div class="divider-line"></div></div>
+        <div class="hmw-grid">
+          <div class="hmw-card">
+            <div class="hmw-label">HMW #1</div>
+            <div class="hmw-text"><strong>How might we</strong> help warehouse operatives complete counting tasks without interruption or confusion about location and scope?</div>
+          </div>
+          <div class="hmw-card">
+            <div class="hmw-label">HMW #2</div>
+            <div class="hmw-text"><strong>How might we</strong> give managers real-time visibility into inventory progress and discrepancies without extra reporting steps?</div>
+          </div>
+          <div class="hmw-card">
+            <div class="hmw-label">HMW #3</div>
+            <div class="hmw-text"><strong>How might we</strong> reduce data entry errors when operatives submit count results from the warehouse floor?</div>
+          </div>
+          <div class="hmw-card">
+            <div class="hmw-label">HMW #4</div>
+            <div class="hmw-text"><strong>How might we</strong> make discrepancy escalation faster, structured, and automatically visible to the right people?</div>
+          </div>
+        </div>
+
+        <div class="divider"><span class="divider-label">Key User Stories</span><div class="divider-shape"></div><div class="divider-line"></div></div>
+        <div class="grid-2">
+          <div class="story-card">
+            <div class="story-role-badge srb-blue" data-i18n="story.role.exec">Operative — Execution</div>
+            <div class="story-text" data-i18n="story.text.exec">
+              As an Operative, I want to <strong>view my assigned tasks</strong> (counts, recounts, investigations) so I know exactly what to work on next.<br><br>
+              As an Operative, I want to <strong>update task status in real time</strong> so the dashboard reflects actual progress.
+            </div>
+          </div>
+          <div class="story-card">
+            <div class="story-role-badge srb-orange" data-i18n="story.role.disc">Operative — Discrepancy</div>
+            <div class="story-text" data-i18n="story.text.disc">
+              As an Operative, I want to <strong>report discrepancies</strong> directly in the app and <strong>attach photo evidence</strong> so investigations start without delay.<br><br>
+              As an Operative, I want <strong>clear SOP references</strong> per task so I always follow the correct process.
+            </div>
+          </div>
+          <div class="story-card">
+            <div class="story-role-badge srb-purple" data-i18n="story.role.mgr">Manager — Monitoring</div>
+            <div class="story-text" data-i18n="story.text.mgr">
+              As a Manager, I want to see <strong>KPIs: accuracy %, discrepancies, backlog, SLA compliance</strong> so I can evaluate performance and identify risks.<br><br>
+              As a Manager, I want <strong>early alerts on critical issues</strong> so I can intervene before they escalate.
+            </div>
+          </div>
+          <div class="story-card">
+            <div class="story-role-badge srb-teal" data-i18n="story.role.shared">Shared Needs</div>
+            <div class="story-text" data-i18n="story.text.shared">
+              As a user, I want a <strong>simple, intuitive interface</strong> so I can quickly understand what needs attention.<br><br>
+              As a user, I want <strong>role-based access</strong> so I only see information relevant to my responsibilities.
+            </div>
+          </div>
+        </div>
+      </div>
+
+        <!-- ── Journey Map ── -->
+        <div class="divider" style="margin-top:40px;"><span class="divider-label">User Journey Map</span><div class="divider-shape"></div><div class="divider-line"></div></div>
+        <p class="cs-lead" style="margin-bottom:24px;">End-to-end flow mapped across six stages — tracking user actions, needs, open pain points, and AI/system interventions.</p>
+
+        <div class="jm-wrap">
+          <div class="jm-outer">
+              <div class="jm-legend">
+                <div class="jm-legend-item"><div class="jm-legend-dot" style="background:#F59E0B;border-radius:2px;"></div>User Needs</div>
+                <div class="jm-legend-item"><div class="jm-legend-dot" style="background:#EA580C;border-radius:2px;"></div>Open Points</div>
+                <div class="jm-legend-item"><div class="jm-legend-dot" style="background:#94A3B8;border-radius:2px;"></div>Actions</div>
+                <div class="jm-legend-item"><div class="jm-legend-dot" style="background:#3B82F6;border-radius:2px;"></div>AI / System</div>
+                <div class="jm-legend-item"><div class="jm-legend-dot" style="background:#16A34A;border-radius:2px;"></div>Opportunity</div>
+              </div>
+
+            <div class="jm-scroll">
+
+              <!-- STEP ROW: 6 steps with arrows -->
+              <div class="jm-steps-wrap">
+                <div class="jm-step-col">
+                  <div class="jm-phase-btn">Analyze<br>Inventory</div>
+                </div>
+                <div class="jm-arrow-col"><span style="color:#F59E0B;font-weight:900;font-size:16px;">→</span></div>
+                <div class="jm-step-col">
+                  <div class="jm-phase-btn active">Create<br>Counting Plans</div>
+                </div>
+                <div class="jm-arrow-col"><span style="color:#F59E0B;font-weight:900;font-size:16px;">→</span></div>
+                <div class="jm-step-col">
+                  <div class="jm-phase-btn">Prepare<br>Tasks</div>
+                </div>
+                <div class="jm-arrow-col"><span style="color:#F59E0B;font-weight:900;font-size:16px;">→</span></div>
+                <div class="jm-step-col">
+                  <div class="jm-phase-btn">Count<br>Inventory</div>
+                </div>
+                <div class="jm-arrow-col"><span style="color:#F59E0B;font-weight:900;font-size:16px;">→</span></div>
+                <div class="jm-step-col">
+                  <div class="jm-phase-btn">Review &amp;<br>Validate</div>
+                </div>
+                <div class="jm-arrow-col"><span style="color:#F59E0B;font-weight:900;font-size:16px;">→</span></div>
+                <div class="jm-step-col">
+                  <div class="jm-phase-btn">Report &amp;<br>Approve</div>
+                </div>
+              </div>
+
+              <!-- CARDS GRID: one column per step -->
+              <div class="jm-cards-grid">
+
+                <!-- 1. Analyze Inventory -->
+                <div class="jm-col-cards">
+                  <div class="jm-card c-action"><div class="jm-card-tag">Action</div>Set reference &amp; analysis parameters in SAP LGM</div>
+                  <div class="jm-card c-action"><div class="jm-card-tag">Action</div>Assign inventory scope to operatives</div>
+                  <div class="jm-card c-need"><div class="jm-card-tag">User Need</div>Overview of which SKUs need to be checked and why</div>
+                  <div class="jm-card c-open"><div class="jm-card-tag">Open Point</div>Manual cross-check between SAP and physical records — time-consuming</div>
+                  <div class="jm-card c-open"><div class="jm-card-tag">Open Point</div>No clear view of which SKUs are flagged for recount</div>
+                  <div class="jm-card c-ai"><div class="jm-card-tag">AI / System</div>AI: suggest bins with high variance history for priority counting</div>
+                </div>
+
+                <!-- 2. Create Counting Plans -->
+                <div class="jm-col-cards">
+                  <div class="jm-card c-action"><div class="jm-card-tag">Action</div>Create counting plan in SAP LGM across 4+ screens</div>
+                  <div class="jm-card c-action"><div class="jm-card-tag">Action</div>Define scope, counting units &amp; deadlines</div>
+                  <div class="jm-card c-need"><div class="jm-card-tag">User Need</div>Estimate workload based on historical duration data</div>
+                  <div class="jm-card c-need"><div class="jm-card-tag">User Need</div>Single-screen plan creation without switching contexts</div>
+                  <div class="jm-card c-open"><div class="jm-card-tag">Open Point</div>No historical data available to estimate time or effort</div>
+                  <div class="jm-card c-open"><div class="jm-card-tag">Open Point</div>Plan creation fragmented across multiple system screens</div>
+                  <div class="jm-card c-ai"><div class="jm-card-tag">AI / System</div>AI: auto-populate plan template based on last cycle data</div>
+                </div>
+
+                <!-- 3. Prepare Tasks -->
+                <div class="jm-col-cards">
+                  <div class="jm-card c-action"><div class="jm-card-tag">Action</div>Create &amp; assign counting tasks per operative</div>
+                  <div class="jm-card c-action"><div class="jm-card-tag">Action</div>Operative receives task on handheld / SAP terminal</div>
+                  <div class="jm-card c-need"><div class="jm-card-tag">User Need</div>Clear task descriptions with bin location &amp; visual guide</div>
+                  <div class="jm-card c-need"><div class="jm-card-tag">User Need</div>Push notification when a new task is ready</div>
+                  <div class="jm-card c-open"><div class="jm-card-tag">Open Point</div>Task instructions are text-only — no bin map or visual guide</div>
+                  <div class="jm-card c-open"><div class="jm-card-tag">Open Point</div>Last-minute changes cause confusion on the warehouse floor</div>
+                  <div class="jm-card c-ai"><div class="jm-card-tag">AI / System</div>AI: auto-group tasks by bin proximity to reduce travel time</div>
+                </div>
+
+                <!-- 4. Count Inventory -->
+                <div class="jm-col-cards">
+                  <div class="jm-card c-action"><div class="jm-card-tag">Action</div>Open task · navigate to bin · scan items</div>
+                  <div class="jm-card c-action"><div class="jm-card-tag">Action</div>Count item by item; handle zero-quantity locations</div>
+                  <div class="jm-card c-action"><div class="jm-card-tag">Action</div>Clerk monitors progress &amp; activates tasks for operatives</div>
+                  <div class="jm-card c-need"><div class="jm-card-tag">User Need</div>Auto-save partial counts to prevent data loss on disconnect</div>
+                  <div class="jm-card c-need"><div class="jm-card-tag">User Need</div>Visual confirmation after each scan is registered</div>
+                  <div class="jm-card c-open"><div class="jm-card-tag">Open Point</div>Scanner disconnects mid-task — no auto-save, data lost</div>
+                  <div class="jm-card c-open"><div class="jm-card-tag">Open Point</div>Barcode scanning fails on damaged labels</div>
+                  <div class="jm-card c-open"><div class="jm-card-tag">Open Point</div>System timeout (10 min) causes full session data loss</div>
+                  <div class="jm-card c-ai"><div class="jm-card-tag">AI / System</div>AI: real-time anomaly detection &amp; flag damaged items for photo</div>
+                </div>
+
+                <!-- 5. Review & Validate -->
+                <div class="jm-col-cards">
+                  <div class="jm-card c-action"><div class="jm-card-tag">Action</div>Review count results in SAP LGM</div>
+                  <div class="jm-card c-action"><div class="jm-card-tag">Action</div>Approve result or trigger recount for discrepancies</div>
+                  <div class="jm-card c-need"><div class="jm-card-tag">User Need</div>Instant visibility of discrepancies during counting — not after</div>
+                  <div class="jm-card c-need"><div class="jm-card-tag">User Need</div>Operative receives confirmation when count is accepted</div>
+                  <div class="jm-card c-open"><div class="jm-card-tag">Open Point</div>No live progress view — clerk must call supervisor for status</div>
+                  <div class="jm-card c-open"><div class="jm-card-tag">Open Point</div>Discrepancies only discovered after counting ends</div>
+                  <div class="jm-card c-ai"><div class="jm-card-tag">AI / System</div>AI: auto-approve items within tolerance threshold</div>
+                </div>
+
+                <!-- 6. Report & Approve -->
+                <div class="jm-col-cards">
+                  <div class="jm-card c-action"><div class="jm-card-tag">Action</div>Generate &amp; export final inventory report</div>
+                  <div class="jm-card c-action"><div class="jm-card-tag">Action</div>Lock inventory in SAP after final approval</div>
+                  <div class="jm-card c-need"><div class="jm-card-tag">User Need</div>One-click report export with variance highlights</div>
+                  <div class="jm-card c-need"><div class="jm-card-tag">User Need</div>Standardised report format across all sites</div>
+                  <div class="jm-card c-open"><div class="jm-card-tag">Open Point</div>Report generation is manual — copy-paste from multiple screens</div>
+                  <div class="jm-card c-open"><div class="jm-card-tag">Open Point</div>Report format not standardised — varies by site</div>
+                  <div class="jm-card c-opp"><div class="jm-card-tag">Opportunity</div>Automated report with variance highlights &amp; AI-suggested corrections</div>
+                </div>
+
+              </div><!-- /jm-cards-grid -->
+            </div><!-- /jm-scroll -->
+          </div><!-- /jm-outer -->
+        </div><!-- /jm-wrap -->
+
+    </section>
+
+    <!-- ═══════════ 03 PROTOTYPE ═══════════ -->
+    <section class="cs-section phase-prototype" id="prototype">
+      <div class="sec-geo" style="width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(245,158,11,0.1) 0%,transparent 70%);top:-60px;right:40px;"></div>
+      <div class="sec-geo" style="width:50px;height:50px;border-radius:50%;border:2px solid rgba(245,158,11,0.2);top:80px;right:220px;background:transparent;"></div>
+      <div class="sec-geo" style="width:18px;height:18px;border-radius:50%;background:rgba(245,158,11,0.25);bottom:100px;left:40px;"></div>
+
+      <div class="sec-geo-content">
+        <div class="section-eyebrow">
+          <div class="eyebrow-badge badge-orange"><span class="badge-dot"></span>03 Prototype</div>
+        </div>
+        <h2 class="cs-title">Sketching the <em>core flows</em></h2>
+        <p class="cs-lead">Before investing in visual design, we sketched low-fidelity wireframes for the three core flows to validate structure, screen hierarchy, and navigation logic early.</p>
+
+        <div class="grid-3" style="margin-bottom:28px;gap:20px;">
+          <div>
+            <div class="screen-flow-label" style="margin-bottom:10px;font-size:12px;font-weight:600;color:var(--text-muted);text-align:center;text-transform:uppercase;letter-spacing:0.05em;">Create Task</div>
+            <img src="lofi-create.jpg" alt="Lo-fi: Create Physical Inventory Task" style="width:100%;border-radius:10px;border:1px solid rgba(0,0,0,0.08);box-shadow:0 4px 16px rgba(0,0,0,0.08);">
+          </div>
+          <div>
+            <div class="screen-flow-label" style="margin-bottom:10px;font-size:12px;font-weight:600;color:var(--text-muted);text-align:center;text-transform:uppercase;letter-spacing:0.05em;">Count Inventory</div>
+            <img src="lofi-count.jpg" alt="Lo-fi: Count Inventory" style="width:100%;border-radius:10px;border:1px solid rgba(0,0,0,0.08);box-shadow:0 4px 16px rgba(0,0,0,0.08);">
+          </div>
+          <div>
+            <div class="screen-flow-label" style="margin-bottom:10px;font-size:12px;font-weight:600;color:var(--text-muted);text-align:center;text-transform:uppercase;letter-spacing:0.05em;">Confirm Results</div>
+            <img src="lofi-confirm.jpg" alt="Lo-fi: Confirm Count Results" style="width:100%;border-radius:10px;border:1px solid rgba(0,0,0,0.08);box-shadow:0 4px 16px rgba(0,0,0,0.08);">
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ═══════════ 04 VALIDATION ═══════════ -->
+    <section class="cs-section phase-midfi" id="validation">
+      <div class="sec-geo" style="width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(139,92,246,0.1) 0%,transparent 70%);top:-50px;right:60px;"></div>
+      <div class="sec-geo" style="width:70px;height:70px;border-radius:50%;border:1.5px solid rgba(139,92,246,0.18);top:90px;right:220px;background:transparent;"></div>
+      <div class="sec-geo" style="width:20px;height:20px;background:rgba(139,92,246,0.15);transform:rotate(45deg);border-radius:4px;bottom:80px;left:60px;"></div>
+
+      <div class="sec-geo-content">
+        <div class="section-eyebrow">
+          <div class="eyebrow-badge badge-purple"><span class="badge-dot"></span>04 Validation</div>
+        </div>
+        <h2 class="cs-title">Testing with <em>real users</em></h2>
+        <p class="cs-lead">We conducted moderated usability sessions with customers and partners using a lo-fi prototype, applying think-aloud protocol to surface pain points early before investing in visual design.</p>
+
+        <div class="divider"><span class="divider-label">Findings &amp; Design Responses</span><div class="divider-shape"></div><div class="divider-line"></div></div>
+
+        <div style="overflow-x:auto;margin-bottom:8px;">
+          <table style="width:100%;border-collapse:collapse;font-size:14px;">
+            <thead>
+              <tr style="background:rgba(139,92,246,0.08);">
+                <th style="padding:12px 16px;text-align:left;font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:#7C3AED;border-bottom:2px solid rgba(139,92,246,0.2);width:5%;">#</th>
+                <th style="padding:12px 16px;text-align:left;font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:#7C3AED;border-bottom:2px solid rgba(139,92,246,0.2);width:30%;">Finding</th>
+                <th style="padding:12px 16px;text-align:left;font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:#7C3AED;border-bottom:2px solid rgba(139,92,246,0.2);width:35%;">User Feedback</th>
+                <th style="padding:12px 16px;text-align:left;font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:#7C3AED;border-bottom:2px solid rgba(139,92,246,0.2);width:30%;">Design Response</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid rgba(0,0,0,0.06);">
+                <td style="padding:14px 16px;vertical-align:top;">
+                  <span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:rgba(245,158,11,0.15);color:#D97706;font-size:11px;font-weight:800;">1</span>
+                </td>
+                <td style="padding:14px 16px;vertical-align:top;font-weight:600;color:var(--navy-dark);">Create flow was unclear — storage bin name alone was not enough to identify the right bin</td>
+                <td style="padding:14px 16px;vertical-align:top;color:var(--text-muted);font-style:italic;">"Can I see the bin's status, stock movement, or other context to help me decide?"</td>
+                <td style="padding:14px 16px;vertical-align:top;color:var(--text-muted);">Redesigned the create entry point around a Storage Bin List — each bin surfaces rich contextual info (status, movement, availability) to guide task creation</td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(0,0,0,0.06);background:rgba(0,0,0,0.015);">
+                <td style="padding:14px 16px;vertical-align:top;">
+                  <span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:rgba(245,158,11,0.15);color:#D97706;font-size:11px;font-weight:800;">2</span>
+                </td>
+                <td style="padding:14px 16px;vertical-align:top;font-weight:600;color:var(--navy-dark);">Counting flow was too fragmented — excessive navigation broke the working rhythm</td>
+                <td style="padding:14px 16px;vertical-align:top;color:var(--text-muted);font-style:italic;">"I have to keep tapping back and forth between tasks. There's no sense of flow — I just want to work through it all at once."</td>
+                <td style="padding:14px 16px;vertical-align:top;color:var(--text-muted);">Bundled tasks and exposed item-level detail directly in the list, grouped by storage bin — mirrors how operatives actually move through a warehouse zone</td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(0,0,0,0.06);">
+                <td style="padding:14px 16px;vertical-align:top;">
+                  <span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:rgba(245,158,11,0.15);color:#D97706;font-size:11px;font-weight:800;">3</span>
+                </td>
+                <td style="padding:14px 16px;vertical-align:top;font-weight:600;color:var(--navy-dark);">Confirming results was tedious — tasks had to be reviewed and posted one by one</td>
+                <td style="padding:14px 16px;vertical-align:top;color:var(--text-muted);font-style:italic;">"I have to open each task separately to check and confirm. It's the same thing over and over."</td>
+                <td style="padding:14px 16px;vertical-align:top;color:var(--text-muted);">Applied the same item-level structure as counting — all items consolidated in a single view for side-by-side comparison, with batch confirmation for tasks with no discrepancy</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ 05 HI-FI ═══════════ -->
+    <section class="cs-section phase-hifi" id="hifi">
+      <div class="sec-geo" style="width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(59,130,246,0.1) 0%,transparent 70%);top:-60px;right:40px;"></div>
+      <div class="sec-geo" style="width:30px;height:30px;border-radius:8px;background:rgba(59,130,246,0.12);transform:rotate(20deg);bottom:100px;right:100px;"></div>
+      <div class="sec-geo" style="width:120px;height:120px;border-radius:50%;border:1.5px solid rgba(59,130,246,0.12);bottom:60px;left:40px;background:transparent;"></div>
+
+      <div class="sec-geo-content">
+        <div class="section-eyebrow">
+          <div class="eyebrow-badge badge-blue"><span class="badge-dot"></span>05 Hi-Fi Prototype</div>
+        </div>
+        <h2 class="cs-title">Bringing the design <em>to life</em></h2>
+        <p class="cs-lead">Design decisions were validated with the PM and engineering team for feasibility before moving to high-fidelity. The screens below reflect both user needs and technical constraints, and have been redesigned for portfolio presentation purposes.</p>
+
+        <div class="divider"><span class="divider-label">Part 1 — Create Physical Inventory Task</span><div class="divider-shape"></div><div class="divider-line"></div></div>
+        <div class="page-struct" style="margin-bottom:40px;">
+          <!-- Top row: two main screens side by side -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;">
+            <!-- Main 1: Storage Bin List -->
+            <div>
+              <img src="hifi-create-1.jpg" alt="Storage Bin List" class="screen-flow-img" style="box-shadow:0 8px 32px rgba(59,130,246,0.18);border:2px solid rgba(59,130,246,0.25);">
+              <div class="screen-flow-label" style="font-size:13px;font-weight:700;color:var(--navy-dark);margin-top:10px;">Storage Bin List<br><span style="font-weight:400;color:#94A3B8;font-size:12px;">Main screen — Clerk / Manager view</span></div>
+            </div>
+            <!-- Main 2: Bin Detail -->
+            <div>
+              <img src="hifi-create-2.jpg" alt="Bin Detail" class="screen-flow-img" style="box-shadow:0 8px 32px rgba(59,130,246,0.18);border:2px solid rgba(59,130,246,0.25);">
+              <div class="screen-flow-label" style="font-size:13px;font-weight:700;color:var(--navy-dark);margin-top:10px;">Bin Detail<br><span style="font-weight:400;color:#94A3B8;font-size:12px;">View counting history &amp; stock info — click → to navigate. Supports discrepancy tracing when exceptions arise.</span></div>
+            </div>
+          </div>
+          <!-- Bottom row: secondary popups, smaller -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+            <!-- Unavailable popover -->
+            <div style="display:flex;align-items:flex-start;gap:12px;">
+              <div style="flex-shrink:0;margin-top:4px;color:var(--orange);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+              </div>
+              <div style="max-width:280px;">
+                <img src="hifi-create-3.jpg" alt="Unavailable for Counting popover" class="screen-flow-img" style="border-radius:8px;">
+                <div class="screen-flow-label">Unavailable Popover<br><span style="font-weight:400;color:#94A3B8;">Click "Unavailable for counting" tag — shows reason &amp; related in-progress documents</span></div>
+              </div>
+            </div>
+            <!-- Create dialog -->
+            <div style="display:flex;align-items:flex-start;gap:12px;">
+              <div style="flex-shrink:0;margin-top:4px;color:var(--orange);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+              </div>
+              <div style="max-width:280px;">
+                <img src="hifi-create-popup.png" alt="Create PI Task dialog" class="screen-flow-img" style="border-radius:8px;">
+                <div class="screen-flow-label">Create Dialog<br><span style="font-weight:400;color:#94A3B8;">Click "Create Physical Inventory task" — confirm type, date &amp; description</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"><span class="divider-label">Part 2 — Counting Physical Inventory</span><div class="divider-shape"></div><div class="divider-line"></div></div>
+        <div class="page-struct" style="margin-bottom:40px;">
+          <!-- Top row: two main screens -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;">
+            <div>
+              <img src="hifi-count-1.jpg" alt="Count Task List" class="screen-flow-img" style="box-shadow:0 8px 32px rgba(59,130,246,0.18);border:2px solid rgba(59,130,246,0.25);">
+              <div class="screen-flow-label" style="font-size:13px;font-weight:700;color:var(--navy-dark);margin-top:10px;">Count Task List<br><span style="font-weight:400;color:#94A3B8;font-size:12px;">Main screen — overview of all counting tasks with progress. Filter by number of items helps temporary workers quickly pick up small-volume counting tasks.</span></div>
+            </div>
+            <div>
+              <img src="hifi-count-2.jpg" alt="Task Detail — Display Mode" class="screen-flow-img" style="box-shadow:0 8px 32px rgba(59,130,246,0.18);border:2px solid rgba(59,130,246,0.25);">
+              <div class="screen-flow-label" style="font-size:13px;font-weight:700;color:var(--navy-dark);margin-top:10px;">Task Detail<br><span style="font-weight:400;color:#94A3B8;font-size:12px;">Click → to enter — view items to be counted, click "Count" to start</span></div>
+            </div>
+          </div>
+          <!-- Bottom row: counting state + partial save result -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+            <div style="display:flex;align-items:flex-start;gap:12px;">
+              <div style="flex-shrink:0;margin-top:4px;color:var(--orange);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+              </div>
+              <div>
+                <img src="hifi-count-3.jpg" alt="Counting — Editing Mode" class="screen-flow-img" style="border-radius:8px;">
+                <div class="screen-flow-label">Counting Mode<br><span style="font-weight:400;color:#94A3B8;">Click "Count" to activate — enter quantities inline, save as draft anytime. A clear indicator appears on each item once a quantity is entered, making counting status immediately visible at a glance.</span></div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:12px;">
+              <div style="flex-shrink:0;margin-top:4px;color:var(--orange);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+              </div>
+              <div>
+                <img src="hifi-count-4.jpg" alt="Partial Save — Counted items at bottom" class="screen-flow-img" style="border-radius:8px;">
+                <div class="screen-flow-label">Partial Save<br><span style="font-weight:400;color:#94A3B8;">Counted items move to bottom — remaining items stay on top for easy continuation</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"><span class="divider-label">Part 3 — Confirm Result &amp; Report Discrepancy</span><div class="divider-shape"></div><div class="divider-line"></div></div>
+        <div class="page-struct" style="margin-bottom:40px;">
+          <!-- Main screen full width -->
+          <div style="margin-bottom:20px;">
+            <img src="hifi-confirm-1.jpg" alt="Confirm Count Results" class="screen-flow-img" style="box-shadow:0 8px 32px rgba(59,130,246,0.18);border:2px solid rgba(59,130,246,0.25);">
+            <div class="screen-flow-label" style="font-size:13px;font-weight:700;color:var(--navy-dark);margin-top:10px;">Confirm Count Results<br><span style="font-weight:400;color:#94A3B8;font-size:12px;">Review all counted items with difference quantities highlighted. Batch-post zero-difference items by filtering Difference Quantity = 0 — eliminating unnecessary one-by-one confirmation. <strong style="color:var(--navy-dark);">New Stock</strong> and <strong style="color:var(--navy-dark);">Zero Count</strong> tags surface common misplacement patterns, helping managers quickly match discrepancies across bins.</span></div>
+          </div>
+          <!-- Secondary row: post dialog + reconcile -->
+          <div style="display:grid;grid-template-columns:1fr 2fr;gap:20px;align-items:flex-start;">
+            <div style="display:flex;align-items:flex-start;gap:12px;">
+              <div style="flex-shrink:0;margin-top:4px;color:var(--orange);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+              </div>
+              <div>
+                <img src="hifi-post-dialog.jpg" alt="Post Physical Inventory dialog" class="screen-flow-img" style="border-radius:8px;">
+                <div class="screen-flow-label">Post Success<br><span style="font-weight:400;color:#94A3B8;">Dialog provides a direct link to Reconcile Stock app for discrepancy reporting.</span></div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:12px;">
+              <div style="flex-shrink:0;margin-top:4px;color:var(--orange);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+              </div>
+              <div>
+                <img src="hifi-reconcile.jpg" alt="Reconcile Stock app" class="screen-flow-img" style="border-radius:8px;">
+                <div class="screen-flow-label">Reconcile Stock<br><span style="font-weight:400;color:#94A3B8;">Click "Reconcile Stock" in the dialog to jump to the Reconcile Stock app — report the discrepancy to the ERP system (SAP S/4HANA) and post the difference quantity.</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"><span class="divider-label">Part 4 — Overall Dashboard</span><div class="divider-shape"></div><div class="divider-line"></div></div>
+        <div class="page-struct" style="margin-bottom:40px;">
+          <!-- Screen 1: Inventory Overview -->
+          <div style="margin-bottom:20px;">
+            <img src="hifi-dashboard-1.jpg" alt="Inventory Overview" class="screen-flow-img" style="box-shadow:0 8px 32px rgba(59,130,246,0.18);border:2px solid rgba(59,130,246,0.25);">
+            <div class="screen-flow-label" style="font-size:13px;font-weight:700;color:var(--navy-dark);margin-top:10px;">Inventory Overview<br><span style="font-weight:400;color:#94A3B8;font-size:12px;">KPI cards prioritise the metrics managers check first — accuracy, today's progress, and active discrepancies — reducing the need to dig into detail views for routine status checks. Daily and weekly progress bars provide immediate orientation on where the team stands against targets.</span></div>
+          </div>
+          <!-- Screen 2 + 3 side by side -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+            <div>
+              <img src="hifi-dashboard-2.jpg" alt="Discrepancy Analysis" class="screen-flow-img" style="box-shadow:0 8px 32px rgba(59,130,246,0.18);border:2px solid rgba(59,130,246,0.25);">
+              <div class="screen-flow-label" style="font-size:13px;font-weight:700;color:var(--navy-dark);margin-top:10px;">Discrepancy Analysis &amp; Early Warnings<br><span style="font-weight:400;color:#94A3B8;font-size:12px;">Discrepancies are categorised by root cause and mapped to storage zones, making it easier to identify patterns rather than reviewing individual items. High-risk areas are visually flagged for immediate attention. The Early Warnings section surfaces proactive alerts before issues escalate, each paired with predicted impact and a recommended action.</span></div>
+            </div>
+            <div>
+              <img src="hifi-dashboard-3.jpg" alt="Inventory Condition Overview" class="screen-flow-img" style="box-shadow:0 8px 32px rgba(59,130,246,0.18);border:2px solid rgba(59,130,246,0.25);">
+              <div class="screen-flow-label" style="font-size:13px;font-weight:700;color:var(--navy-dark);margin-top:10px;">Inventory Condition &amp; Movement<br><span style="font-weight:400;color:#94A3B8;font-size:12px;">ABC classification gives managers a prioritisation framework — high-value items stay in focus without manual filtering. Movement tracking is scoped per storage bin with switchable time ranges, enabling targeted investigation of activity spikes without leaving the dashboard.</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ 06 TEST ═══════════ -->
+    <section class="cs-section phase-test" id="test">
+      <div class="sec-geo" style="width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(239,68,68,0.08) 0%,transparent 70%);top:-70px;right:40px;"></div>
+      <div class="sec-geo" style="width:50px;height:50px;border-radius:50%;border:2px solid rgba(239,68,68,0.12);top:60px;right:240px;background:transparent;"></div>
+      <div class="sec-geo" style="width:14px;height:14px;background:rgba(245,158,11,0.3);transform:rotate(45deg);border-radius:3px;bottom:80px;left:40px;"></div>
+
+      <div class="sec-geo-content">
+        <div class="section-eyebrow">
+          <div class="eyebrow-badge badge-red"><span class="badge-dot"></span>06 Test</div>
+        </div>
+        <h2 class="cs-title">Validating with <em>real users</em></h2>
+        <p class="cs-lead">We conducted moderated usability testing on the high-fidelity prototype with participants performing 3 core task scenarios. Results confirmed mid-fi decisions and surfaced final refinements.</p>
+
+        <div class="divider"><span class="divider-label">Test Setup</span><div class="divider-shape"></div><div class="divider-line"></div></div>
+        <div class="grid-3" style="margin-bottom:32px;">
+          <div class="card">
+            <div class="card-accent accent-orange"></div>
+            <div class="card-label" style="color:var(--orange);">Method</div>
+            <div class="card-title">Moderated Usability Testing</div>
+            <div class="card-body">Remote moderated sessions using think-aloud protocol. Each participant navigated the hi-fi prototype independently while verbalising their thought process.</div>
+          </div>
+          <div class="card">
+            <div class="card-accent" style="background:linear-gradient(90deg,#0F766E,#10B981);"></div>
+            <div class="card-label" style="color:var(--teal);">Scenarios Tested</div>
+            <div class="card-title">3 Core Tasks</div>
+            <div class="card-body" data-i18n="scenarios.list">
+              1. Create a new counting task<br>
+              2. Complete a count task end-to-end<br>
+              3. Report a discrepancy with photo evidence
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-accent accent-purple"></div>
+            <div class="card-label" style="color:var(--purple);">Participants</div>
+            <div class="card-title">Customers &amp; Partners</div>
+            <div class="card-body">SAP customers and partners with hands-on experience in inventory and warehouse operations.</div>
+          </div>
+        </div>
+
+        <div class="divider"><span class="divider-label">Final Findings</span><div class="divider-shape"></div><div class="divider-line"></div></div>
+        <div style="overflow-x:auto;margin-bottom:8px;">
+          <table style="width:100%;border-collapse:collapse;font-size:14px;">
+            <thead>
+              <tr style="background:rgba(239,68,68,0.06);">
+                <th style="padding:12px 16px;text-align:left;font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:#DC2626;border-bottom:2px solid rgba(239,68,68,0.18);width:25%;">Task</th>
+                <th style="padding:12px 16px;text-align:left;font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:#DC2626;border-bottom:2px solid rgba(239,68,68,0.18);width:15%;">Result</th>
+                <th style="padding:12px 16px;text-align:left;font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:#DC2626;border-bottom:2px solid rgba(239,68,68,0.18);width:35%;">Observation</th>
+                <th style="padding:12px 16px;text-align:left;font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:#DC2626;border-bottom:2px solid rgba(239,68,68,0.18);width:25%;">Follow-up Opportunity</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid rgba(0,0,0,0.06);">
+                <td style="padding:14px 16px;vertical-align:top;font-weight:600;color:var(--navy-dark);">Create a new counting task</td>
+                <td style="padding:14px 16px;vertical-align:top;">
+                  <span style="display:inline-block;padding:3px 10px;border-radius:20px;background:rgba(245,158,11,0.12);color:#D97706;font-size:12px;font-weight:700;">Partial</span>
+                </td>
+                <td style="padding:14px 16px;vertical-align:top;color:var(--text-muted);">Storage bin contextual info helped participants make more confident decisions. However, several noted that manually creating tasks for recurring cycles felt repetitive and time-consuming.</td>
+                <td style="padding:14px 16px;vertical-align:top;color:var(--text-muted);">Automate task creation via counting rules — reduce manual setup for recurring cycles</td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(0,0,0,0.06);background:rgba(0,0,0,0.015);">
+                <td style="padding:14px 16px;vertical-align:top;font-weight:600;color:var(--navy-dark);">Complete a count task end-to-end</td>
+                <td style="padding:14px 16px;vertical-align:top;">
+                  <span style="display:inline-block;padding:3px 10px;border-radius:20px;background:rgba(16,185,129,0.1);color:#059669;font-size:12px;font-weight:700;">Pass</span>
+                </td>
+                <td style="padding:14px 16px;vertical-align:top;color:var(--text-muted);">Task bundle structure and item-level grouping by storage bin were intuitive. Participants moved through the flow without backtracking. Some raised questions about how tasks reach operatives in the field, particularly in large warehouses.</td>
+                <td style="padding:14px 16px;vertical-align:top;color:var(--text-muted);">Mobile work queue to allow managers to assign and dispatch tasks directly from the warehouse floor</td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(0,0,0,0.06);">
+                <td style="padding:14px 16px;vertical-align:top;font-weight:600;color:var(--navy-dark);">Report a discrepancy</td>
+                <td style="padding:14px 16px;vertical-align:top;">
+                  <span style="display:inline-block;padding:3px 10px;border-radius:20px;background:rgba(245,158,11,0.12);color:#D97706;font-size:12px;font-weight:700;">Partial</span>
+                </td>
+                <td style="padding:14px 16px;vertical-align:top;color:var(--text-muted);">Participants identified and filtered discrepant items without difficulty. The Reconcile Stock deep-link was well received. However, when root causes were ambiguous, participants paused and expressed uncertainty about what to do next.</td>
+                <td style="padding:14px 16px;vertical-align:top;color:var(--text-muted);">AI assistant to surface likely root causes and suggest corrective actions based on discrepancy patterns</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="divider"><span class="divider-label">Outcomes</span><div class="divider-shape"></div><div class="divider-line"></div></div>
+        <div class="outcomes-bar">
+          <div class="ob-geo ob-circle-1"></div>
+          <div class="ob-geo ob-circle-2"></div>
+          <div class="ob-geo ob-ring"></div>
+          <div class="outcome-item">
+            <div class="outcome-num">4 Apps</div>
+            <div class="outcome-label">Designed end-to-end:<br>Create, Count, Confirm &amp; Dashboard</div>
+          </div>
+          <div class="outcome-item">
+            <div class="outcome-num">2 Roles</div>
+            <div class="outcome-label">Operative &amp; Manager<br>workflows fully covered</div>
+          </div>
+          <div class="outcome-item">
+            <div class="outcome-num">0 → 1</div>
+            <div class="outcome-label">New module shipped<br>from scratch</div>
+          </div>
+          <div class="outcome-item">
+            <div class="outcome-num">3 Rounds</div>
+            <div class="outcome-label">User validation across<br>lo-fi and hi-fi prototypes</div>
+          </div>
+        </div>
+
+        <!-- Reflection -->
+        <div class="divider" style="margin-top:40px;"><span class="divider-label">Reflection</span><div class="divider-shape"></div><div class="divider-line"></div></div>
+        <div class="quote">
+          <div class="quote-text">Balancing standardisation with usability was the biggest challenge throughout this project. Within the constraints of technical architecture and system conventions, the core design work was about reconstructing the real-world mental model of warehouse operatives — not just mapping UI onto existing flows. For rules and behaviours dictated by the system, the priority became communicating them clearly to users, and finding every opportunity to surface shortcuts and cross-feature navigation so the experience feels connected rather than siloed.</div>
+          <div class="quote-src">— Designer Reflection</div>
+        </div>
+
+        <!-- Next Steps -->
+        <div class="divider" style="margin-top:36px;"><span class="divider-label">What's Next</span><div class="divider-shape"></div><div class="divider-line"></div></div>
+        <div class="grid-3">
+          <div class="next-card">
+            <div class="next-card-icon" style="background:linear-gradient(135deg,#FEF3C7,#FDE68A);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>
+            </div>
+            <div class="next-card-label" style="color:var(--orange-dark);">Phase 2</div>
+            <div class="next-card-title">Counting Rules</div>
+            <div class="next-card-body">System automatically creates counting tasks based on configurable rules — schedule, frequency, storage zone, or stock movement triggers.</div>
+          </div>
+          <div class="next-card">
+            <div class="next-card-icon" style="background:linear-gradient(135deg,#EFF6FF,#BFDBFE);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#1D4ED8" stroke-width="2"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M12 18h.01"/></svg>
+            </div>
+            <div class="next-card-label" style="color:var(--blue-dark);">Phase 2</div>
+            <div class="next-card-title">Mobile Device Support</div>
+            <div class="next-card-body">Use a mobile work queue to assign and dispatch counting tasks to warehouse operatives directly from the floor.</div>
+          </div>
+          <div class="next-card">
+            <div class="next-card-icon" style="background:linear-gradient(135deg,#F5F3FF,#DDD6FE);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#5B21B6" stroke-width="2"><path d="M12 2a10 10 0 1 1 0 20A10 10 0 0 1 12 2z"/><path d="M12 8v4l3 3"/><path d="M9.5 9.5c.8-1.5 2.5-2 3.8-1.2M14 16c-.8 1-2.2 1.4-3.5.8"/></svg>
+            </div>
+            <div class="next-card-label" style="color:#5B21B6;">Future</div>
+            <div class="next-card-title">AI Assistant</div>
+            <div class="next-card-body">Analyse discrepancy patterns and inventory status to surface root causes, flag anomalies, and recommend corrective actions.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+// ── LANG TOGGLE ──
+const ZH = {
+  // Nav & sidebar
+  'nav.back': '返回作品集',
+  'sidebar.label': '设计流程',
+  'sidebar.s1.name': '01 研究', 'sidebar.s1.sub': '访谈 · 旅程地图',
+  'sidebar.s2.name': '02 创意', 'sidebar.s2.sub': 'HMW · 用户画像 · 故事',
+  'sidebar.s3.name': '03 原型', 'sidebar.s3.sub': '低保真线框图',
+  'sidebar.s4.name': '04 验证', 'sidebar.s4.sub': '可用性测试 · 发现',
+  'sidebar.s5.name': '05 高保真', 'sidebar.s5.sub': '最终原型',
+  'sidebar.s6.name': '06 测试', 'sidebar.s6.sub': '可用性 · 成果',
+  // Hero
+  'hero.back': '所有项目',
+  'hero.tag.ai': 'AI 工具辅助', 'hero.tag.eux': '企业级 UX', 'hero.tag.dt': '设计思维',
+  'hero.brand': 'SAP 物流管理',
+  'hero.title.em': '实物库存', 'hero.title.app': '管理应用',
+  'hero.desc': 'SAP 全新实物库存模块的 0→1 产品设计——面向两类角色：负责现场盘点任务的<strong>仓库操作员</strong>，以及管理盘点计划并确认结果的<strong>仓库管理员</strong>。从零设计，旨在简化两类角色的端到端工作流程。界面已针对作品集展示进行重新设计。',
+  'hero.meta.role.label': '我的角色', 'hero.meta.role.val': '主设计师',
+  'hero.meta.timeline.label': '时间线', 'hero.meta.timeline.val': '2025年10月 – 2026年4月',
+  'hero.meta.platform.label': '平台', 'hero.meta.platform.val': 'Web · 平板',
+  'hero.meta.users.label': '用户', 'hero.meta.users.val': '仓库操作员 · 仓库管理员',
+  // Scenarios & user story cards
+  'scenarios.list': '1. 创建新盘点任务<br>2. 端到端完成盘点任务<br>3. 附照片证据报告差异',
+  'story.role.exec': '仓库操作员——执行',
+  'story.role.disc': '仓库操作员——差异处理',
+  'story.role.mgr': '仓库管理员——监控',
+  'story.role.shared': '共同需求',
+  'story.text.exec': '作为仓库操作员，我希望<strong>查看我的分配任务</strong>（盘点、复盘、异常排查），以便清楚下一步要做什么。<br><br>作为仓库操作员，我希望<strong>实时更新任务状态</strong>，以便仪表盘反映实际进度。',
+  'story.text.disc': '作为仓库操作员，我希望直接在应用中<strong>报告差异</strong>并<strong>附上照片证据</strong>，以便调查工作立即启动。<br><br>作为仓库操作员，我希望每个任务都有<strong>清晰的SOP参考</strong>，以便始终遵循正确流程。',
+  'story.text.mgr': '作为仓库管理员，我希望查看<strong>KPI：准确率%、差异数、积压量、SLA合规率</strong>，以便评估绩效并识别风险。<br><br>作为仓库管理员，我希望收到<strong>关键问题的预警提醒</strong>，以便在问题升级前及时介入。',
+  'story.text.shared': '作为用户，我希望有一个<strong>简洁直观的界面</strong>，以便快速了解需要关注的内容。<br><br>作为用户，我希望有<strong>基于角色的访问权限</strong>，以便只看到与我职责相关的信息。',
+};
+
+// Text-content map for elements without data-i18n keys
+const ZH_TEXT = {
+  // Section badges
+  '01 Research': '01 研究', '02 Ideation': '02 创意', '03 Prototype': '03 原型',
+  '04 Validation': '04 验证', '05 Hi-Fi Prototype': '05 高保真原型', '06 Test': '06 测试',
+  // Section titles (em parts)
+  'real users': '真实用户', 'design opportunities': '设计机会', 'core flows': '核心流程',
+  'to life': '呈现', 'real users': '真实用户',
+  // Section title text nodes handled via innerHTML approach below
+  // Divider labels
+  'Interview Setup': '访谈设置',
+  'Interview Questions — 4 Topic Areas': '访谈问题——4个主题领域',
+  'Personas': '用户画像',
+  'How Might We': '我们如何能',
+  'Key User Stories': '核心用户故事',
+  'User Journey Map': '用户旅程地图',
+  'Create Physical Inventory Task': '创建实物库存任务',
+  'Count Inventory': '盘点库存',
+  'Confirm Results': '确认结果',
+  'Findings & Design Responses': '发现与设计回应',
+  'Part 1 — Create Physical Inventory Task': '第一部分——创建实物库存任务',
+  'Part 2 — Counting Physical Inventory': '第二部分——实物盘点',
+  'Part 3 — Confirm Result & Report Discrepancy': '第三部分——确认结果与报告差异',
+  'Part 4 — Overall Dashboard': '第四部分——总览仪表盘',
+  'Test Setup': '测试设置',
+  'Final Findings': '最终发现',
+  'Outcomes': '成果',
+  'Reflection': '总结反思',
+  "What's Next": '下一步',
+  // Card labels
+  'Method': '方法', 'Scenarios Tested': '测试场景', 'Participants': '参与者',
+  'Phase 2': '第二阶段', 'Future': '未来',
+  // Timing & Planning card
+  'Timing & Planning': '时间规划',
+  'Counting Process': '盘点流程',
+  'Review & Validation': '审核与验证',
+  '"Magic Button"': '「魔法按钮」',
+  // Interview card titles
+  'How do you plan and assign counting tasks?': '你如何规划和分配盘点任务？',
+  'What happens on the warehouse floor?': '仓库现场发生了什么？',
+  'How do you handle discrepancies?': '你如何处理差异？',
+  'What would you fix first?': '你最先想解决什么？',
+  // Interview questions
+  'How do you assign tasks to the right operatives?': '如何将任务分配给合适的操作员？',
+  'Which exception cases trigger an ad-hoc count?': '哪些异常情况会触发临时盘点？',
+  'How strict are planned count deadlines?': '计划盘点的截止日期有多严格？',
+  'What could block you mid-count and interrupt the process?': '什么情况会中断盘点流程？',
+  'How do you transmit results to the system?': '如何将结果录入系统？',
+  'What happens when there are zero items at a location?': '某库位数量为零时如何处理？',
+  'What happens when the count doesn\'t match the system?': '盘点结果与系统不符时怎么办？',
+  'How is a recount decision triggered?': '复盘决策是如何触发的？',
+  'What are consequences of inventory corrections?': '库存调整会带来哪些后果？',
+  '"If you had a magic button that could solve any issue in the current physical inventory process, what would it do?"': '「如果你有一个魔法按钮，可以解决当前实物盘点流程中的任何问题，它会做什么？」',
+  // Card titles
+  'Semi-structured User Interviews': '半结构化用户访谈',
+  'Moderated Usability Testing': '主持式可用性测试',
+  '3 Core Tasks': '3个核心任务',
+  'Customers & Partners': '客户与合作伙伴',
+  'Counting Rules': '盘点规则',
+  'Mobile Device Support': '移动端支持',
+  'AI Assistant': 'AI 助手',
+  // Card bodies
+  'Each session covered 4 topic areas: Timing & Planning, Counting Process, Review & Validation, and a "Magic Button" open question — designed to surface functional needs and latent frustrations.': '每次访谈涵盖4个主题：时间规划、盘点流程、审核与验证，以及「魔法按钮」开放问题——旨在挖掘功能需求和潜在痛点。',
+  'Remote moderated sessions using think-aloud protocol. Each participant navigated the hi-fi prototype independently while verbalising their thought process.': '采用有声思维法的远程主持访谈。每位参与者独立操作高保真原型并同步说出思考过程。',
+  'SAP customers and partners with hands-on experience in inventory and warehouse operations.': '具备库存与仓储实际操作经验的SAP客户和合作伙伴。',
+  'System automatically creates counting tasks based on configurable rules — schedule, frequency, storage zone, or stock movement triggers.': '系统根据可配置规则自动创建盘点任务——包括计划排期、频率、存储区域或库存移动触发器。',
+  'Use a mobile work queue to assign and dispatch counting tasks to warehouse operatives directly from the floor.': '通过移动端工作队列，直接在仓库现场向操作员分配和派发盘点任务。',
+  'Analyse discrepancy patterns and inventory status to surface root causes, flag anomalies, and recommend corrective actions.': '分析差异规律和库存状态，挖掘根本原因，标记异常，并推荐纠正措施。',
+  // CS section titles & leads
+  'Understanding the': '深入了解',
+  'behind warehouse counting': '仓库盘点背后的',
+  'Turning insights into': '将洞察转化为',
+  'Sketching the': '勾勒',
+  'Before investing in visual design, we sketched low-fidelity wireframes for the three core flows to validate structure, screen hierarchy, and navigation logic early.': '在投入视觉设计之前，我们为三个核心流程绘制了低保真线框图，以尽早验证结构、页面层级和导航逻辑。',
+  'Testing with': '与',
+  'Bringing the design': '将设计',
+  'Validating with': '与',
+  // Leads
+  'Before touching any design tool, we needed to deeply understand how physical inventory was actually done and who was doing it. We ran semi-structured interviews with warehouse operatives and logistics clerks, then distilled the findings into personas and a To-Be journey map.': '在使用任何设计工具之前，我们需要深入了解实物库存的实际操作方式及其执行者。我们与仓库操作员和物流文员进行了半结构化访谈，并将发现提炼为用户画像和To-Be旅程地图。',
+  'With research complete and our personas defined, we synthesised the journey map findings into "How Might We" questions — reframing each pain point as a concrete design challenge before moving into solutions.': '研究完成并确定用户画像后，我们将旅程地图的发现综合成「我们如何能」问题——在进入解决方案之前，将每个痛点重新定义为具体的设计挑战。',
+  'We conducted moderated usability sessions with customers and partners using a lo-fi prototype, applying think-aloud protocol to surface pain points early before investing in visual design.': '我们使用低保真原型与客户和合作伙伴进行了主持式可用性测试，采用有声思维法在投入视觉设计之前尽早发现痛点。',
+  'Design decisions were validated with the PM and engineering team for feasibility before moving to high-fidelity. The screens below reflect both user needs and technical constraints, and have been redesigned for portfolio presentation purposes.': '在进入高保真阶段之前，设计决策已与产品经理和工程团队进行可行性验证。以下界面同时反映了用户需求和技术约束，并已针对作品集展示进行重新设计。',
+  'We conducted moderated usability testing on the high-fidelity prototype with participants performing 3 core task scenarios. Results confirmed mid-fi decisions and surfaced final refinements.': '我们对高保真原型进行了主持式可用性测试，参与者执行了3个核心任务场景。结果验证了设计决策并发现了最终的优化点。',
+  'End-to-end flow mapped across six stages — tracking user actions, needs, open pain points, and AI/system interventions.': '端到端流程跨六个阶段映射——追踪用户行为、需求、开放痛点以及AI/系统干预。',
+  // Personas
+  'Warehouse Operative · 5 yrs': '仓库操作员 · 5年经验',
+  '"Just tell me what to count and where. I don\'t want to figure things out on the floor — I want to focus and finish fast."': '「直接告诉我数什么、在哪里数。我不想在现场自己摸索——我只想专注高效地完成任务。」',
+  'Goals': '目标',
+  'Clear task list with precise location guidance': '清晰的任务列表，精确的位置指引',
+  'Fast count entry — no manual re-typing': '快速录入盘点数量——无需手动重复输入',
+  'Know immediately if a discrepancy needs action': '立即了解差异是否需要处理',
+  'Logistics Clerk / Manager': '物流仓库管理员',
+  '"I need the full picture — who\'s done, what\'s flagged, where are we on accuracy — without chasing people or waiting until end of day."': '「我需要全局视图——谁完成了、什么被标记了、准确率如何——不用追着人问，也不用等到下班。」',
+  'Real-time KPI dashboard (accuracy %, backlog)': '实时KPI仪表盘（准确率%、积压量）',
+  'Instant alerts on critical discrepancies': '关键差异即时提醒',
+  'Historical trends for continuous improvement': '历史趋势数据，持续改进',
+  // Pain tags
+  'Ambiguous assignments': '任务分配不明确',
+  'Paper re-entry errors': '纸质数据重录错误',
+  'No real-time view': '无实时视图',
+  'Manual KPI reporting': '手动KPI汇报',
+  // User stories badge
+  'Operative — Execution': '操作员——执行',
+  'Operative — Discrepancy': '操作员——差异处理',
+  'Manager — Monitoring': '仓库管理员——监控',
+  'Shared Needs': '共同需求',
+  // HMW
+  'How might we help warehouse operatives complete counting tasks without interruption or confusion about location and scope?': '我们如何能帮助仓库操作员在不被打断、不对位置和范围感到困惑的情况下完成盘点任务？',
+  'How might we give managers real-time visibility into inventory progress and discrepancies without extra reporting steps?': '我们如何能让仓库管理员在无需额外汇报步骤的情况下，实时了解库存进度和差异情况？',
+  'How might we reduce data entry errors when operatives submit count results from the warehouse floor?': '我们如何能减少操作员在仓库现场提交盘点结果时的数据录入错误？',
+  'How might we make discrepancy escalation faster, structured, and automatically visible to the right people?': '我们如何能让差异上报更快速、更结构化，并自动呈现给相关负责人？',
+  // Journey map legend
+  'User Needs': '用户需求', 'Open Points': '开放问题', 'Actions': '行动',
+  'AI / System': 'AI / 系统', 'Opportunity': '机会点',
+  // Journey map stages
+  'Analyze Inventory': '分析库存', 'Create Counting Plans': '创建盘点计划',
+  'Prepare Tasks': '准备任务', 'Count Inventory': '实物盘点',
+  'Review & Validate': '审核与验证', 'Report & Approve': '报告与审批',
+  // Validation table headers
+  '#': '#', 'Finding': '发现', 'User Feedback': '用户反馈', 'Design Response': '设计回应',
+  // Validation table content
+  'Create flow was unclear — storage bin name alone was not enough to identify the right bin': '创建流程不够清晰——仅凭库位名称不足以识别正确库位',
+  '"Can I see the bin\'s status, stock movement, or other context to help me decide?"': '「我可以查看库位状态、库存移动或其他辅助信息来帮助我判断吗？」',
+  'Redesigned the create entry point around a Storage Bin List — each bin surfaces rich contextual info (status, movement, availability) to guide task creation': '将创建入口重新设计为库位列表——每个库位展示丰富的上下文信息（状态、移动记录、可用性）以辅助任务创建',
+  'Counting flow was too fragmented — excessive navigation broke the working rhythm': '盘点流程过于分散——过多的页面跳转打断了工作节奏',
+  '"I have to keep tapping back and forth between tasks. There\'s no sense of flow — I just want to work through it all at once."': '「我需要在任务之间反复切换。完全没有流程感——我只想一口气完成所有任务。」',
+  'Bundled tasks and exposed item-level detail directly in the list, grouped by storage bin — mirrors how operatives actually move through a warehouse zone': '将任务打包并直接在列表中展示物品级别的详情，按库位分组——与操作员在仓库区域中的实际行动路径一致',
+  'Confirming results was tedious — tasks had to be reviewed and posted one by one': '确认结果过于繁琐——需要逐一审核并提交每个任务',
+  '"I have to open each task separately to check and confirm. It\'s the same thing over and over."': '「我必须分别打开每个任务进行检查和确认，反复重复同样的操作。」',
+  'Applied the same item-level structure as counting — all items consolidated in a single view for side-by-side comparison, with batch confirmation for tasks with no discrepancy': '采用与盘点相同的物品级结构——所有物品汇总在单一视图中便于对比，无差异任务支持批量确认',
+  // Test table headers
+  'Task': '任务', 'Result': '结果', 'Observation': '观察', 'Follow-up Opportunity': '后续机会',
+  // Test table content
+  'Create a new counting task': '创建新盘点任务',
+  'Partial': '部分通过',
+  'Storage bin contextual info helped participants make more confident decisions. However, several noted that manually creating tasks for recurring cycles felt repetitive and time-consuming.': '库位上下文信息帮助参与者做出更自信的决策。但有几位指出，手动创建周期性任务感觉重复且耗时。',
+  'Automate task creation via counting rules — reduce manual setup for recurring cycles': '通过盘点规则自动化任务创建——减少周期性任务的手动设置',
+  'Complete a count task end-to-end': '端到端完成盘点任务',
+  'Pass': '通过',
+  'Task bundle structure and item-level grouping by storage bin were intuitive. Participants moved through the flow without backtracking. Some raised questions about how tasks reach operatives in the field, particularly in large warehouses.': '任务包结构和按库位的物品级分组非常直观。参与者流畅地完成了整个流程，无需回退。部分参与者对任务如何分派给现场操作员提出了疑问，尤其是在大型仓库中。',
+  'Mobile work queue to allow managers to assign and dispatch tasks directly from the warehouse floor': '移动端工作队列，让仓库管理员直接在仓库现场分配和派发任务',
+  'Report a discrepancy': '报告差异',
+  'Participants identified and filtered discrepant items without difficulty. The Reconcile Stock deep-link was well received. However, when root causes were ambiguous, participants paused and expressed uncertainty about what to do next.': '参与者能够顺利识别和筛选差异物品。Reconcile Stock深层链接受到好评。但当根本原因不明确时，参与者会停顿，对下一步操作感到不确定。',
+  'AI assistant to surface likely root causes and suggest corrective actions based on discrepancy patterns': 'AI助手根据差异模式挖掘可能的根本原因并建议纠正措施',
+  // Outcomes
+  '4 Apps': '4个应用',
+  'Designed end-to-end:\nCreate, Count, Confirm & Dashboard': '端到端设计：\n创建、盘点、确认与仪表盘',
+  '2 Roles': '2种角色',
+  'Operative & Manager\nworkflows fully covered': '仓库操作员与仓库管理员\n工作流程全覆盖',
+  '0 → 1': '0 → 1',
+  'New module shipped\nfrom scratch': '全新模块\n从零交付',
+  '3 Rounds': '3轮',
+  'User validation across\nlo-fi and hi-fi prototypes': '跨低保真与高保真原型\n的用户验证',
+  // Outcome labels (text content as rendered)
+  'Designed end-to-end: Create, Count, Confirm & Dashboard': '端到端设计：创建、盘点、确认与仪表盘',
+  'Operative & Manager workflows fully covered': '仓库操作员与仓库管理员工作流程全覆盖',
+  'New module shipped from scratch': '全新模块从零交付',
+  'User validation across lo-fi and hi-fi prototypes': '跨低保真与高保真原型的用户验证',
+  // Reflection
+  '— Designer Reflection': '——设计师感悟',
+  'Balancing standardisation with usability was the biggest challenge throughout this project. Within the constraints of technical architecture and system conventions, the core design work was about reconstructing the real-world mental model of warehouse operatives — not just mapping UI onto existing flows. For rules and behaviours dictated by the system, the priority became communicating them clearly to users, and finding every opportunity to surface shortcuts and cross-feature navigation so the experience feels connected rather than siloed.': '在整个项目中，如何在标准化与可用性之间取得平衡是最大的挑战。在技术架构和系统规范的约束下，核心设计工作是重建仓库操作员的真实心智模型——而不仅仅是将UI套用在现有流程上。对于系统既定的规则和行为，重点在于向用户清晰传达，并尽一切机会提供快捷方式和跨功能导航，让整体体验感觉连贯而非割裂。',
+  // Hi-fi screen labels
+  'Storage Bin List': '库位列表',
+  'Main screen — Clerk / Manager view': '主界面——仓库管理员视图',
+  'Bin Detail': '库位详情',
+  'View counting history & stock info — click → to navigate. Supports discrepancy tracing when exceptions arise.': '查看盘点历史与库存信息——点击 → 导航。发生异常时支持差异溯源。',
+  'Unavailable Popover': '不可用弹窗',
+  'Click "Unavailable for counting" tag — shows reason & related in-progress documents': '点击「不可用于盘点」标签——显示原因及相关进行中的单据',
+  'Create Dialog': '创建对话框',
+  'Click "Create Physical Inventory task" — confirm type, date & description': '点击「创建实物库存任务」——确认类型、日期和描述',
+  'Count Task List': '盘点任务列表',
+  'Main screen — overview of all counting tasks with progress. Filter by number of items helps temporary workers quickly pick up small-volume counting tasks.': '主界面——所有盘点任务及进度总览。按物品数量筛选，帮助临时工快速接取小体量盘点任务。',
+  'Task Detail': '任务详情',
+  'Click → to enter — view items to be counted, click "Count" to start': '点击 → 进入——查看待盘点物品，点击「盘点」开始',
+  'Counting Mode': '盘点模式',
+  'Click "Count" to activate — enter quantities inline, save as draft anytime. A clear indicator appears on each item once a quantity is entered, making counting status immediately visible at a glance.': '点击「盘点」激活——内联输入数量，随时保存草稿。输入数量后，每个物品会显示明确的状态指示器，让盘点进度一目了然。',
+  'Partial Save': '部分保存',
+  'Counted items move to bottom — remaining items stay on top for easy continuation': '已盘点物品移至底部——未盘点物品保留在顶部，方便继续盘点',
+  'Confirm Count Results': '确认盘点结果',
+  'Post Success': '提交成功',
+  'Dialog provides a direct link to Reconcile Stock app for discrepancy reporting.': '对话框提供直接链接跳转至Reconcile Stock应用，用于差异报告。',
+  'Reconcile Stock': '调整库存',
+  'Click "Reconcile Stock" in the dialog to jump to the Reconcile Stock app — report the discrepancy to the ERP system (SAP S/4HANA) and post the difference quantity.': '点击对话框中的「调整库存」跳转至Reconcile Stock应用——向ERP系统（SAP S/4HANA）报告差异并过账差异数量。',
+  'Inventory Overview': '库存总览',
+  'Discrepancy Analysis & Early Warnings': '差异分析与预警',
+  'Inventory Condition & Movement': '库存状态与移动',
+  'Interview Session — Video call with 3 participants': '访谈环节——与3位参与者的视频通话',
+  'Review all counted items with difference quantities highlighted. Batch-post zero-difference items by filtering Difference Quantity = 0 — eliminating unnecessary one-by-one confirmation. New Stock and Zero Count tags surface common misplacement patterns, helping managers quickly match discrepancies across bins.': '查看所有已盘点物品及高亮显示的差异数量。通过筛选差异数量=0批量过账零差异物品——省去逐一确认的繁琐步骤。「新库存」和「零盘点」标签揭示常见错放规律，帮助仓库管理员快速跨库位匹配差异。',
+  "KPI cards prioritise the metrics managers check first — accuracy, today's progress, and active discrepancies — reducing the need to dig into detail views for routine status checks. Daily and weekly progress bars provide immediate orientation on where the team stands against targets.": 'KPI卡片优先展示仓库管理员最常查看的指标——准确率、今日进度和当前差异——减少日常状态检查时深入详情页的需求。日度和周度进度条让团队与目标的差距一目了然。',
+  'Discrepancies are categorised by root cause and mapped to storage zones, making it easier to identify patterns rather than reviewing individual items. High-risk areas are visually flagged for immediate attention. The Early Warnings section surfaces proactive alerts before issues escalate, each paired with predicted impact and a recommended action.': '差异按根本原因分类并映射到库区，便于识别规律而非逐一审查。高风险区域通过视觉标记吸引即时关注。预警模块在问题升级前主动推送提醒，每条预警附带预测影响和建议措施。',
+  'ABC classification gives managers a prioritisation framework — high-value items stay in focus without manual filtering. Movement tracking is scoped per storage bin with switchable time ranges, enabling targeted investigation of activity spikes without leaving the dashboard.': 'ABC分类为仓库管理员提供优先级框架——高价值物品无需手动筛选即可保持关注。移动记录按库位追踪并支持切换时间范围，无需离开仪表盘即可对活动峰值进行针对性调查。',
+  // Scenario list
+  '1. Create a new counting task': '1. 创建新盘点任务',
+  '2. Complete a count task end-to-end': '2. 端到端完成盘点任务',
+  '3. Report a discrepancy with photo evidence': '3. 附照片证据报告差异',
+};
+
+const EN_TEXT = {};
+
+function setLang(lang) {
+  // Handle data-i18n elements
+  if (lang === 'zh') {
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if (ZH[key]) el.innerHTML = ZH[key];
+    });
+  } else {
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      const orig = el.getAttribute('data-en-orig');
+      if (orig) el.innerHTML = orig;
+    });
+  }
+
+  // Handle text-content elements (store original EN on first call)
+  const selectors = [
+    '.eyebrow-badge', '.cs-title', '.cs-title em', '.cs-lead',
+    '.divider-label', '.card-label', '.card-title', '.card-body',
+    '.quote-text', '.quote-src', '.next-card-label', '.next-card-title', '.next-card-body',
+    '.outcome-label', '.hmw-text', '.hmw-text strong',
+    '.topic-card-title', '.topic-card-body li',
+    '.persona-name', '.persona-role-tag', '.persona-quote-box',
+    '.persona-goals-title', '.tag.tag-pain',
+    '.story-badge',
+    '.jm-card-tag', '.jm-stage-title',
+    '.screen-flow-label', '.screen-flow-label span',
+    '.case-tag', '.sidebar-label',
+    'th', 'td',
+    '.iter-issue-title', '.iter-label', '.iter-note',
+    '.legend-item span',
+    '.tl-name', '.tl-sub',
+  ];
+
+  document.querySelectorAll(selectors.join(',')).forEach(el => {
+    if (el.closest('[data-i18n]')) return; // already handled above
+    const children = el.childNodes;
+    const hasOnlyText = children.length === 1 && children[0].nodeType === 3;
+    const text = el.textContent.trim();
+    if (!text) return;
+
+    if (lang === 'zh') {
+      if (!el.hasAttribute('data-en-cache')) el.setAttribute('data-en-cache', el.innerHTML);
+      if (ZH_TEXT[text]) el.textContent = ZH_TEXT[text];
+    } else {
+      const cached = el.getAttribute('data-en-cache');
+      if (cached) el.innerHTML = cached;
+    }
+  });
+
+  // Handle .persona-goal (has SVG child — only translate the trailing text node)
+  document.querySelectorAll('.persona-goal').forEach(el => {
+    const textNode = Array.from(el.childNodes).find(n => n.nodeType === 3 && n.textContent.trim());
+    if (!textNode) return;
+    const text = textNode.textContent.trim();
+    if (lang === 'zh') {
+      if (!el.hasAttribute('data-goal-en')) el.setAttribute('data-goal-en', text);
+      if (ZH_TEXT[text]) textNode.textContent = ZH_TEXT[text];
+    } else {
+      const cached = el.getAttribute('data-goal-en');
+      if (cached) textNode.textContent = cached;
+    }
+  });
+
+  // Toggle button states
+  document.querySelectorAll('#langToggle button').forEach(btn => {
+    btn.classList.toggle('active', (lang === 'en' && btn.textContent === 'EN') || (lang === 'zh' && btn.textContent === '中'));
+  });
+
+  localStorage.setItem('portfolio-lang', lang);
+}
+
+// Store data-i18n original values on load
+document.querySelectorAll('[data-i18n]').forEach(el => {
+  el.setAttribute('data-en-orig', el.innerHTML);
+});
+
+// Restore saved language
+const saved = localStorage.getItem('portfolio-lang');
+if (saved && saved !== 'en') setLang(saved);
+
+  const sections = ['research','ideation','prototype','validation','hifi','test'];
+  const items = document.querySelectorAll('.tl-item');
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const idx = sections.indexOf(entry.target.id);
+        if (idx >= 0) items.forEach((el, i) => el.classList.toggle('active', i === idx));
+      }
+    });
+  }, { rootMargin: '-15% 0px -70% 0px' });
+  sections.forEach(id => { const el = document.getElementById(id); if (el) obs.observe(el); });
+</script>
+</body>
+</html>

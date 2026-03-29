@@ -1,0 +1,1406 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1200">
+<title>AnyBackup 报表中心优化&功能完善</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Mulish:wght@600&family=Inter:wght@400&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #f0f0f0; font-family: 'Noto Sans SC', sans-serif; }
+  .canvas {
+    width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    background: white;
+    overflow-x: visible;
+  }
+
+  /* ── SECTION 1: Banner ── */
+  .s1 {
+    width: 1200px;
+    height: 873px;
+    position: relative;
+    overflow: hidden;
+    background: #568EE8;
+    border-radius: 0;
+  }
+  .s1-bg1 {
+    position: absolute;
+    width: 1653px; height: 930px;
+    left: -190px; top: -3px;
+    background: #E3F1E9;
+  }
+  .s1-bg2 {
+    position: absolute;
+    width: 1220px; height: 911px;
+    left: 0; top: -38px;
+    background: rgba(18,110,227,0.75);
+  }
+  .s1-bg3 {
+    position: absolute;
+    width: 1220px; height: 867px;
+    left: -10px; top: -10px;
+    background: #568EE8;
+    border-radius: 30px;
+  }
+  .s1-circle1 {
+    position: absolute;
+    width: 372px; height: 372px;
+    left: 1001px; top: -149px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 9999px;
+    transform: rotate(20deg);
+  }
+  .s1-circle2 {
+    position: absolute;
+    width: 669px; height: 669px;
+    left: 860px; top: 161px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 9999px;
+  }
+  .s1-circle3 {
+    position: absolute;
+    width: 343px; height: 343px;
+    left: -165px; top: 339px;
+    background: rgba(255,255,255,0.19);
+    border-radius: 9999px;
+  }
+  /* screenshots layered */
+  .s1-img-desktop5 {
+    position: absolute;
+    width: 745px; height: 419px;
+    left: 390px; top: 464px;
+    filter: blur(1.5px);
+    object-fit: cover;
+  }
+  .s1-img-desktop6 {
+    position: absolute;
+    width: 722px; height: 406px;
+    left: 410px; top: 52px;
+    filter: blur(0.75px);
+    object-fit: cover;
+  }
+  .s1-img-main {
+    position: absolute;
+    width: 977px; height: 549px;
+    left: -23px; top: 327px;
+    box-shadow: 0 4px 4px rgba(0,0,0,0.25);
+    object-fit: cover;
+  }
+  /* title bar */
+  .s1-title-bar {
+    position: absolute;
+    width: 855px; height: 93px;
+    left: 21px; top: 107px;
+    background: #242F65;
+    box-shadow: 0 5px 16px 3px #242F65;
+    border-radius: 26px;
+  }
+  .s1-title {
+    position: absolute;
+    left: 46px; top: 118px;
+    color: white;
+    white-space: nowrap;
+    line-height: 1.1;
+  }
+  .s1-title .brand { font-family: 'Mulish', sans-serif; font-weight: 600; font-size: 48px; }
+  .s1-title .cn { font-family: 'Noto Sans SC', sans-serif; font-weight: 500; font-size: 48px; }
+  .s1-subtitle {
+    position: absolute;
+    width: 418px; height: 83px;
+    left: 81px; top: 219px;
+    color: white;
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 1.45;
+    text-shadow: 0 4px 4px rgba(0,0,0,0.25);
+  }
+
+  /* ── SECTION 2: 项目背景 01 ── */
+  .s2 {
+    width: 1200px;
+    height: 664px;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(316deg, rgba(116,144,251,0.57) 0%, rgba(18,110,227,0.96) 100%);
+  }
+  .s2-circle1 {
+    position: absolute;
+    width: 1088px; height: 1069px;
+    left: 440px; top: -666px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 9999px;
+    filter: blur(2px);
+  }
+  .s2-circle2 {
+    position: absolute;
+    width: 701px; height: 689px;
+    left: -173px; top: -452px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 9999px;
+    filter: blur(2px);
+  }
+  .s2-num {
+    position: absolute;
+    left: 44px; top: 81px;
+    font-size: 48px; font-weight: 500;
+    color: rgba(255,255,255,0.45);
+    text-align: center;
+  }
+  .s2-title {
+    position: absolute;
+    left: 115px; top: 81px;
+    font-size: 48px; font-weight: 500;
+    color: white;
+  }
+  .s2-label1 {
+    position: absolute;
+    left: 52px; top: 192px;
+    font-size: 32px; font-weight: 500; color: white;
+  }
+  .s2-label2 {
+    position: absolute;
+    left: 638px; top: 192px;
+    font-size: 32px; font-weight: 500; color: white;
+  }
+  .s2-card {
+    position: absolute;
+    background: white;
+    box-shadow: 0 4px 4px rgba(0,0,0,0.25);
+    border-radius: 24px 33px 24px 24px;
+  }
+  .s2-card1 { width: 518px; height: 332px; left: 44px; top: 251px; }
+  .s2-card2 { width: 518px; height: 332px; left: 638px; top: 251px; }
+  .s2-card-text {
+    position: absolute;
+    font-size: 32px; font-weight: 400; color: black;
+    word-wrap: break-word; line-height: 1.5;
+  }
+  .s2-text1 { width: 438px; left: 72px; top: 295px; }
+  .s2-text2 { width: 475px; left: 660px; top: 295px; }
+
+  /* ── SECTION 3: 用户需求分析 02 ── */
+  .s3 {
+    width: 1200px;
+    height: 1830px;
+    position: relative;
+    overflow: visible;
+    background: white;
+  }
+  .s3-blob { position: absolute; border-radius: 9999px; filter: blur(2px); }
+  .s3-blob1 { width: 840px; height: 825px; left: 567px; top: -91px; background: radial-gradient(ellipse 50% 50% at 50% 50%, rgba(72,160,233,0.15) 0%, rgba(72,160,233,0) 100%); }
+  .s3-blob2 { width: 1117px; height: 1097px; left: -27px; top: 1000px; background: radial-gradient(ellipse 50% 50% at 50% 50%, rgba(190,243,234,0.15) 0%, rgba(72,160,233,0) 100%); }
+  .s3-blob3 { width: 882px; height: 867px; left: -64px; top: 351px; background: radial-gradient(ellipse 50% 50% at 50% 50%, rgba(255,81,165,0.12) 0%, rgba(255,213,233,0) 100%); }
+  .s3-blob4 { width: 809px; height: 793px; left: -322px; top: -98px; background: radial-gradient(ellipse 50% 50% at 50% 50%, rgba(115,144,249,0.12) 0%, rgba(115,144,249,0) 100%); }
+  .s3-num { position: absolute; left: 44px; top: 45px; font-size: 48px; font-weight: 500; color: rgba(115,144,249,0.4); }
+  .s3-title { position: absolute; left: 115px; top: 45px; font-size: 48px; font-weight: 500; color: #7390F9; }
+
+  /* role cards */
+  .s3-role-card {
+    position: absolute;
+    background: white;
+    box-shadow: 0 4px 3.6px rgba(0,0,0,0.25);
+    border-radius: 24px;
+  }
+  .s3-role-card1 { width: 296px; height: 332px; left: 50px; top: 166px; }
+  .s3-role-card2 { width: 296px; height: 332px; left: 452px; top: 166px; }
+  .s3-role-card3 { width: 296px; height: 332px; left: 854px; top: 166px; }
+  .s3-role-header {
+    position: absolute;
+    height: 100px;
+    background: radial-gradient(ellipse 100.5% 100.5% at 50% 16.5%, #008CFF 0%, #7390F9 100%);
+    border-radius: 24px 24px 0 0;
+    width: 296px;
+  }
+  .s3-role-header1 { left: 50px; top: 166px; }
+  .s3-role-header2 { left: 452px; top: 166px; }
+  .s3-role-header3 { left: 854px; top: 166px; }
+  .s3-role-name { position: absolute; font-size: 32px; font-weight: 400; color: white; }
+  .s3-role-name1 { left: 118px; top: 193px; }
+  .s3-role-name2 { left: 552px; top: 193px; }
+  .s3-role-name3 { left: 922px; top: 193px; }
+  .s3-role-desc { position: absolute; font-size: 24px; font-weight: 400; color: black; word-wrap: break-word; line-height: 1.5; width: 250px; }
+  .s3-role-desc1 { left: 81px; top: 282px; }
+  .s3-role-desc2 { left: 483px; top: 282px; }
+  .s3-role-desc3 { left: 885px; top: 282px; }
+
+  /* flow box */
+  .s3-flow-box {
+    position: absolute;
+    background: rgba(246,246,246,0.80);
+    backdrop-filter: blur(3.8px);
+    border-radius: 16px;
+  }
+  .s3-flow-box1 { width: 1112px; height: 369px; left: 44px; top: 549px; }
+  .s3-section-bar {
+    position: absolute;
+    width: 14px;
+    background: #7390F9;
+  }
+  .s3-bar1 { height: 40px; left: 43px; top: 569px; }
+  .s3-flow-title { position: absolute; font-size: 32px; font-weight: 400; color: #242F65; }
+  .s3-flow-title1 { left: 81px; top: 566px; }
+
+  /* flow steps */
+  .s3-step {
+    position: absolute;
+    background: white;
+    border-radius: 8px;
+    outline: 2px solid #1A73E8;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center;
+    font-size: 24px; font-weight: 400; color: #242F65;
+    padding: 4px 8px;
+    line-height: 1.3;
+  }
+  .s3-arrow {
+    position: absolute;
+    width: 26px; height: 26px;
+    overflow: visible;
+  }
+
+  /* illustration */
+  .s3-illus {
+    position: absolute;
+    left: -47px; top: 933px;
+    width: 378px; height: 378px;
+    overflow: hidden;
+    border-radius: 8px;
+  }
+
+  /* bullet row */
+  .s3-dot { position: absolute; width: 20px; height: 20px; background: #7390F9; border-radius: 50%; }
+  .s3-label { position: absolute; font-size: 24px; font-weight: 400; color: black; }
+  .s3-value { position: absolute; font-size: 24px; font-weight: 400; color: #333; }
+
+  /* solution bar */
+  .s3-solution-bar {
+    position: absolute;
+    width: 647px; height: 63px;
+    left: 441px; top: 1242px;
+    background: #1A73E8;
+    box-shadow: 0 4px 4px rgba(0,0,0,0.25);
+    border-radius: 11px;
+    backdrop-filter: blur(2px);
+    display: flex; align-items: center; justify-content: center;
+    gap: 0;
+  }
+  .s3-solution-label { font-size: 24px; font-weight: 500; color: white; }
+
+  /* loop annotation */
+  .s3-loop-box {
+    position: absolute;
+    border: 3px solid #1A73E8;
+    border-radius: 4px;
+  }
+  .s3-loop-text { position: absolute; font-size: 24px; font-weight: 400; color: #242F65; text-align: center; }
+
+  /* new flow section */
+  .s3-newflow-top { position: absolute; width: 1112px; height: 430px; left: 44px; top: 1351px; background: rgba(246,246,246,0.80); border-radius: 16px; backdrop-filter: blur(3.8px); }
+  .s3-newflow-bot { display: none; }
+  .s3-bar2 { height: 40px; left: 43px; top: 1371px; }
+  .s3-step-purple { outline-color: #4353FF !important; }
+  .s3-arrow-purple { border-left-color: #4353FF !important; }
+  .s3-loop-purple { border-color: #4353FF !important; }
+  .s3-loop-red { border-color: #EF5668 !important; }
+
+  /* ── SECTION 4: 用户体验场景分析 03 ── */
+  .s4 {
+    width: 1200px;
+    height: 903px;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(0deg, rgba(115,144,249,0.05) 0%, rgba(115,144,249,0.05) 100%), #F5F5F5;
+  }
+  .s4-num { position: absolute; left: 44px; top: 45px; font-size: 48px; font-weight: 500; color: rgba(36,47,101,0.35); }
+  .s4-title { position: absolute; left: 115px; top: 45px; font-size: 48px; font-weight: 500; color: #242F65; }
+  .s4-desc { position: absolute; left: 115px; top: 125px; width: 1041px; font-size: 20px; font-weight: 400; color: black; line-height: 1.7; }
+  .s4-desc .hl { color: #1A73E8; font-weight: 700; }
+
+  /* row label pills */
+  .s4-pill {
+    position: absolute;
+    border-radius: 8px;
+    background: radial-gradient(ellipse 100.5% 100.5% at 50% 16.5%, #008CFF 0%, #7390F9 100%);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .s4-pill-text {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    color: white;
+    font-size: 16px; font-weight: 700;
+    line-height: 1;
+  }
+
+  /* stage header cells */
+  .s4-stage-cell {
+    position: absolute;
+    background: white;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 400; color: #1A73E8;
+  }
+  /* behavior cells */
+  .s4-cell-blue { position: absolute; background: rgba(196,214,243,0.66); border-radius: 8px; }
+  .s4-cell-white { position: absolute; background: white; border-radius: 8px; }
+  .s4-cell-text {
+    position: absolute;
+    font-size: 16px; font-weight: 400; color: #242F65;
+    word-wrap: break-word; line-height: 1.6;
+  }
+  .s4-cell-text-blue { color: #1A73E8; }
+
+  /* ── SECTION 5: 设计图及细节-1 04 ── */
+  .s5 {
+    width: 1200px;
+    height: 2048px;
+    position: relative;
+    overflow: hidden;
+    background: #EFF0F5;
+  }
+  .s5-band1 {
+    position: absolute;
+    width: 1156px; height: 516px;
+    left: 0; top: 135px;
+    background: radial-gradient(ellipse 121.47% 371.03% at 67.04% 16.86%, #008CFF 0%, rgba(115,144,249,0.38) 100%);
+    border-top-right-radius: 16px;
+    border-bottom-right-radius: 16px;
+  }
+  .s5-band2 {
+    position: absolute;
+    width: 1039px; height: 1250px;
+    left: 161px; top: 721px;
+    background: radial-gradient(ellipse 135.01% 135.03% at 47.17% 8.42%, #008CFF 0%, rgba(115,144,249,0.38) 100%);
+    border-top-left-radius: 16px;
+    border-bottom-left-radius: 16px;
+  }
+  .s5-circle { position: absolute; background: rgba(255,255,255,0.19); border-radius: 9999px; }
+  .s5-num { position: absolute; left: 44px; top: 45px; font-size: 48px; font-weight: 500; color: rgba(26,115,232,0.4); }
+  .s5-title { position: absolute; left: 115px; top: 45px; font-size: 48px; font-weight: 500; color: #008CFF; }
+
+  /* label chips */
+  .s5-chip {
+    position: absolute;
+    background: white;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 400; color: #1A73E8;
+  }
+
+  /* annotation outline */
+
+  /* screenshot images */
+  .s5-ss { position: absolute; object-fit: cover; border-radius: 4px; }
+
+  /* description text */
+  .s5-desc { position: absolute; font-size: 16px; font-weight: 400; color: white; line-height: 1.8; word-wrap: break-word; }
+  .s5-desc strong { color: #FBBC04; }
+  .s5-desc ul { padding-left: 20px; }
+  .s5-desc li { margin-bottom: 8px; }
+
+  /* ── SECTION 6: 任务报表分析 05 ── */
+  .s6 {
+    width: 1200px;
+    height: 2662px;
+    position: relative;
+    overflow: hidden;
+    background: #EFF0F5;
+  }
+  .s6-header-bg {
+    position: absolute;
+    width: 1200px; height: 466px;
+    left: 0; top: 156px;
+    background: linear-gradient(92deg, rgba(72,160,233,0.20) 0%, rgba(72,160,233,0) 61%, rgba(72,160,233,0.18) 100%);
+    box-shadow: 0 -5px 28px -12px rgba(36,47,101,0.10);
+    border-radius: 12px;
+  }
+  .s6-wave-bg {
+    position: absolute;
+    width: 1221px; height: 2012px;
+    left: -21px; top: 650px;
+    background: radial-gradient(ellipse 121.47% 371.03% at 32.96% 83.14%, #008CFF 0%, rgba(115,144,249,0.38) 100%);
+    border-top-right-radius: 16px;
+    border-bottom-right-radius: 16px;
+  }
+  .s6-circle { position: absolute; border-radius: 9999px; background: rgba(255,255,255,0.19); }
+  .s6-num { position: absolute; left: 44px; top: 45px; font-size: 48px; font-weight: 500; color: rgba(26,115,232,0.4); }
+  .s6-title { position: absolute; left: 115px; top: 45px; font-size: 48px; font-weight: 500; color: #008CFF; }
+
+  /* goal circles */
+  .s6-goal-design {
+    position: absolute;
+    width: 379px; height: 379px;
+    left: 141px; top: 204px;
+    background: #4085F0;
+    border-radius: 9999px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 40px;
+  }
+  .s6-goal-biz {
+    position: absolute;
+    width: 379px; height: 379px;
+    left: 679px; top: 204px;
+    background: white;
+    border-radius: 9999px;
+    outline: 1px solid #102140;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 40px;
+  }
+  .s6-goal-title { font-size: 40px; font-weight: 700; margin-bottom: 16px; }
+  .s6-goal-text { font-size: 24px; font-weight: 400; line-height: 1.6; word-wrap: break-word; }
+
+  .s6-section-title { position: absolute; font-size: 36px; font-weight: 700; color: white; }
+
+  /* glass card overlay */
+  .s6-glass {
+    position: absolute;
+    background: linear-gradient(360deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0) 100%);
+    box-shadow: 0 0 6px 3px rgba(255,255,255,0.55) inset;
+    border-radius: 8px;
+    backdrop-filter: blur(5px);
+  }
+
+  /* annotation outlines */
+  .s6-label { position: absolute; font-size: 20px; font-weight: 500; color: #102140; }
+
+  .s6-ss { position: absolute; object-fit: cover; border-radius: 4px; }
+
+  /* mini dropdown widget */
+  .s6-dropdown {
+    position: absolute;
+    width: 191px; height: 245px;
+    left: 949px; top: 1480px;
+    overflow: hidden;
+    background: white;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    font-size: 13px; font-family: 'Inter', sans-serif;
+  }
+  .s6-dd-left {
+    position: absolute;
+    width: 111px; height: 245px;
+    left: 0; top: 0;
+    background: white;
+    border-right: 1px solid #e8e8e8;
+  }
+  .s6-dd-right {
+    position: absolute;
+    left: 42px; top: 35px;
+    width: 113px; height: 151px;
+    background: linear-gradient(179deg, white 0%, white 52%, rgba(255,255,255,0) 100%);
+  }
+  .s6-dd-item { position: absolute; color: #505050; }
+  .s6-dd-item2 { position: absolute; color: rgba(0,0,0,0.6); opacity: 0.6; }
+
+/* ── Portfolio Nav ── */
+:root { --pf-orange: #F59E0B; --pf-orange-light: #FEF3C7; --pf-navy: #0F172A; --pf-muted: #475569; --pf-border: rgba(30,41,59,0.08); }
+.pf-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 60px;
+  position: sticky; top: 0; z-index: 300;
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(30,41,59,0.08);
+}
+.pf-nav-logo {
+  font-family: 'Noto Sans SC', sans-serif; font-weight: 900; font-size: 18px;
+  color: var(--pf-navy); text-decoration: none; letter-spacing: -0.5px;
+}
+.pf-nav-logo span { color: var(--pf-orange); }
+.pf-nav-back {
+  display: flex; align-items: center; gap: 8px;
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 13px; font-weight: 600; color: var(--pf-muted);
+  text-decoration: none; padding: 8px 16px; border-radius: 50px;
+  border: 1.5px solid var(--pf-border);
+  background: rgba(255,255,255,0.7);
+  transition: all 0.2s;
+}
+.pf-nav-back:hover { color: var(--pf-orange); border-color: var(--pf-orange); background: var(--pf-orange-light); }
+.pf-nav-back svg { width: 15px; height: 15px; }
+.lang-toggle { display:flex; align-items:center; background:rgba(15,23,42,0.06); border:1px solid rgba(15,23,42,0.1); border-radius:20px; padding:3px; }
+.lang-toggle button { background:none; border:none; cursor:pointer; padding:3px 10px; border-radius:16px; font-size:12px; font-weight:700; color:rgba(15,23,42,0.35); font-family:'Noto Sans SC',sans-serif; }
+.lang-toggle button.active { background:#F59E0B; color:#fff; }
+
+/* ═══════════════════════════════════════
+   ENGLISH MODE OVERRIDES
+   Applied when body has class "lang-en"
+═══════════════════════════════════════ */
+body.lang-en .s1-title { white-space: normal; }
+body.lang-en .s1-title .cn { font-size: 32px; }
+body.lang-en .s1-subtitle { font-size: 16px; width: 480px; height: auto; line-height: 1.5; }
+body.lang-en .s1-title-bar { width: auto; height: auto; padding: 16px 28px; }
+
+body.lang-en .s2-title,
+body.lang-en .s3-title,
+body.lang-en .s4-title,
+body.lang-en .s5-title,
+body.lang-en .s6-title { font-size: 32px; white-space: normal; }
+
+/* Section 2 cards */
+body.lang-en p[style*="font-size:48px"][style*="white-space:nowrap"] { white-space: normal !important; font-size: 32px !important; }
+body.lang-en p[style*="font-size:32px"][style*="left:52px"],
+body.lang-en p[style*="font-size:32px"][style*="left:638px"] { font-size: 22px !important; }
+body.lang-en p[style*="left:72px"][style*="font-size:32px"],
+body.lang-en p[style*="left:660px"][style*="font-size:32px"] { font-size: 20px !important; }
+
+/* Section 3 roles */
+body.lang-en .s3-role-name { font-size: 20px; white-space: normal; width: 220px; line-height: 1.3; }
+body.lang-en .s3-role-desc { font-size: 16px; }
+body.lang-en .s3-flow-title { font-size: 22px; white-space: normal; }
+body.lang-en .s3-solution-label { font-size: 18px; }
+
+/* Section 3 bullet points */
+body.lang-en div[style*="left:408px"][style*="font-size:24px"],
+body.lang-en div[style*="left:492px"][style*="font-size:24px"],
+body.lang-en div[style*="left:929px"][style*="font-size:24px"] { font-size: 16px !important; white-space: normal !important; }
+
+/* Section 4 title */
+body.lang-en p[style*="left:115px"][style*="font-size:48px"] { font-size: 30px !important; white-space: normal !important; }
+
+/* Section 4 stage headers */
+body.lang-en div[style*="top:223px"] span { font-size: 13px; }
+
+/* Section 4 behavior cells */
+body.lang-en div[style*="top:312px"] p,
+body.lang-en div[style*="top:444px"] p,
+body.lang-en div[style*="top:575px"] p,
+body.lang-en div[style*="top:708px"] p { font-size: 12px !important; }
+
+/* Section 5 */
+body.lang-en div[style*="left:988px"][style*="font-size:24px"],
+body.lang-en div[style*="left:187px"][style*="font-size:24px"] { font-size: 17px !important; white-space: normal !important; width: 200px; line-height: 1.4; }
+body.lang-en div[style*="top:388px"][style*="font-size:20px"] { font-size: 15px !important; }
+body.lang-en .s5-chip { font-size: 12px !important; white-space: normal; height: auto !important; padding: 6px 8px; }
+body.lang-en .s5-desc { font-size: 14px; }
+
+/* Section 6 */
+body.lang-en .s6-goal-title { font-size: 28px; }
+body.lang-en .s6-goal-text { font-size: 18px; }
+body.lang-en .s6-section-title { font-size: 26px; white-space: normal; }
+body.lang-en .s6-label { font-size: 15px; white-space: normal; max-width: 300px; }
+
+</style>
+</head>
+<body>
+<nav class="pf-nav">
+  <a href="index.html" class="pf-nav-logo">You<span>.</span>Ran</a>
+  <div style="display:flex;align-items:center;gap:16px;">
+    <a href="index.html" class="pf-nav-back">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      <span id="nav-back-text">返回作品集</span>
+    </a>
+    <div class="lang-toggle" id="langToggle">
+      <button onclick="setLang('zh')" class="active">中</button>
+      <button onclick="setLang('en')">EN</button>
+    </div>
+  </div>
+</nav>
+
+<div class="canvas">
+
+<!-- ════════════════════════════════════
+     SECTION 1 · BANNER
+════════════════════════════════════ -->
+<div class="s1">
+  <div class="s1-bg1"></div>
+  <div class="s1-bg2"></div>
+  <div class="s1-bg3"></div>
+  <div class="s1-circle1"></div>
+  <div class="s1-circle2"></div>
+  <div class="s1-circle3"></div>
+
+  <!-- Desktop screens layered in banner -->
+  <!-- Desktop 5 (blurred, bottom layer) -->
+  <img class="s1-img-desktop5"
+    src="https://www.figma.com/api/mcp/asset/09480a92-d2c0-4d35-a9eb-dfc0007ef96e"
+    alt="desktop 5" style="position:absolute;width:745px;height:419px;left:390px;top:464px;filter:blur(1.5px);object-fit:cover;z-index:1;">
+  <!-- Desktop 6 (blurred, mid layer) -->
+  <img class="s1-img-desktop6"
+    src="https://www.figma.com/api/mcp/asset/7f0d1b99-6ea1-4573-a2e9-10998675ae90"
+    alt="desktop 6" style="position:absolute;width:722px;height:406px;left:410px;top:52px;filter:blur(0.75px);object-fit:cover;z-index:1;">
+  <!-- Desktop 2 (main foreground screen) -->
+  <img class="s1-img-main"
+    src="https://www.figma.com/api/mcp/asset/00f3850c-26d4-466c-9bd5-4b0d8ca84753"
+    alt="desktop 2" style="position:absolute;width:977px;height:549px;left:-23px;top:327px;box-shadow:0 4px 4px rgba(0,0,0,0.25);object-fit:cover;z-index:2;">
+
+  <!-- overlay the title on top -->
+  <div class="s1-title-bar" style="z-index:2;left:21px;top:107px;"></div>
+  <div class="s1-title" style="z-index:3;left:46px;top:118px;">
+    <span class="brand">AnyBackup</span>
+    <span class="cn" data-i18n="s1.subtitle"> 报表中心优化&amp;功能完善</span>
+  </div>
+  <div class="s1-subtitle" style="z-index:3;left:81px;top:219px;">
+    <span data-i18n="s1.desc">数据保护产品针对任务和容量提供报表查看、导出、推送及数据可视化功能</span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+     SECTION 2 · 项目背景 01
+════════════════════════════════════ -->
+<div class="s2" style="position:relative;overflow:hidden;">
+  <!-- background circles -->
+  <div class="s2-circle1"></div>
+  <div class="s2-circle2"></div>
+  <!-- number + title -->
+  <p style="position:absolute;left:44px;top:81px;font-size:48px;font-weight:500;color:rgba(255,255,255,0.45);margin:0;">01</p>
+  <p style="position:absolute;left:115px;top:81px;font-size:48px;font-weight:500;color:white;margin:0;white-space:nowrap;"><span data-i18n="s2.title">项目背景</span></p>
+  <!-- labels -->
+  <p style="position:absolute;left:52px;top:192px;font-size:32px;font-weight:500;color:white;margin:0;"><span data-i18n="s2.label1">客户反馈</span></p>
+  <p style="position:absolute;left:638px;top:192px;font-size:32px;font-weight:500;color:white;margin:0;"><span data-i18n="s2.label2">内部迭代</span></p>
+  <!-- card 1 -->
+  <div style="position:absolute;width:518px;height:332px;left:44px;top:251px;background:white;box-shadow:0 4px 4px rgba(0,0,0,0.25);border-radius:24px 33px 24px 24px;"></div>
+  <p style="position:absolute;left:72px;top:295px;width:438px;font-size:32px;font-weight:400;color:black;line-height:1.5;margin:0;"><span data-i18n="s2.card1">当前的报表中心提供容量报表查看和手动导出数量巨大，比较繁琐。</span></p>
+  <!-- card 2 -->
+  <div style="position:absolute;width:518px;height:332px;left:638px;top:251px;background:white;box-shadow:0 4px 4px rgba(0,0,0,0.25);border-radius:24px 33px 24px 24px;"></div>
+  <p style="position:absolute;left:660px;top:295px;width:475px;font-size:32px;font-weight:400;color:black;line-height:1.5;margin:0;"><span data-i18n="s2.card2">为解决备份、恢复任务结果管理不清晰，需要数据审计、汇报的问题，提供任务报表的能力。</span></p>
+</div>
+
+<!-- ════════════════════════════════════
+     SECTION 3 · 用户需求分析 02
+════════════════════════════════════ -->
+<div class="s3">
+  <div class="s3-blob s3-blob1"></div>
+  <div class="s3-blob s3-blob2"></div>
+  <div class="s3-blob s3-blob3"></div>
+  <div class="s3-blob s3-blob4"></div>
+
+  <div class="s3-num">02</div>
+  <div class="s3-title" data-i18n="s3.title">用户需求分析</div>
+
+  <!-- Role cards -->
+  <div class="s3-role-card s3-role-card1"></div>
+  <div class="s3-role-header s3-role-header1"></div>
+  <div class="s3-role-name s3-role-name1" data-i18n="s3.role1.name">系统管理员</div>
+  <div class="s3-role-desc s3-role-desc1" data-i18n="s3.role1.desc">查看报表、观察基本情况、根据情况调整备份、恢复任务的容量及发起策略</div>
+
+  <div class="s3-role-card s3-role-card2"></div>
+  <div class="s3-role-header s3-role-header2"></div>
+  <div class="s3-role-name s3-role-name2" data-i18n="s3.role2.name">操作员</div>
+  <div class="s3-role-desc s3-role-desc2" data-i18n="s3.role2.desc">查看报表、导出报表、统计结果、进行数据总结汇报等</div>
+
+  <div class="s3-role-card s3-role-card3"></div>
+  <div class="s3-role-header s3-role-header3"></div>
+  <div class="s3-role-name s3-role-name3" data-i18n="s3.role3.name">巡检管理员</div>
+  <div class="s3-role-desc s3-role-desc3" data-i18n="s3.role3.desc">仅可查看报表、对异常情况进行汇报</div>
+
+  <!-- Original flow box -->
+  <div class="s3-flow-box s3-flow-box1"></div>
+  <div class="s3-section-bar s3-bar1"></div>
+  <div class="s3-flow-title s3-flow-title1" data-i18n="s3.flow1.title">原使用流程：</div>
+
+  <!-- Steps row 1: single SVG matching reference image -->
+  <svg style="position:absolute;left:44px;top:610px;width:1112px;height:200px;" viewBox="0 0 1112 200" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans SC',sans-serif">
+    <defs>
+      <marker id="mOrig" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+        <polygon points="0,0 8,4 0,8" fill="#1A73E8"/>
+      </marker>
+    </defs>
+    <!-- B1: 筛选条件 (tall 150x72) x=0 -->
+    <rect x="0" y="4" width="150" height="72" rx="8" fill="white" stroke="#1A73E8" stroke-width="2"/>
+    <text id="f1b1a" x="75" y="34" text-anchor="middle" font-size="15" fill="#242F65">筛选条件（时</text>
+    <text id="f1b1b" x="75" y="56" text-anchor="middle" font-size="15" fill="#242F65">间、报表类型</text>
+    <!-- > arrow -->
+    <text x="172" y="48" text-anchor="middle" font-size="22" fill="#1A73E8">›</text>
+    <!-- B2: 查看报表 x=196 -->
+    <rect x="196" y="15" width="150" height="50" rx="8" fill="white" stroke="#1A73E8" stroke-width="2"/>
+    <text id="f1b2" x="271" y="45" text-anchor="middle" font-size="15" fill="#242F65">查看报表</text>
+    <!-- > arrow -->
+    <text x="368" y="48" text-anchor="middle" font-size="22" fill="#1A73E8">›</text>
+    <!-- B3: 选择导出 x=392 -->
+    <rect x="392" y="4" width="170" height="72" rx="8" fill="white" stroke="#1A73E8" stroke-width="2"/>
+    <text id="f1b3a" x="477" y="34" text-anchor="middle" font-size="15" fill="#242F65">选择导出报表</text>
+    <text id="f1b3b" x="477" y="56" text-anchor="middle" font-size="15" fill="#242F65">及报表格式</text>
+    <!-- blue dot at bottom center of B3 -->
+    <circle cx="477" cy="78" r="6" fill="#1A73E8"/>
+    <!-- > arrow -->
+    <text x="584" y="48" text-anchor="middle" font-size="22" fill="#1A73E8">›</text>
+    <!-- B4: 本地查看 x=608 -->
+    <rect x="608" y="15" width="150" height="50" rx="8" fill="white" stroke="#1A73E8" stroke-width="2"/>
+    <text id="f1b4" x="683" y="45" text-anchor="middle" font-size="15" fill="#242F65">本地查看报表</text>
+    <!-- > arrow -->
+    <text x="780" y="48" text-anchor="middle" font-size="22" fill="#1A73E8">›</text>
+    <!-- B5: 转发 x=804 -->
+    <rect x="804" y="15" width="160" height="50" rx="8" fill="white" stroke="#1A73E8" stroke-width="2"/>
+    <text id="f1b5" x="884" y="45" text-anchor="middle" font-size="15" fill="#242F65">转发给相关人员</text>
+    <!-- Loop arc: from B3 dot(477,84) back to B1 left(0,40) -->
+    <path d="M 477,84 C 477,150 240,150 240,150 C 130,150 0,110 0,40"
+          fill="none" stroke="#1A73E8" stroke-width="2" marker-end="url(#mOrig)"/>
+    <!-- 多次 label -->
+    <text id="f1loop" x="240" y="172" text-anchor="middle" font-size="15" fill="#242F65">多次</text>
+  </svg>
+
+  <!-- illustration: node 15:1129, 378×378px, multi-vector -->
+  <div class="s3-illus" style="position:absolute;left:-47px;top:933px;width:378px;height:378px;overflow:hidden;border-radius:8px;">
+    <img src="anybackup-illustration.png" alt="illustration" style="width:100%;height:100%;object-fit:contain;display:block;">
+  </div>
+
+  <!-- Bullet points -->
+  <div class="s3-dot" style="left:383px;top:979px;"></div>
+  <div class="s3-dot" style="left:383px;top:1057px;"></div>
+  <div class="s3-dot" style="left:383px;top:1125px;"></div>
+
+  <div style="position:absolute;left:408px;top:981px;font-size:24px;font-weight:400;color:black;"><span data-i18n="s3.pain.label">痛点：</span></div>
+  <div style="position:absolute;left:492px;top:988px;font-size:24px;font-weight:400;color:#333;"><span data-i18n="s3.pain.text">长期查看的情况下手动导出报表繁琐</span></div>
+  <div style="position:absolute;left:929px;top:965px;font-size:24px;font-weight:400;color:#333;white-space:nowrap;"><span data-i18n="s3.manual1">手动筛选报表</span></div>
+  <div style="position:absolute;left:929px;top:1007px;font-size:24px;font-weight:400;color:#333;white-space:nowrap;"><span data-i18n="s3.manual2">多次导出本地查看</span></div>
+
+  <!-- right side chevron marks -->
+  <div style="position:absolute;left:879px;top:980px;width:42px;height:18px;">
+    <svg viewBox="0 0 42 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M1 1 L21 9 L1 17" stroke="#999" stroke-width="1.5" fill="none"/>
+      <path d="M21 1 L41 9 L21 17" stroke="#999" stroke-width="1.5" fill="none"/>
+    </svg>
+  </div>
+
+  <div style="position:absolute;left:408px;top:1058px;font-size:24px;font-weight:400;color:black;"><span data-i18n="s3.task.label">任务：</span></div>
+  <div style="position:absolute;left:492px;top:1065px;font-size:24px;font-weight:400;color:#333;"><span data-i18n="s3.task.text">查看报表（不仅限于最新的报表）、提交给相关同事</span></div>
+
+  <div style="position:absolute;left:408px;top:1126px;font-size:24px;font-weight:400;color:black;"><span data-i18n="s3.goal.label">目标：</span></div>
+  <div style="position:absolute;width:675px;left:492px;top:1130px;font-size:24px;font-weight:400;color:#333;word-wrap:break-word;line-height:1.5;"><span data-i18n="s3.goal.text">方便地查阅不同时间、具体类型的报表，对相关数据进行管理、分析、预测</span></div>
+
+  <!-- Solution bar -->
+  <div class="s3-solution-bar">
+    <span class="s3-solution-label" data-i18n="s3.solution">解决方案：增加报表中心的自动推送功能</span>
+  </div>
+
+  <!-- NEW flow section -->
+  <div class="s3-newflow-top"></div>
+  <div class="s3-newflow-bot"></div>
+  <div class="s3-section-bar s3-bar2"></div>
+  <div class="s3-flow-title" style="left:81px;top:1368px;" data-i18n="s3.flow2.title">新增功能后使用流程：</div>
+
+  <!-- ── Single SVG flow diagram ── -->
+  <svg style="position:absolute;left:44px;top:1400px;width:1112px;height:380px;" viewBox="0 0 1112 380" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans SC',sans-serif">
+    <defs>
+      <marker id="arrowBlue" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+        <polygon points="0,0 8,4 0,8" fill="#1A73E8"/>
+      </marker>
+      <marker id="arrowRed" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+        <polygon points="0,0 8,4 0,8" fill="#EF5668"/>
+      </marker>
+    </defs>
+
+    <!-- ══ ROW 1: 5 boxes ══ -->
+    <!-- B1: 筛选条件 (tall 150×70) x=0 -->
+    <rect x="0" y="15" width="150" height="70" rx="8" fill="white" stroke="#1A73E8" stroke-width="2"/>
+    <text id="f2b1a" x="75" y="44" text-anchor="middle" font-size="15" fill="#242F65">筛选条件（时间、</text>
+    <text id="f2b1b" x="75" y="66" text-anchor="middle" font-size="15" fill="#242F65">报表类型）</text>
+
+    <!-- arrow B1→B2 -->
+    <path d="M 152,50 L 172,50" stroke="#1A73E8" stroke-width="2" fill="none" marker-end="url(#arrowBlue)"/>
+
+    <!-- B2: 查看报表 (short 150×50) x=176 -->
+    <rect x="176" y="25" width="150" height="50" rx="8" fill="white" stroke="#1A73E8" stroke-width="2"/>
+    <text id="f2b2" x="251" y="55" text-anchor="middle" font-size="15" fill="#242F65">查看报表</text>
+
+    <!-- arrow B2→B3 -->
+    <path d="M 328,50 L 348,50" stroke="#1A73E8" stroke-width="2" fill="none" marker-end="url(#arrowBlue)"/>
+
+    <!-- B3: 选择导出 (tall 150×70) x=352 -->
+    <rect x="352" y="15" width="150" height="70" rx="8" fill="white" stroke="#1A73E8" stroke-width="2"/>
+    <text id="f2b3a" x="427" y="44" text-anchor="middle" font-size="15" fill="#242F65">选择导出报表</text>
+    <text id="f2b3b" x="427" y="66" text-anchor="middle" font-size="15" fill="#242F65">及报表格式</text>
+
+    <!-- arrow B3→B4 -->
+    <path d="M 504,50 L 524,50" stroke="#1A73E8" stroke-width="2" fill="none" marker-end="url(#arrowBlue)"/>
+
+    <!-- B4: 本地查看 (short 150×50) x=528 -->
+    <rect x="528" y="25" width="150" height="50" rx="8" fill="white" stroke="#1A73E8" stroke-width="2"/>
+    <text id="f2b4" x="603" y="55" text-anchor="middle" font-size="15" fill="#242F65">本地查看报表</text>
+
+    <!-- arrow B4→B5 -->
+    <path d="M 680,50 L 700,50" stroke="#1A73E8" stroke-width="2" fill="none" marker-end="url(#arrowBlue)"/>
+
+    <!-- B5: 转发 (short 150×50) x=704 -->
+    <rect x="704" y="25" width="150" height="50" rx="8" fill="white" stroke="#1A73E8" stroke-width="2"/>
+    <text id="f2b5" x="779" y="55" text-anchor="middle" font-size="15" fill="#242F65">转发给相关人员</text>
+
+    <!-- ══ Loop arc row1: B3 bottom(427,85) → junction(240,148) → B1 left(0,50) ══ -->
+    <path d="M 427,85 C 427,148 240,148 240,148 C 130,148 0,110 0,50"
+          fill="none" stroke="#1A73E8" stroke-width="2" marker-end="url(#arrowBlue)"/>
+    <circle cx="240" cy="148" r="7" fill="#EF5668"/>
+    <text id="f2loop1" x="240" y="136" text-anchor="middle" font-size="14" fill="#242F65">多次</text>
+
+    <!-- Red arrow: junction(240,148) → B6 top(75,252) -->
+    <path d="M 240,156 C 200,195 100,220 75,252"
+          fill="none" stroke="#EF5668" stroke-width="2" marker-end="url(#arrowRed)"/>
+
+    <!-- ══ ROW 2: 3 boxes ══ -->
+    <!-- B6: 设置报表订阅 (short 150×50) x=0 y=255 -->
+    <rect x="0" y="255" width="150" height="50" rx="8" fill="white" stroke="#1A73E8" stroke-width="2"/>
+    <text id="f2b6" x="75" y="285" text-anchor="middle" font-size="15" fill="#242F65">设置报表订阅</text>
+
+    <!-- arrow B6→B7 -->
+    <path d="M 152,280 L 172,280" stroke="#1A73E8" stroke-width="2" fill="none" marker-end="url(#arrowBlue)"/>
+
+    <!-- B7: 查看邮件 (short 150×50) x=176 -->
+    <rect x="176" y="255" width="150" height="50" rx="8" fill="white" stroke="#1A73E8" stroke-width="2"/>
+    <text id="f2b7" x="251" y="285" text-anchor="middle" font-size="15" fill="#242F65">查看邮件</text>
+
+    <!-- arrow B7→B8 -->
+    <path d="M 328,280 L 348,280" stroke="#1A73E8" stroke-width="2" fill="none" marker-end="url(#arrowBlue)"/>
+
+    <!-- B8: 附件查看报表 (tall 180×70) x=352 -->
+    <rect x="352" y="245" width="180" height="70" rx="8" fill="white" stroke="#1A73E8" stroke-width="2"/>
+    <text id="f2b8a" x="442" y="274" text-anchor="middle" font-size="15" fill="#242F65">附件查看报表/缓存</text>
+    <text id="f2b8b" x="442" y="298" text-anchor="middle" font-size="15" fill="#242F65">本地查看</text>
+
+    <!-- ══ Loop arc row2: B8 bottom(442,315) → junction(315,358) → B7 left(176,280) ══ -->
+    <path d="M 442,315 C 442,358 315,358 315,358 C 255,358 176,320 176,280"
+          fill="none" stroke="#1A73E8" stroke-width="2" marker-end="url(#arrowBlue)"/>
+    <circle cx="315" cy="358" r="7" fill="#1A73E8"/>
+    <text id="f2loop2" x="315" y="346" text-anchor="middle" font-size="14" fill="#242F65">多次</text>
+  </svg>
+</div>
+
+<!-- ════════════════════════════════════
+     SECTION 4 · 用户体验场景分析 03
+════════════════════════════════════ -->
+<div class="s4" style="height:870px;">
+
+  <!-- Title -->
+  <p style="position:absolute;left:44px;top:45px;font-size:48px;font-weight:500;color:rgba(36,47,101,0.35);white-space:nowrap;line-height:normal;">03</p>
+  <p style="position:absolute;left:115px;top:45px;font-size:48px;font-weight:500;color:#242F65;white-space:nowrap;line-height:normal;"><span data-i18n="s4.title">用户体验场景分析</span></p>
+  <p style="position:absolute;left:115px;top:125px;width:1041px;font-size:20px;font-weight:400;color:black;line-height:1.7;">
+    <span data-i18n="s4.intro">通过分析用户在导出报表过程中引导其添加报表订阅的流程，使用用户旅程地图分析，完善<strong style="color:#1A73E8;font-weight:700;">用户场景</strong>的起点终点并剖析其中可能的<strong style="color:#1A73E8;font-weight:700;">设计机会点</strong></span>
+  </p>
+
+  <!-- ── Row label pills ── -->
+  <!-- 阶段 h=65 top=223 -->
+  <div style="position:absolute;left:13px;top:223px;width:38px;height:65px;border-radius:8px;background:radial-gradient(ellipse 100.5% 100.5% at 50% 16.5%,#008CFF 0%,#7390F9 100%);display:flex;align-items:center;justify-content:center;">
+    <span style="writing-mode:vertical-rl;text-orientation:mixed;color:white;font-size:16px;font-weight:700;letter-spacing:0.1em;" data-i18n="s4.row1">阶段</span>
+  </div>
+  <!-- 行为 h=97 top=317 -->
+  <div style="position:absolute;left:13px;top:317px;width:38px;height:97px;border-radius:8px;background:radial-gradient(ellipse 100.5% 100.5% at 50% 16.5%,#008CFF 0%,#7390F9 100%);display:flex;align-items:center;justify-content:center;">
+    <span style="writing-mode:vertical-rl;text-orientation:mixed;color:white;font-size:16px;font-weight:700;letter-spacing:0.1em;" data-i18n="s4.row2">行为</span>
+  </div>
+  <!-- 用户思考 h=108 top=443 -->
+  <div style="position:absolute;left:13px;top:443px;width:38px;height:108px;border-radius:8px;background:radial-gradient(ellipse 100.5% 100.5% at 50% 16.5%,#008CFF 0%,#7390F9 100%);display:flex;align-items:center;justify-content:center;">
+    <span style="writing-mode:vertical-rl;text-orientation:mixed;color:white;font-size:16px;font-weight:700;letter-spacing:0.1em;" data-i18n="s4.row3">用户思考</span>
+  </div>
+  <!-- 痛点 h=97 top=580 -->
+  <div style="position:absolute;left:13px;top:580px;width:38px;height:97px;border-radius:8px;background:radial-gradient(ellipse 100.5% 100.5% at 50% 16.5%,#008CFF 0%,#7390F9 100%);display:flex;align-items:center;justify-content:center;">
+    <span style="writing-mode:vertical-rl;text-orientation:mixed;color:white;font-size:16px;font-weight:700;letter-spacing:0.1em;" data-i18n="s4.row4">痛点</span>
+  </div>
+  <!-- 设计机会点 h=132 top=707 -->
+  <div style="position:absolute;left:13px;top:707px;width:38px;height:132px;border-radius:8px;background:radial-gradient(ellipse 100.5% 100.5% at 50% 16.5%,#008CFF 0%,#7390F9 100%);display:flex;align-items:center;justify-content:center;">
+    <span style="writing-mode:vertical-rl;text-orientation:mixed;color:white;font-size:16px;font-weight:700;letter-spacing:0.1em;" data-i18n="s4.row5">设计机会点</span>
+  </div>
+
+  <!-- ── Stage header row (top=223, h=65) ── -->
+  <!-- 查看报表: left=65 w=576.828 -->
+  <div style="position:absolute;left:65px;top:223px;width:577px;height:65px;background:white;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+    <span style="font-size:16px;font-weight:400;color:#1A73E8;"><span data-i18n="s4.stage1">查看报表</span>
+  </div>
+  <!-- 配置报表推送策略: left=656 w=385.643 -->
+  <div style="position:absolute;left:656px;top:223px;width:386px;height:65px;background:white;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+    <span style="font-size:16px;font-weight:400;color:#1A73E8;"><span data-i18n="s4.stage2">配置报表推送策略</span>
+  </div>
+  <!-- 外部查看报表: left=1059 w=124 -->
+  <div style="position:absolute;left:1059px;top:223px;width:124px;height:65px;background:white;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+    <span style="font-size:16px;font-weight:400;color:#1A73E8;"><span data-i18n="s4.stage3">外部查看报表</span>
+  </div>
+
+  <!-- ── 行为 row (top=312, h=108) ── -->
+  <div style="position:absolute;left:65px;top:312px;width:203px;height:108px;background:rgba(196,214,243,0.66);border-radius:8px;overflow:hidden;">
+    <p style="position:absolute;left:11px;top:10px;right:11px;font-size:14px;font-weight:400;color:#242F65;line-height:1.6;"><span data-i18n="s4.b1">点击报表进入，点击所选tab。<br>点击时间选框，选择时间。<br>点击类型下拉，选择类型。</span></p>
+  </div>
+
+  <div style="position:absolute;left:274px;top:312px;width:166px;height:108px;background:rgba(196,214,243,0.66);border-radius:8px;overflow:hidden;">
+    <p style="position:absolute;left:10px;top:10px;right:10px;font-size:14px;font-weight:400;color:#242F65;line-height:1.6;"><span data-i18n="s4.b2">下滑浏览，确认正确。点击导出。点击本地文件夹。查看</span></p>
+  </div>
+
+  <div style="position:absolute;left:460px;top:312px;width:203px;height:108px;background:rgba(196,214,243,0.66);border-radius:8px;overflow:hidden;">
+    <p style="position:absolute;left:11px;top:10px;right:11px;font-size:14px;font-weight:400;color:#242F65;line-height:1.6;"><span data-i18n="s4.b3">下滑浏览，确认正确。点击导出。点击本地文件夹。查看报表</span></p>
+  </div>
+
+  <div style="position:absolute;left:669px;top:312px;width:246px;height:108px;background:rgba(196,214,243,0.66);border-radius:8px;overflow:hidden;">
+    <p style="position:absolute;left:11px;top:8px;right:11px;font-size:14px;font-weight:400;color:#242F65;line-height:1.6;"><span data-i18n="s4.b4">看到提示："需要配置SMTP服务器和邮箱"筛选报表类型、选择推送方式<br>选择推送时间、确定</span></p>
+  </div>
+
+  <div style="position:absolute;left:926px;top:312px;width:121px;height:108px;background:rgba(196,214,243,0.66);border-radius:8px;overflow:hidden;">
+    <p style="position:absolute;left:10px;top:8px;right:10px;font-size:14px;font-weight:400;color:#242F65;line-height:1.6;"><span data-i18n="s4.b5">返回首页列表，查看刚刚配置好的推送策略</span></p>
+  </div>
+
+  <div style="position:absolute;left:1063px;top:312px;width:121px;height:108px;background:rgba(196,214,243,0.66);border-radius:8px;overflow:hidden;">
+    <p style="position:absolute;left:10px;top:8px;right:10px;font-size:14px;font-weight:400;color:#242F65;line-height:1.6;"><span data-i18n="s4.b6">点开邮箱，查看附件的表格。</span></p>
+  </div>
+
+  <!-- ── 用户思考 row (top=444, h=101) ── -->
+  <div style="position:absolute;left:65px;top:444px;width:591px;height:101px;background:white;border-radius:8px;overflow:hidden;">
+    <p style="position:absolute;left:136px;top:50%;transform:translateY(-50%);right:10px;font-size:14px;font-weight:400;color:#1A73E8;line-height:1.6;"><span data-i18n="s4.t1">手动导出多个报表好麻烦，能否直接自动导出？</span></p>
+  </div>
+
+  <div style="position:absolute;left:669px;top:444px;width:190px;height:101px;background:white;border-radius:8px;overflow:hidden;">
+    <p style="position:absolute;left:10px;top:8px;right:10px;font-size:14px;font-weight:400;color:#1A73E8;line-height:1.6;"><span data-i18n="s4.t2">在哪里配置、之前是否配置成功（想要进行检查）、邮箱发给谁</span></p>
+  </div>
+
+  <div style="position:absolute;left:866px;top:444px;width:190px;height:101px;background:white;border-radius:8px;overflow:hidden;">
+    <p style="position:absolute;left:10px;top:50%;transform:translateY(-50%);right:10px;font-size:14px;font-weight:400;color:#1A73E8;line-height:1.6;"><span data-i18n="s4.t3">一次性添加多条策略，筛选多次很麻烦</span></p>
+  </div>
+
+  <div style="position:absolute;left:1064px;top:444px;width:120px;height:101px;background:white;border-radius:8px;overflow:hidden;">
+    <p style="position:absolute;left:10px;top:8px;right:10px;font-size:14px;font-weight:400;color:#1A73E8;line-height:1.6;"><span data-i18n="s4.t4">邮件是否发送成功？发送了多少报表？</span></p>
+  </div>
+
+  <!-- ── 痛点 row (top=575, h=108) ── -->
+  <div style="position:absolute;left:65px;top:575px;width:591px;height:108px;background:rgba(196,214,243,0.66);border-radius:8px;overflow:hidden;">
+    <p style="position:absolute;left:10px;top:50%;transform:translateY(-50%);right:10px;font-size:14px;font-weight:400;color:#242F65;line-height:1.6;text-align:center;"><span data-i18n="s4.p1">手动筛选繁琐、查看多个维度的报表需要重复操作</span></p>
+  </div>
+
+  <div style="position:absolute;left:669px;top:575px;width:190px;height:108px;background:rgba(196,214,243,0.66);border-radius:8px;overflow:hidden;">
+    <p style="position:absolute;left:10px;top:8px;right:10px;font-size:14px;font-weight:400;color:#242F65;line-height:1.6;"><span data-i18n="s4.p2">SMTP和邮箱配置页面分布分散，需要多次跳转</span></p>
+  </div>
+
+  <div style="position:absolute;left:866px;top:575px;width:190px;height:108px;background:rgba(196,214,243,0.66);border-radius:8px;overflow:hidden;">
+    <p style="position:absolute;left:10px;top:50%;transform:translateY(-50%);right:10px;font-size:14px;font-weight:400;color:#242F65;line-height:1.6;"><span data-i18n="s4.p3">策略配置项过多会繁琐</span></p>
+  </div>
+
+  <div style="position:absolute;left:1069px;top:575px;width:115px;height:108px;background:rgba(196,214,243,0.66);border-radius:8px;overflow:hidden;">
+    <p style="position:absolute;left:8px;top:8px;right:8px;font-size:14px;font-weight:400;color:#242F65;line-height:1.6;"><span data-i18n="s4.p4">邮件推送后无法跟踪状态，不知道是否发送成功</span></p>
+  </div>
+
+  <!-- ── 设计机会点 row (top=708, h=131) ── -->
+  <div style="position:absolute;left:65px;top:708px;width:591px;height:131px;background:white;border-radius:8px;overflow:hidden;">
+    <p style="position:absolute;left:10px;top:50%;transform:translateY(-50%);right:10px;font-size:14px;font-weight:400;color:#1A73E8;line-height:1.6;text-align:center;"><span data-i18n="s4.o1">页面引导：是否尝试报表订阅，自动发送至邮箱（提供入口）</span></p>
+  </div>
+
+  <div style="position:absolute;left:669px;top:708px;width:190px;height:131px;background:white;border-radius:8px;overflow:hidden;">
+    <p style="position:absolute;left:10px;top:8px;right:10px;font-size:14px;font-weight:400;color:#1A73E8;line-height:1.6;"><span data-i18n="s4.o2">页面引导：是否尝试报表订阅，自动发送至邮箱（提供入口）</span></p>
+  </div>
+
+  <div style="position:absolute;left:866px;top:708px;width:190px;height:131px;background:white;border-radius:8px;overflow:hidden;">
+    <p style="position:absolute;left:10px;top:8px;right:10px;font-size:14px;font-weight:400;color:#1A73E8;line-height:1.6;"><span data-i18n="s4.o3">一次新建任务中可以批量添加<br>减少配置思考，推荐最优选（默认选项）</span></p>
+  </div>
+
+  <div style="position:absolute;left:1069px;top:708px;width:116px;height:131px;background:white;border-radius:8px;overflow:hidden;">
+    <p style="position:absolute;left:8px;top:8px;right:8px;font-size:14px;font-weight:400;color:#1A73E8;line-height:1.6;"><span data-i18n="s4.o4">提供发送历史记录，显示发送状态</span></p>
+  </div>
+
+</div>
+
+<!-- ════════════════════════════════════
+     SECTION 5 · 设计图及细节-1  04
+════════════════════════════════════ -->
+<div class="s5">
+  <div class="s5-band1"></div>
+  <div class="s5-band2"></div>
+  <div class="s5-circle" style="width:343px;height:343px;left:-73px;top:-92px;"></div>
+  <div class="s5-circle" style="width:343px;height:343px;left:910px;top:449px;"></div>
+  <div class="s5-circle" style="width:439px;height:439px;left:73px;top:556px;"></div>
+  <div class="s5-circle" style="width:261px;height:261px;left:1056px;top:665px;"></div>
+  <div class="s5-circle" style="width:686px;height:686px;left:-126px;top:1479px;"></div>
+
+  <div class="s5-num">04</div>
+  <div class="s5-title" data-i18n="s5.title">设计图及细节-1</div>
+
+  <!-- Section: 增加流程引导 -->
+  <div style="position:absolute;left:988px;top:155px;color:white;font-size:24px;font-weight:700;"><span data-i18n="s5.sub1">增加流程引导</span></div>
+
+  <!-- Desktop 5 screenshot -->
+  <img class="s5-ss"
+    src="https://www.figma.com/api/mcp/asset/cb9c250a-bcbb-470a-a548-76887dc08228"
+    alt="desktop 5" style="width:761px;height:428px;left:0;top:223px;">
+
+  <!-- Toast notification screenshot -->
+  <img class="s5-ss"
+    src="https://www.figma.com/api/mcp/asset/2115fce3-9082-44dd-a30d-50d838bd2683"
+    alt="toast notification" style="width:494px;height:170px;left:715px;top:211px;">
+
+  <!-- Yellow highlight box -->
+  <!-- Yellow outlined highlighted row -->
+
+  <div style="position:absolute;width:294px;left:782px;top:388px;color:white;font-size:20px;font-weight:400;line-height:1.7;word-wrap:break-word;">
+    <span data-i18n="s5.sub1.desc">功能上线后，在前三次导出报表时在toast提示中进行引导</span>
+  </div>
+
+  <!-- Section: 报表规则展示 -->
+  <div style="position:absolute;left:187px;top:736px;color:white;font-size:24px;font-weight:700;"><span data-i18n="s5.sub2">报表规则展示</span></div>
+
+  <!-- Desktop 7 screenshot (push rules list) -->
+  <img class="s5-ss"
+    src="https://www.figma.com/api/mcp/asset/87e2be49-bf59-49a5-9429-e095f26971d5"
+    alt="desktop 7" style="width:813px;height:457px;left:-160px;top:800px;">
+
+  <!-- chip: 推送规则详情展示 -->
+  <div class="s5-chip" style="width:196px;height:38px;left:731px;top:830px;" data-i18n="s5.chip1">推送规则详情展示</div>
+
+  <!-- Description list -->
+  <div class="s5-desc" style="width:410px;left:722px;top:885px;">
+    <ul>
+      <li data-i18n="s5.d1.li1">详情页增加编辑按钮，符合用户使用流程，无需退回至主页进行编辑</li>
+      <li data-i18n="s5.d1.li2">详情页可查看推送记录，推送记录中<strong>保留导出的报表文件</strong>，可点击进行再次下载。避免邮件发送失败或内容过多<strong>不好查找历史邮件</strong></li>
+      <li data-i18n="s5.d1.li3">失败原因展示，清晰可排查</li>
+    </ul>
+  </div>
+
+  <!-- Yellow annotation outline on left chart -->
+  <!-- Arrow 1: from list "查看" col → description panel -->
+  <svg style="position:absolute;left:415px;top:997px;width:320px;height:30px;overflow:visible;" viewBox="0 0 320 30" xmlns="http://www.w3.org/2000/svg">
+    <line x1="0" y1="15" x2="300" y2="15" stroke="#FBBC04" stroke-width="2.5" stroke-dasharray="6,4"/>
+    <polygon points="296,8 316,15 296,22" fill="#FBBC04"/>
+  </svg>
+
+  <!-- Desktop 8 screenshot (push rules detail) -->
+  <img class="s5-ss"
+    src="https://www.figma.com/api/mcp/asset/2bd73249-b21b-41ba-8ffb-81b61557fb87"
+    alt="desktop 8" style="width:1013px;height:570px;left:187px;top:1114px;">
+
+  <!-- New rule form screenshot -->
+  <img class="s5-ss"
+    src="https://www.figma.com/api/mcp/asset/16574e5c-b376-4704-a67d-2fcf6619f642"
+    alt="new rule" style="width:982px;height:552px;left:-442px;top:1373px;">
+
+  <!-- Yellow outline on new rule form -->
+  <!-- Arrow 2: from new-rule form prompt → description panel -->
+  <svg style="position:absolute;left:415px;top:1510px;width:320px;height:30px;overflow:visible;" viewBox="0 0 320 30" xmlns="http://www.w3.org/2000/svg">
+    <line x1="0" y1="15" x2="300" y2="15" stroke="#FBBC04" stroke-width="2.5" stroke-dasharray="6,4"/>
+    <polygon points="296,8 316,15 296,22" fill="#FBBC04"/>
+  </svg>
+
+  <!-- chip: 新建推送规则 -->
+  <div class="s5-chip" style="width:159px;height:38px;left:569px;top:1709px;" data-i18n="s5.chip2">新建推送规则</div>
+
+  <!-- Description list 2 -->
+  <div class="s5-desc" style="width:410px;left:560px;top:1764px;">
+    <ul>
+      <li data-i18n="s5.d2.li1">必要配置<strong>先行判断</strong>，提供配置入口减少寻找用户成本</li>
+      <li data-i18n="s5.d2.li2">根据实际用户工作时间的场景，设置默认推送时间</li>
+      <li data-i18n="s5.d2.li3">提供添加其他邮箱选项，根据实际用户场景方便报表汇报给指定人员</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+     SECTION 6 · 任务报表分析 05
+════════════════════════════════════ -->
+<div class="s6">
+  <div class="s6-header-bg"></div>
+  <div class="s6-wave-bg"></div>
+  <div class="s6-circle" style="width:343px;height:343px;left:878px;top:1164px;"></div>
+  <div class="s6-circle" style="width:496px;height:496px;left:-128px;top:1513px;"></div>
+
+  <div class="s6-num">05</div>
+  <div class="s6-title" data-i18n="s6.title">任务报表分析</div>
+
+  <!-- Goal circles -->
+  <div class="s6-goal-design">
+    <div class="s6-goal-title" style="color:white;" data-i18n="s6.design.goal.title">设计目标</div>
+    <div class="s6-goal-text" style="color:white;" data-i18n="s6.design.g1">简化流程，符合完整的用户使用流程</div>
+    <div class="s6-goal-text" style="color:white;margin-top:12px;" data-i18n="s6.design.g2">在庞大信息中总结出有用数据方便观测查看</div>
+  </div>
+  <div class="s6-goal-biz">
+    <div class="s6-goal-title" style="color:#102140;" data-i18n="s6.biz.goal.title">业务目标</div>
+    <div class="s6-goal-text" style="color:black;" data-i18n="s6.biz.g1">缩短任务结果查看时间<br><br>满足后续业务拓展</div>
+  </div>
+
+  <!-- Section title -->
+  <div class="s6-section-title" style="left:56px;top:723px;" data-i18n="s6.section1">任务报表展示</div>
+
+  <!-- Labels above screenshots -->
+  <div class="s6-label" style="left:126px;top:810px;" data-i18n="s6.lbl1">任务次数及结果数字展示</div>
+  <div class="s6-label" style="left:765px;top:775px;" data-i18n="s6.lbl2">根据时间筛选维度不同，展示不同时间段的趋势</div>
+
+  <!-- Main task report screenshot -->
+  <img class="s6-ss"
+    src="https://www.figma.com/api/mcp/asset/821a3af6-86ef-46c7-b22a-e7670238e446"
+    alt="desktop 2" style="width:1014px;height:570px;left:99px;top:859px;">
+
+  <!-- Glass card overlays -->
+  <div class="s6-glass" style="width:280px;height:220px;left:19px;top:919px;"></div>
+  <div class="s6-glass" style="width:462px;height:205px;left:734px;top:815px;"></div>
+  <div class="s6-glass" style="width:364px;height:189px;left:361px;top:710px;"></div>
+
+  <!-- Small stat screenshots -->
+  <img class="s6-ss"
+    src="https://www.figma.com/api/mcp/asset/9bbeb0a8-4727-4542-988d-4bdc56279399"
+    alt="stat 4" style="width:290px;height:195px;left:9px;top:931px;">
+  <img class="s6-ss"
+    src="https://www.figma.com/api/mcp/asset/255d240c-8c5c-4488-b258-dc780caadcf7"
+    alt="board 2" style="width:460px;height:195px;left:725px;top:825px;">
+  <img class="s6-ss"
+    src="https://www.figma.com/api/mcp/asset/216ccc10-fb12-427c-ab58-8c4dfd3baec4"
+    alt="stat 5" style="width:378px;height:195px;left:356px;top:707px;">
+
+  <!-- Yellow outlines -->
+
+  <!-- Label: click result -->
+  <div class="s6-label" style="left:164px;top:1440px;" data-i18n="s6.lbl3">点击结果后可直接筛选出对应报表</div>
+
+  <!-- Filter result screenshot -->
+  <img class="s6-ss"
+    src="https://www.figma.com/api/mcp/asset/014e008e-0b44-4e3b-a46e-9577e6126bf8"
+    alt="desktop 3" style="width:863px;height:486px;left:-21px;top:1480px;">
+
+  <!-- Dropdown widget -->
+  <img src="anybackup-dropdown.png"
+    alt="dropdown widget"
+    style="position:absolute;left:949px;top:1480px;width:191px;height:245px;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,0.12);">
+
+  <!-- Labels -->
+  <div class="s6-label" style="left:882px;top:1738px;" data-i18n="s6.lbl4">支持不同字段筛选后进行导出</div>
+
+  <!-- Export screenshot -->
+  <img class="s6-ss"
+    src="https://www.figma.com/api/mcp/asset/38c4ab5a-b76a-48de-b1ee-025819f76446"
+    alt="desktop 4" style="width:992px;height:558px;left:164px;top:2001px;">
+
+  <!-- Yellow outline on export -->
+
+  <div class="s6-label" style="left:1005px;top:1920px;" data-i18n="s6.lbl5">失败原因可直接查看</div>
+</div>
+
+</div><!-- end .canvas -->
+
+<script>
+const ZH_AB = {
+  'nav.back': '返回作品集',
+  's1.subtitle': ' 报表中心优化&功能完善',
+  's1.desc': '数据保护产品针对任务和容量提供报表查看、导出、推送及数据可视化功能',
+  's2.title': '项目背景',
+  's2.label1': '客户反馈',
+  's2.label2': '内部迭代',
+  's2.card1': '当前的报表中心提供容量报表查看和手动导出数量巨大，比较繁琐。',
+  's2.card2': '为解决备份、恢复任务结果管理不清晰，需要数据审计、汇报的问题，提供任务报表的能力。',
+  's3.title': '用户需求分析',
+  's3.role1.name': '系统管理员',
+  's3.role1.desc': '查看报表、观察基本情况、根据情况调整备份、恢复任务的容量及发起策略',
+  's3.role2.name': '操作员',
+  's3.role2.desc': '查看报表、导出报表、统计结果、进行数据总结汇报等',
+  's3.role3.name': '巡检管理员',
+  's3.role3.desc': '仅可查看报表、对异常情况进行汇报',
+  's3.flow1.title': '原使用流程：',
+  's3.solution': '解决方案：增加报表中心的自动推送功能',
+  's3.flow2.title': '新增功能后使用流程：',
+  's3.pain.label': '痛点：',
+  's3.pain.text': '长期查看的情况下手动导出报表繁琐',
+  's3.manual1': '手动筛选报表',
+  's3.manual2': '多次导出本地查看',
+  's3.task.label': '任务：',
+  's3.task.text': '查看报表（不仅限于最新的报表）、提交给相关同事',
+  's3.goal.label': '目标：',
+  's3.goal.text': '方便地查阅不同时间、具体类型的报表，对相关数据进行管理、分析、预测',
+  's4.title': '用户体验场景分析',
+  's4.stage1': '查看报表',
+  's4.stage2': '配置报表推送策略',
+  's4.stage3': '外部查看报表',
+  's5.title': '设计图及细节-1',
+  's5.sub1': '增加流程引导',
+  's5.sub1.desc': '功能上线后，在前三次导出报表时在toast提示中进行引导',
+  's5.sub2': '报表规则展示',
+  's5.chip1': '推送规则详情展示',
+  's5.chip2': '新建推送规则',
+  's6.title': '任务报表分析',
+  's6.design.goal.title': '设计目标',
+  's6.biz.goal.title': '业务目标',
+  's6.section1': '任务报表展示',
+  's4.intro': '通过分析用户在导出报表过程中引导其添加报表订阅的流程，使用用户旅程地图分析，完善<strong style="color:#1A73E8;font-weight:700;">用户场景</strong>的起点终点并剖析其中可能的<strong style="color:#1A73E8;font-weight:700;">设计机会点</strong>',
+  's4.row1': '阶段',
+  's4.row2': '行为',
+  's4.row3': '用户思考',
+  's4.row4': '痛点',
+  's4.row5': '设计机会点',
+  's4.b1': '点击报表进入，点击所选tab。<br>点击时间选框，选择时间。<br>点击类型下拉，选择类型。',
+  's4.b2': '下滑浏览，确认正确。点击导出。点击本地文件夹。查看',
+  's4.b3': '下滑浏览，确认正确。点击导出。点击本地文件夹。查看报表',
+  's4.b4': '看到提示："需要配置SMTP服务器和邮箱"筛选报表类型、选择推送方式<br>选择推送时间、确定',
+  's4.b5': '返回首页列表，查看刚刚配置好的推送策略',
+  's4.b6': '点开邮箱，查看附件的表格。',
+  's4.t1': '手动导出多个报表好麻烦，能否直接自动导出？',
+  's4.t2': '在哪里配置、之前是否配置成功（想要进行检查）、邮箱发给谁',
+  's4.t3': '一次性添加多条策略，筛选多次很麻烦',
+  's4.t4': '邮件是否发送成功？发送了多少报表？',
+  's4.p1': '手动筛选繁琐、查看多个维度的报表需要重复操作',
+  's4.p2': 'SMTP和邮箱配置页面分布分散，需要多次跳转',
+  's4.p3': '策略配置项过多会繁琐',
+  's4.p4': '邮件推送后无法跟踪状态，不知道是否发送成功',
+  's4.o1': '页面引导：是否尝试报表订阅，自动发送至邮箱（提供入口）',
+  's4.o2': '页面引导：是否尝试报表订阅，自动发送至邮箱（提供入口）',
+  's4.o3': '一次新建任务中可以批量添加<br>减少配置思考，推荐最优选（默认选项）',
+  's4.o4': '提供发送历史记录，显示发送状态',
+  's5.d1.li1': '详情页增加编辑按钮，符合用户使用流程，无需退回至主页进行编辑',
+  's5.d1.li2': '详情页可查看推送记录，推送记录中<strong>保留导出的报表文件</strong>，可点击进行再次下载。避免邮件发送失败或内容过多<strong>不好查找历史邮件</strong>',
+  's5.d1.li3': '失败原因展示，清晰可排查',
+  's5.d2.li1': '必要配置<strong>先行判断</strong>，提供配置入口减少寻找用户成本',
+  's5.d2.li2': '根据实际用户工作时间的场景，设置默认推送时间',
+  's5.d2.li3': '提供添加其他邮箱选项，根据实际用户场景方便报表汇报给指定人员',
+  's6.design.g1': '简化流程，符合完整的用户使用流程',
+  's6.design.g2': '在庞大信息中总结出有用数据方便观测查看',
+  's6.biz.g1': '缩短任务结果查看时间<br><br>满足后续业务拓展',
+  's6.lbl1': '任务次数及结果数字展示',
+  's6.lbl2': '根据时间筛选维度不同，展示不同时间段的趋势',
+  's6.lbl3': '点击结果后可直接筛选出对应报表',
+  's6.lbl4': '支持不同字段筛选后进行导出',
+  's6.lbl5': '失败原因可直接查看',
+};
+
+const EN_AB = {
+  'nav.back': 'Back to Portfolio',
+  's1.subtitle': ' Report Center Optimization & Enhancement',
+  's1.desc': 'Provides report viewing, export, push notifications, and data visualization for backup tasks and capacity.',
+  's2.title': 'Background',
+  's2.label1': 'Customer Feedback',
+  's2.label2': 'Internal Iteration',
+  's2.card1': 'The current report center provides capacity report viewing and manual export — the volume is large and the process is cumbersome.',
+  's2.card2': 'To address unclear backup and recovery task result management and the need for data auditing and reporting, task report capabilities are added.',
+  's3.title': 'User Needs Analysis',
+  's3.role1.name': 'System Admin',
+  's3.role1.desc': 'View reports, monitor status, adjust backup/recovery task capacity, and initiate policies accordingly.',
+  's3.role2.name': 'Operator',
+  's3.role2.desc': 'View reports, export reports, compile statistics, and prepare data summaries for reporting.',
+  's3.role3.name': 'Inspection Admin',
+  's3.role3.desc': 'View-only access to reports; reports anomalies to relevant parties.',
+  's3.flow1.title': 'Original Workflow:',
+  's3.solution': 'Solution: Add automatic push functionality to the report center',
+  's3.flow2.title': 'Updated Workflow:',
+  's3.pain.label': 'Pain Point:',
+  's3.pain.text': 'Manually exporting reports repeatedly is tedious for recurring use',
+  's3.manual1': 'Manual report filtering',
+  's3.manual2': 'Multiple local exports to review',
+  's3.task.label': 'Task:',
+  's3.task.text': 'View historical reports and share with relevant colleagues',
+  's3.goal.label': 'Goal:',
+  's3.goal.text': 'Easily browse reports by time and type, and manage, analyze, and forecast the related data',
+  's4.title': 'UX Scenario Analysis',
+  's4.stage1': 'View Report',
+  's4.stage2': 'Configure Push Strategy',
+  's4.stage3': 'View Report Externally',
+  's5.title': 'Design Details — Part 1',
+  's5.sub1': 'Add Guided Flow',
+  's5.sub1.desc': 'Guide users to set up report subscriptions via toast prompts during their first 3 exports.',
+  's5.sub2': 'Push Rule Display',
+  's5.chip1': 'Push Rule Detail View',
+  's5.chip2': 'Create Push Rule',
+  's6.title': 'Task Report Analysis',
+  's6.design.goal.title': 'Design Goal',
+  's6.biz.goal.title': 'Business Goal',
+  's6.section1': 'Task Report Display',
+  's4.intro': 'By analyzing the flow that guides users to add report subscriptions during the export process, using user journey map analysis to define the start and end of <strong style="color:#1A73E8;font-weight:700;">user scenarios</strong> and identify potential <strong style="color:#1A73E8;font-weight:700;">design opportunities</strong>.',
+  's4.row1': 'Stage',
+  's4.row2': 'Action',
+  's4.row3': 'User Thoughts',
+  's4.row4': 'Pain Points',
+  's4.row5': 'Design Opportunities',
+  's4.b1': 'Enter reports, click tab.<br>Select time range.<br>Select report type.',
+  's4.b2': 'Scroll to review, confirm, click export, open local folder, view.',
+  's4.b3': 'Scroll to review, confirm, click export, open folder, view report.',
+  's4.b4': 'See prompt: "Configure SMTP and email first." Filter type, select push method,<br>set schedule, confirm.',
+  's4.b5': 'Return to list, review the newly configured push strategy.',
+  's4.b6': 'Open email, view the attached report.',
+  's4.t1': 'Exporting reports manually every time is tedious — can it be automated?',
+  's4.t2': 'Where to configure? Was it set up successfully before? Who to send it to?',
+  's4.t3': 'Adding multiple strategies one by one with repeated filtering is frustrating.',
+  's4.t4': 'Was the email sent successfully? How many reports were delivered?',
+  's4.p1': 'Manual filtering is repetitive; viewing multiple report dimensions requires redundant steps.',
+  's4.p2': 'SMTP and email config pages are scattered — requires multiple navigation jumps.',
+  's4.p3': 'Too many configuration fields make the process cumbersome.',
+  's4.p4': 'No way to track push status after sending — unclear if delivery succeeded.',
+  's4.o1': 'In-page prompt: suggest trying report subscription for auto email delivery (provide entry point).',
+  's4.o2': 'In-page prompt: suggest trying report subscription for auto email delivery (provide entry point).',
+  's4.o3': 'Allow batch-adding in one session.<br>Reduce decision load with smart defaults.',
+  's4.o4': 'Provide send history with delivery status tracking.',
+  's5.d1.li1': 'Add an edit button on the detail page — fits the natural user flow without needing to go back to the list.',
+  's5.d1.li2': 'Detail page shows push history with <strong>exported report files retained</strong> for re-download. Avoids issues when emails fail or are <strong>hard to find in inbox history</strong>.',
+  's5.d1.li3': 'Failure reasons are clearly displayed for easy troubleshooting.',
+  's5.d2.li1': 'Pre-check required configurations upfront and provide direct entry points to reduce setup friction.',
+  's5.d2.li2': 'Set default push time based on typical working hours.',
+  's5.d2.li3': 'Allow adding multiple recipient emails to support forwarding reports to specific colleagues.',
+  's6.design.g1': 'Simplify the flow to match the complete user journey.',
+  's6.design.g2': 'Summarize useful data from large volumes for easy monitoring.',
+  's6.biz.g1': 'Reduce time to view task results.<br><br>Support future business expansion.',
+  's6.lbl1': 'Task count and result figures',
+  's6.lbl2': 'Different time filters show trends across different periods',
+  's6.lbl3': 'Click a result to directly filter the corresponding report',
+  's6.lbl4': 'Supports export after filtering by different fields',
+  's6.lbl5': 'Failure reasons are directly visible',
+};
+
+function setLang(lang) {
+  const dict = lang === 'zh' ? ZH_AB : EN_AB;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (dict[key] !== undefined) el.innerHTML = dict[key];
+  });
+  var backText = document.getElementById('nav-back-text');
+  if (backText) backText.textContent = lang === 'zh' ? '返回作品集' : 'Back to Portfolio';
+  document.querySelectorAll('#langToggle button').forEach(btn => {
+    btn.classList.toggle('active',
+      (lang === 'zh' && btn.textContent === '中') ||
+      (lang === 'en' && btn.textContent === 'EN')
+    );
+  });
+
+  // SVG flow diagram text
+  if (lang === 'zh') {
+    document.getElementById('f1b1a').textContent = '筛选条件（时';
+    document.getElementById('f1b1b').textContent = '间、报表类型';
+    document.getElementById('f1b2').textContent = '查看报表';
+    document.getElementById('f1b3a').textContent = '选择导出报表';
+    document.getElementById('f1b3b').textContent = '及报表格式';
+    document.getElementById('f1b4').textContent = '本地查看报表';
+    document.getElementById('f1b5').textContent = '转发给相关人员';
+    document.getElementById('f1loop').textContent = '多次';
+    document.getElementById('f2b1a').textContent = '筛选条件（时间、';
+    document.getElementById('f2b1b').textContent = '报表类型）';
+    document.getElementById('f2b2').textContent = '查看报表';
+    document.getElementById('f2b3a').textContent = '选择导出报表';
+    document.getElementById('f2b3b').textContent = '及报表格式';
+    document.getElementById('f2b4').textContent = '本地查看报表';
+    document.getElementById('f2b5').textContent = '转发给相关人员';
+    document.getElementById('f2loop1').textContent = '多次';
+    document.getElementById('f2b6').textContent = '设置报表订阅';
+    document.getElementById('f2b7').textContent = '查看邮件';
+    document.getElementById('f2b8a').textContent = '附件查看报表/缓存';
+    document.getElementById('f2b8b').textContent = '本地查看';
+    document.getElementById('f2loop2').textContent = '多次';
+  } else {
+    document.getElementById('f1b1a').textContent = 'Filter Conditions';
+    document.getElementById('f1b1b').textContent = '(Time, Type)';
+    document.getElementById('f1b2').textContent = 'View Report';
+    document.getElementById('f1b3a').textContent = 'Select Export';
+    document.getElementById('f1b3b').textContent = 'Format';
+    document.getElementById('f1b4').textContent = 'View Locally';
+    document.getElementById('f1b5').textContent = 'Forward to Team';
+    document.getElementById('f1loop').textContent = 'Repeat';
+    document.getElementById('f2b1a').textContent = 'Filter Conditions';
+    document.getElementById('f2b1b').textContent = '(Time, Type)';
+    document.getElementById('f2b2').textContent = 'View Report';
+    document.getElementById('f2b3a').textContent = 'Select Export';
+    document.getElementById('f2b3b').textContent = 'Format';
+    document.getElementById('f2b4').textContent = 'View Locally';
+    document.getElementById('f2b5').textContent = 'Forward to Team';
+    document.getElementById('f2loop1').textContent = 'Repeat';
+    document.getElementById('f2b6').textContent = 'Set Subscription';
+    document.getElementById('f2b7').textContent = 'Check Email';
+    document.getElementById('f2b8a').textContent = 'View Attachment/';
+    document.getElementById('f2b8b').textContent = 'View Locally';
+    document.getElementById('f2loop2').textContent = 'Repeat';
+  }
+  document.body.classList.toggle('lang-en', lang === 'en');
+  // Resize title bar to match title dimensions
+  requestAnimationFrame(function() {
+    var title = document.querySelector('.s1-title');
+    var bar = document.querySelector('.s1-title-bar');
+    if (title && bar) {
+      if (lang === 'en') {
+        bar.style.width = (title.offsetWidth + 40) + 'px';
+        bar.style.height = (title.offsetHeight + 20) + 'px';
+      } else {
+        bar.style.width = '';
+        bar.style.height = '';
+      }
+    }
+  });
+  localStorage.setItem('portfolio-lang', lang);
+}
+const savedLang = localStorage.getItem('portfolio-lang') || 'zh';
+setLang(savedLang);
+</script>
+</body>
+</html>
