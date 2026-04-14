@@ -356,9 +356,9 @@
   /* ── SECTION 5: 设计图及细节-1 04 ── */
   .s5 {
     width: 1200px;
-    height: 2048px;
+    height: 2200px;
     position: relative;
-    overflow: hidden;
+    overflow: visible;
     background: #EFF0F5;
   }
   .s5-band1 {
@@ -393,7 +393,7 @@
   /* annotation outline */
 
   /* screenshot images */
-  .s5-ss { position: absolute; object-fit: cover; border-radius: 4px; }
+  .s5-ss { position: absolute; border-radius: 4px; }
 
   /* description text */
   .s5-desc { position: absolute; font-size: 16px; font-weight: 400; color: white; line-height: 1.8; word-wrap: break-word; }
@@ -589,9 +589,9 @@ body.lang-en .s6-label { font-size: 15px; white-space: normal; max-width: 300px;
 </head>
 <body>
 <nav class="pf-nav">
-  <a href="index.html" class="pf-nav-logo">You<span>.</span>Ran</a>
+  <a href="index.html" target="_blank" class="pf-nav-logo">You<span>.</span>Ran</a>
   <div style="display:flex;align-items:center;gap:16px;">
-    <a href="index.html" class="pf-nav-back">
+    <a href="index.html" target="_blank" class="pf-nav-back">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
       <span id="nav-back-text">返回作品集</span>
     </a>
@@ -618,15 +618,15 @@ body.lang-en .s6-label { font-size: 15px; white-space: normal; max-width: 300px;
   <!-- Desktop screens layered in banner -->
   <!-- Desktop 5 (blurred, bottom layer) -->
   <img class="s1-img-desktop5"
-    src="https://www.figma.com/api/mcp/asset/09480a92-d2c0-4d35-a9eb-dfc0007ef96e"
+    src="anybackup-new-1.png"
     alt="desktop 5" style="position:absolute;width:745px;height:419px;left:390px;top:464px;filter:blur(1.5px);object-fit:cover;z-index:1;">
   <!-- Desktop 6 (blurred, mid layer) -->
   <img class="s1-img-desktop6"
-    src="https://www.figma.com/api/mcp/asset/7f0d1b99-6ea1-4573-a2e9-10998675ae90"
+    src="anybackup-new-2.png"
     alt="desktop 6" style="position:absolute;width:722px;height:406px;left:410px;top:52px;filter:blur(0.75px);object-fit:cover;z-index:1;">
   <!-- Desktop 2 (main foreground screen) -->
   <img class="s1-img-main"
-    src="https://www.figma.com/api/mcp/asset/00f3850c-26d4-466c-9bd5-4b0d8ca84753"
+    src="anybackup-new-3.png"
     alt="desktop 2" style="position:absolute;width:977px;height:549px;left:-23px;top:327px;box-shadow:0 4px 4px rgba(0,0,0,0.25);object-fit:cover;z-index:2;">
 
   <!-- overlay the title on top -->
@@ -1005,12 +1005,12 @@ body.lang-en .s6-label { font-size: 15px; white-space: normal; max-width: 300px;
 
   <!-- Desktop 5 screenshot -->
   <img class="s5-ss"
-    src="https://www.figma.com/api/mcp/asset/cb9c250a-bcbb-470a-a548-76887dc08228"
+    src="anybackup-new-4.png"
     alt="desktop 5" style="width:761px;height:428px;left:0;top:223px;">
 
   <!-- Toast notification screenshot -->
   <img class="s5-ss"
-    src="https://www.figma.com/api/mcp/asset/2115fce3-9082-44dd-a30d-50d838bd2683"
+    src="anybackup-new-5.png"
     alt="toast notification" style="width:494px;height:170px;left:715px;top:211px;">
 
   <!-- Yellow highlight box -->
@@ -1025,8 +1025,8 @@ body.lang-en .s6-label { font-size: 15px; white-space: normal; max-width: 300px;
 
   <!-- Desktop 7 screenshot (push rules list) -->
   <img class="s5-ss"
-    src="https://www.figma.com/api/mcp/asset/87e2be49-bf59-49a5-9429-e095f26971d5"
-    alt="desktop 7" style="width:813px;height:457px;left:-160px;top:800px;">
+    src="anybackup-new-6.png"
+    alt="desktop 7" style="width:500px;height:auto;left:50px;top:800px;display:block;">
 
   <!-- chip: 推送规则详情展示 -->
   <div class="s5-chip" style="width:196px;height:38px;left:731px;top:830px;" data-i18n="s5.chip1">推送规则详情展示</div>
@@ -1049,13 +1049,13 @@ body.lang-en .s6-label { font-size: 15px; white-space: normal; max-width: 300px;
 
   <!-- Desktop 8 screenshot (push rules detail) -->
   <img class="s5-ss"
-    src="https://www.figma.com/api/mcp/asset/2bd73249-b21b-41ba-8ffb-81b61557fb87"
+    src="anybackup-new-7.png"
     alt="desktop 8" style="width:1013px;height:570px;left:187px;top:1114px;">
 
   <!-- New rule form screenshot -->
   <img class="s5-ss"
-    src="https://www.figma.com/api/mcp/asset/16574e5c-b376-4704-a67d-2fcf6619f642"
-    alt="new rule" style="width:982px;height:552px;left:-442px;top:1373px;">
+    src="anybackup-new-8.png"
+    alt="new rule" style="width:550px;height:auto;left:100px;top:1373px;display:block;">
 
   <!-- Yellow outline on new rule form -->
   <!-- Arrow 2: from new-rule form prompt → description panel -->
@@ -1109,7 +1109,7 @@ body.lang-en .s6-label { font-size: 15px; white-space: normal; max-width: 300px;
 
   <!-- Main task report screenshot -->
   <img class="s6-ss"
-    src="https://www.figma.com/api/mcp/asset/821a3af6-86ef-46c7-b22a-e7670238e446"
+    src="anybackup-new-9.png"
     alt="desktop 2" style="width:1014px;height:570px;left:99px;top:859px;">
 
   <!-- Glass card overlays -->
@@ -1119,13 +1119,13 @@ body.lang-en .s6-label { font-size: 15px; white-space: normal; max-width: 300px;
 
   <!-- Small stat screenshots -->
   <img class="s6-ss"
-    src="https://www.figma.com/api/mcp/asset/9bbeb0a8-4727-4542-988d-4bdc56279399"
+    src="anybackup-new-10.png"
     alt="stat 4" style="width:290px;height:195px;left:9px;top:931px;">
   <img class="s6-ss"
-    src="https://www.figma.com/api/mcp/asset/255d240c-8c5c-4488-b258-dc780caadcf7"
+    src="anybackup-new-11.png"
     alt="board 2" style="width:460px;height:195px;left:725px;top:825px;">
   <img class="s6-ss"
-    src="https://www.figma.com/api/mcp/asset/216ccc10-fb12-427c-ab58-8c4dfd3baec4"
+    src="anybackup-new-12.png"
     alt="stat 5" style="width:378px;height:195px;left:356px;top:707px;">
 
   <!-- Yellow outlines -->
@@ -1135,7 +1135,7 @@ body.lang-en .s6-label { font-size: 15px; white-space: normal; max-width: 300px;
 
   <!-- Filter result screenshot -->
   <img class="s6-ss"
-    src="https://www.figma.com/api/mcp/asset/014e008e-0b44-4e3b-a46e-9577e6126bf8"
+    src="anybackup-new-13.png"
     alt="desktop 3" style="width:863px;height:486px;left:-21px;top:1480px;">
 
   <!-- Dropdown widget -->
@@ -1148,7 +1148,7 @@ body.lang-en .s6-label { font-size: 15px; white-space: normal; max-width: 300px;
 
   <!-- Export screenshot -->
   <img class="s6-ss"
-    src="https://www.figma.com/api/mcp/asset/38c4ab5a-b76a-48de-b1ee-025819f76446"
+    src="anybackup-new-14.png"
     alt="desktop 4" style="width:992px;height:558px;left:164px;top:2001px;">
 
   <!-- Yellow outline on export -->
