@@ -1290,27 +1290,27 @@
               <!-- STEP ROW: 6 steps with arrows -->
               <div class="jm-steps-wrap">
                 <div class="jm-step-col">
-                  <div class="jm-phase-btn">Analyze<br>Inventory</div>
+                  <div class="jm-phase-btn" data-i18n="jm.phase1">Analyze<br>Inventory</div>
                 </div>
                 <div class="jm-arrow-col"><span style="color:#F59E0B;font-weight:900;font-size:16px;">→</span></div>
                 <div class="jm-step-col">
-                  <div class="jm-phase-btn active">Create<br>Counting Plans</div>
+                  <div class="jm-phase-btn active" data-i18n="jm.phase2">Create<br>Counting Plans</div>
                 </div>
                 <div class="jm-arrow-col"><span style="color:#F59E0B;font-weight:900;font-size:16px;">→</span></div>
                 <div class="jm-step-col">
-                  <div class="jm-phase-btn">Prepare<br>Tasks</div>
+                  <div class="jm-phase-btn" data-i18n="jm.phase3">Prepare<br>Tasks</div>
                 </div>
                 <div class="jm-arrow-col"><span style="color:#F59E0B;font-weight:900;font-size:16px;">→</span></div>
                 <div class="jm-step-col">
-                  <div class="jm-phase-btn">Count<br>Inventory</div>
+                  <div class="jm-phase-btn" data-i18n="jm.phase4">Count<br>Inventory</div>
                 </div>
                 <div class="jm-arrow-col"><span style="color:#F59E0B;font-weight:900;font-size:16px;">→</span></div>
                 <div class="jm-step-col">
-                  <div class="jm-phase-btn">Review &amp;<br>Validate</div>
+                  <div class="jm-phase-btn" data-i18n="jm.phase5">Review &amp;<br>Validate</div>
                 </div>
                 <div class="jm-arrow-col"><span style="color:#F59E0B;font-weight:900;font-size:16px;">→</span></div>
                 <div class="jm-step-col">
-                  <div class="jm-phase-btn">Report &amp;<br>Approve</div>
+                  <div class="jm-phase-btn" data-i18n="jm.phase6">Report &amp;<br>Approve</div>
                 </div>
               </div>
 
@@ -1778,8 +1778,8 @@ const ZH = {
   'hero.back': '所有项目',
   'hero.tag.ai': 'AI 工具辅助', 'hero.tag.eux': '企业级 UX', 'hero.tag.dt': '设计思维',
   'hero.brand': 'SAP 物流管理',
-  'hero.title.em': '实物库存', 'hero.title.app': '管理应用',
-  'hero.desc': 'SAP 全新实物库存模块的 0→1 产品设计——面向两类角色：负责现场盘点任务的<strong>仓库操作员</strong>，以及管理盘点计划并确认结果的<strong>仓库管理员</strong>。从零设计，旨在简化两类角色的端到端工作流程。界面已针对作品集展示进行重新设计。',
+  'hero.title.em': '库存盘点', 'hero.title.app': '管理应用',
+  'hero.desc': 'SAP 全新库存盘点模块的 0→1 产品设计——面向两类角色：负责现场盘点任务的<strong>仓库操作员</strong>，以及管理盘点计划并确认结果的<strong>仓库管理员</strong>。从零设计，旨在简化两类角色的端到端工作流程。界面已针对作品集展示进行重新设计。',
   'hero.meta.role.label': '我的角色', 'hero.meta.role.val': '主设计师',
   'hero.meta.timeline.label': '时间线', 'hero.meta.timeline.val': '2025年10月 – 2026年4月',
   'hero.meta.platform.label': '平台', 'hero.meta.platform.val': 'Web · 平板',
@@ -1787,13 +1787,20 @@ const ZH = {
   // Scenarios & user story cards
   'scenarios.list': '1. 创建新盘点任务<br>2. 端到端完成盘点任务<br>3. 附照片证据报告差异',
   'story.role.exec': '仓库操作员——执行',
-  'story.role.disc': '仓库操作员——差异处理',
+  'story.role.disc': '仓库管理员——差异审核',
   'story.role.mgr': '仓库管理员——监控',
   'story.role.shared': '共同需求',
   'story.text.exec': '作为仓库操作员，我希望<strong>查看我的分配任务</strong>（盘点、复盘、异常排查），以便清楚下一步要做什么。<br><br>作为仓库操作员，我希望<strong>实时更新任务状态</strong>，以便仪表盘反映实际进度。',
-  'story.text.disc': '作为仓库操作员，我希望直接在应用中<strong>报告差异</strong>并<strong>附上照片证据</strong>，以便调查工作立即启动。<br><br>作为仓库操作员，我希望每个任务都有<strong>清晰的SOP参考</strong>，以便始终遵循正确流程。',
+  'story.text.disc': '作为仓库管理员，我希望在盘点过程中<strong>实时查看差异</strong>并快速<strong>审批结果或触发复盘</strong>，避免事后才发现问题。<br><br>作为仓库管理员，我希望<strong>一键导出标准化报告</strong>并自动锁定库存，简化最终确认流程。',
   'story.text.mgr': '作为仓库管理员，我希望查看<strong>KPI：准确率%、差异数、积压量、SLA合规率</strong>，以便评估绩效并识别风险。<br><br>作为仓库管理员，我希望收到<strong>关键问题的预警提醒</strong>，以便在问题升级前及时介入。',
   'story.text.shared': '作为用户，我希望有一个<strong>简洁直观的界面</strong>，以便快速了解需要关注的内容。<br><br>作为用户，我希望有<strong>基于角色的访问权限</strong>，以便只看到与我职责相关的信息。',
+  // Journey map phases
+  'jm.phase1': '分析库存',
+  'jm.phase2': '创建盘点计划',
+  'jm.phase3': '准备任务',
+  'jm.phase4': '盘点库存',
+  'jm.phase5': '审核与验证',
+  'jm.phase6': '报告与审批',
 };
 
 // Text-content map for elements without data-i18n keys
@@ -1812,12 +1819,12 @@ const ZH_TEXT = {
   'How Might We': '我们如何能',
   'Key User Stories': '核心用户故事',
   'User Journey Map': '用户旅程地图',
-  'Create Physical Inventory Task': '创建实物库存任务',
+  'Create Physical Inventory Task': '创建库存盘点任务',
   'Count Inventory': '盘点库存',
   'Confirm Results': '确认结果',
   'Findings & Design Responses': '发现与设计回应',
-  'Part 1 — Create Physical Inventory Task': '第一部分——创建实物库存任务',
-  'Part 2 — Counting Physical Inventory': '第二部分——实物盘点',
+  'Part 1 — Create Physical Inventory Task': '第一部分——创建库存盘点任务',
+  'Part 2 — Counting Physical Inventory': '第二部分——库存盘点',
   'Part 3 — Confirm Result & Report Discrepancy': '第三部分——确认结果与报告差异',
   'Part 4 — Overall Dashboard': '第四部分——总览仪表盘',
   'Test Setup': '测试设置',
@@ -1839,7 +1846,7 @@ const ZH_TEXT = {
   'How do you handle discrepancies?': '你如何处理差异？',
   'What would you fix first?': '你最先想解决什么？',
   // Interview questions
-  'How do you assign tasks to the right operatives?': '如何将任务分配给合适的操作员？',
+  'How do you assign tasks to the right operatives?': '如何将任务分配给合适的仓库操作员？',
   'Which exception cases trigger an ad-hoc count?': '哪些异常情况会触发临时盘点？',
   'How strict are planned count deadlines?': '计划盘点的截止日期有多严格？',
   'What could block you mid-count and interrupt the process?': '什么情况会中断盘点流程？',
@@ -1848,7 +1855,7 @@ const ZH_TEXT = {
   'What happens when the count doesn\'t match the system?': '盘点结果与系统不符时怎么办？',
   'How is a recount decision triggered?': '复盘决策是如何触发的？',
   'What are consequences of inventory corrections?': '库存调整会带来哪些后果？',
-  '"If you had a magic button that could solve any issue in the current physical inventory process, what would it do?"': '「如果你有一个魔法按钮，可以解决当前实物盘点流程中的任何问题，它会做什么？」',
+  '"If you had a magic button that could solve any issue in the current physical inventory process, what would it do?"': '「如果你有一个魔法按钮，可以解决当前库存盘点流程中的任何问题，它会做什么？」',
   // Card titles
   'Semi-structured User Interviews': '半结构化用户访谈',
   'Moderated Usability Testing': '主持式可用性测试',
@@ -1862,7 +1869,7 @@ const ZH_TEXT = {
   'Remote moderated sessions using think-aloud protocol. Each participant navigated the hi-fi prototype independently while verbalising their thought process.': '采用有声思维法的远程主持访谈。每位参与者独立操作高保真原型并同步说出思考过程。',
   'SAP customers and partners with hands-on experience in inventory and warehouse operations.': '具备库存与仓储实际操作经验的SAP客户和合作伙伴。',
   'System automatically creates counting tasks based on configurable rules — schedule, frequency, storage zone, or stock movement triggers.': '系统根据可配置规则自动创建盘点任务——包括计划排期、频率、存储区域或库存移动触发器。',
-  'Use a mobile work queue to assign and dispatch counting tasks to warehouse operatives directly from the floor.': '通过移动端工作队列，直接在仓库现场向操作员分配和派发盘点任务。',
+  'Use a mobile work queue to assign and dispatch counting tasks to warehouse operatives directly from the floor.': '通过移动端工作队列，直接在仓库现场向仓库操作员分配和派发盘点任务。',
   'Analyse discrepancy patterns and inventory status to surface root causes, flag anomalies, and recommend corrective actions.': '分析差异规律和库存状态，挖掘根本原因，标记异常，并推荐纠正措施。',
   // CS section titles & leads
   'Understanding the': '深入了解',
@@ -1874,7 +1881,7 @@ const ZH_TEXT = {
   'Bringing the design': '将设计',
   'Validating with': '与',
   // Leads
-  'Before touching any design tool, we needed to deeply understand how physical inventory was actually done and who was doing it. We ran semi-structured interviews with warehouse operatives and logistics clerks, then distilled the findings into personas and a To-Be journey map.': '在使用任何设计工具之前，我们需要深入了解实物库存的实际操作方式及其执行者。我们与仓库操作员和物流文员进行了半结构化访谈，并将发现提炼为用户画像和To-Be旅程地图。',
+  'Before touching any design tool, we needed to deeply understand how physical inventory was actually done and who was doing it. We ran semi-structured interviews with warehouse operatives and logistics clerks, then distilled the findings into personas and a To-Be journey map.': '在使用任何设计工具之前，我们需要深入了解库存盘点的实际操作方式及其执行者。我们与仓库操作员和仓库管理员进行了半结构化访谈，并将发现提炼为用户画像和To-Be旅程地图。',
   'With research complete and our personas defined, we synthesised the journey map findings into "How Might We" questions — reframing each pain point as a concrete design challenge before moving into solutions.': '研究完成并确定用户画像后，我们将旅程地图的发现综合成「我们如何能」问题——在进入解决方案之前，将每个痛点重新定义为具体的设计挑战。',
   'We conducted moderated usability sessions with customers and partners using a lo-fi prototype, applying think-aloud protocol to surface pain points early before investing in visual design.': '我们使用低保真原型与客户和合作伙伴进行了主持式可用性测试，采用有声思维法在投入视觉设计之前尽早发现痛点。',
   'Design decisions were validated with the PM and engineering team for feasibility before moving to high-fidelity. The screens below reflect both user needs and technical constraints, and have been redesigned for portfolio presentation purposes.': '在进入高保真阶段之前，设计决策已与产品经理和工程团队进行可行性验证。以下界面同时反映了用户需求和技术约束，并已针对作品集展示进行重新设计。',
@@ -1887,7 +1894,7 @@ const ZH_TEXT = {
   'Clear task list with precise location guidance': '清晰的任务列表，精确的位置指引',
   'Fast count entry — no manual re-typing': '快速录入盘点数量——无需手动重复输入',
   'Know immediately if a discrepancy needs action': '立即了解差异是否需要处理',
-  'Logistics Clerk / Manager': '物流仓库管理员',
+  'Logistics Clerk / Manager': '仓库管理员',
   '"I need the full picture — who\'s done, what\'s flagged, where are we on accuracy — without chasing people or waiting until end of day."': '「我需要全局视图——谁完成了、什么被标记了、准确率如何——不用追着人问，也不用等到下班。」',
   'Real-time KPI dashboard (accuracy %, backlog)': '实时KPI仪表盘（准确率%、积压量）',
   'Instant alerts on critical discrepancies': '关键差异即时提醒',
@@ -1898,22 +1905,66 @@ const ZH_TEXT = {
   'No real-time view': '无实时视图',
   'Manual KPI reporting': '手动KPI汇报',
   // User stories badge
-  'Operative — Execution': '操作员——执行',
-  'Operative — Discrepancy': '操作员——差异处理',
+  'Operative — Execution': '仓库操作员——执行',
+  'Operative — Discrepancy': '仓库操作员——差异处理',
   'Manager — Monitoring': '仓库管理员——监控',
   'Shared Needs': '共同需求',
   // HMW
   'How might we help warehouse operatives complete counting tasks without interruption or confusion about location and scope?': '我们如何能帮助仓库操作员在不被打断、不对位置和范围感到困惑的情况下完成盘点任务？',
   'How might we give managers real-time visibility into inventory progress and discrepancies without extra reporting steps?': '我们如何能让仓库管理员在无需额外汇报步骤的情况下，实时了解库存进度和差异情况？',
-  'How might we reduce data entry errors when operatives submit count results from the warehouse floor?': '我们如何能减少操作员在仓库现场提交盘点结果时的数据录入错误？',
+  'How might we reduce data entry errors when operatives submit count results from the warehouse floor?': '我们如何能减少仓库操作员在仓库现场提交盘点结果时的数据录入错误？',
   'How might we make discrepancy escalation faster, structured, and automatically visible to the right people?': '我们如何能让差异上报更快速、更结构化，并自动呈现给相关负责人？',
   // Journey map legend
   'User Needs': '用户需求', 'Open Points': '开放问题', 'Actions': '行动',
   'AI / System': 'AI / 系统', 'Opportunity': '机会点',
   // Journey map stages
   'Analyze Inventory': '分析库存', 'Create Counting Plans': '创建盘点计划',
-  'Prepare Tasks': '准备任务', 'Count Inventory': '实物盘点',
+  'Prepare Tasks': '准备任务', 'Count Inventory': '盘点库存',
   'Review & Validate': '审核与验证', 'Report & Approve': '报告与审批',
+  // Journey map cards
+  'Set reference & analysis parameters in SAP LGM': '在 SAP LGM 中设置参考和分析参数',
+  'Assign inventory scope to operatives': '向仓库操作员分配盘点范围',
+  'Overview of which SKUs need to be checked and why': '需要检查哪些 SKU 及原因的概览',
+  'Manual cross-check between SAP and physical records — time-consuming': 'SAP 与实物记录之间的人工交叉核对——耗时',
+  'No clear view of which SKUs are flagged for recount': '不清楚哪些 SKU 被标记为复盘',
+  'AI: suggest bins with high variance history for priority counting': 'AI：建议优先盘点历史差异较大的库位',
+  'Create counting plan in SAP LGM across 4+ screens': '在 SAP LGM 中跨 4+ 个屏幕创建盘点计划',
+  'Define scope, counting units & deadlines': '定义范围、盘点单位和截止日期',
+  'Estimate workload based on historical duration data': '基于历史时长数据估算工作量',
+  'Single-screen plan creation without switching contexts': '无需切换上下文的单屏计划创建',
+  'No historical data available to estimate time or effort': '没有历史数据可用于估算时间或工作量',
+  'Plan creation fragmented across multiple system screens': '计划创建分散在多个系统屏幕中',
+  'AI: auto-populate plan template based on last cycle data': 'AI：基于上次周期数据自动填充计划模板',
+  'Create & assign counting tasks per operative': '为每个仓库操作员创建和分配盘点任务',
+  'Operative receives task on handheld / SAP terminal': '仓库操作员在手持设备/SAP 终端上接收任务',
+  'Clear task descriptions with bin location & visual guide': '清晰的任务描述，包含库位位置和视觉指引',
+  'Push notification when a new task is ready': '新任务就绪时推送通知',
+  'Task instructions are text-only — no bin map or visual guide': '任务说明仅为文本——没有库位地图或视觉指引',
+  'Last-minute changes cause confusion on the warehouse floor': '临时变更导致仓库现场混乱',
+  'AI: auto-group tasks by bin proximity to reduce travel time': 'AI：按库位邻近度自动分组任务，减少行走时间',
+  'Open task · navigate to bin · scan items': '打开任务 · 导航到库位 · 扫描物品',
+  'Count item by item; handle zero-quantity locations': '逐个清点；处理零数量库位',
+  'Clerk monitors progress & activates tasks for operatives': '仓库管理员监控进度并为仓库操作员激活任务',
+  'Auto-save partial counts to prevent data loss on disconnect': '自动保存部分盘点数量，防止断线时数据丢失',
+  'Visual confirmation after each scan is registered': '每次扫描注册后提供视觉确认',
+  'Scanner disconnects mid-task — no auto-save, data lost': '扫描仪在任务中途断线——无自动保存，数据丢失',
+  'Barcode scanning fails on damaged labels': '损坏标签上的条码扫描失败',
+  'System timeout (10 min) causes full session data loss': '系统超时（10 分钟）导致整个会话数据丢失',
+  'AI: real-time anomaly detection & flag damaged items for photo': 'AI：实时异常检测并标记损坏物品以便拍照',
+  'Review count results in SAP LGM': '在 SAP LGM 中审核盘点结果',
+  'Approve result or trigger recount for discrepancies': '确认结果或对差异触发复盘',
+  'Instant visibility of discrepancies during counting — not after': '盘点过程中即时可见差异——而非结束后',
+  'Operative receives confirmation when count is accepted': '盘点被接受时仓库操作员收到确认',
+  'No live progress view — clerk must call supervisor for status': '无实时进度视图——仓库管理员必须打电话询问主管获取状态',
+  'Discrepancies only discovered after counting ends': '差异仅在盘点结束后才发现',
+  'AI: auto-approve items within tolerance threshold': 'AI：在容差范围内自动确认物品',
+  'Generate & export final inventory report': '生成并导出最终库存盘点报告',
+  'Lock inventory in SAP after final approval': '最终确认后在 SAP 中锁定库存',
+  'One-click report export with variance highlights': '一键导出高亮差异的报告',
+  'Standardised report format across all sites': '所有站点的标准化报告格式',
+  'Report generation is manual — copy-paste from multiple screens': '报告生成是手动的——从多个屏幕复制粘贴',
+  'Report format not standardised — varies by site': '报告格式不统一——各站点不同',
+  'Automated report with variance highlights & AI-suggested corrections': '自动生成高亮差异和 AI 建议纠正措施的报告',
   // Validation table headers
   '#': '#', 'Finding': '发现', 'User Feedback': '用户反馈', 'Design Response': '设计回应',
   // Validation table content
@@ -1922,7 +1973,7 @@ const ZH_TEXT = {
   'Redesigned the create entry point around a Storage Bin List — each bin surfaces rich contextual info (status, movement, availability) to guide task creation': '将创建入口重新设计为库位列表——每个库位展示丰富的上下文信息（状态、移动记录、可用性）以辅助任务创建',
   'Counting flow was too fragmented — excessive navigation broke the working rhythm': '盘点流程过于分散——过多的页面跳转打断了工作节奏',
   '"I have to keep tapping back and forth between tasks. There\'s no sense of flow — I just want to work through it all at once."': '「我需要在任务之间反复切换。完全没有流程感——我只想一口气完成所有任务。」',
-  'Bundled tasks and exposed item-level detail directly in the list, grouped by storage bin — mirrors how operatives actually move through a warehouse zone': '将任务打包并直接在列表中展示物品级别的详情，按库位分组——与操作员在仓库区域中的实际行动路径一致',
+  'Bundled tasks and exposed item-level detail directly in the list, grouped by storage bin — mirrors how operatives actually move through a warehouse zone': '将任务打包并直接在列表中展示物品级别的详情，按库位分组——与仓库操作员在仓库区域中的实际行动路径一致',
   'Confirming results was tedious — tasks had to be reviewed and posted one by one': '确认结果过于繁琐——需要逐一审核并提交每个任务',
   '"I have to open each task separately to check and confirm. It\'s the same thing over and over."': '「我必须分别打开每个任务进行检查和确认，反复重复同样的操作。」',
   'Applied the same item-level structure as counting — all items consolidated in a single view for side-by-side comparison, with batch confirmation for tasks with no discrepancy': '采用与盘点相同的物品级结构——所有物品汇总在单一视图中便于对比，无差异任务支持批量确认',
@@ -1935,7 +1986,7 @@ const ZH_TEXT = {
   'Automate task creation via counting rules — reduce manual setup for recurring cycles': '通过盘点规则自动化任务创建——减少周期性任务的手动设置',
   'Complete a count task end-to-end': '端到端完成盘点任务',
   'Pass': '通过',
-  'Task bundle structure and item-level grouping by storage bin were intuitive. Participants moved through the flow without backtracking. Some raised questions about how tasks reach operatives in the field, particularly in large warehouses.': '任务包结构和按库位的物品级分组非常直观。参与者流畅地完成了整个流程，无需回退。部分参与者对任务如何分派给现场操作员提出了疑问，尤其是在大型仓库中。',
+  'Task bundle structure and item-level grouping by storage bin were intuitive. Participants moved through the flow without backtracking. Some raised questions about how tasks reach operatives in the field, particularly in large warehouses.': '任务包结构和按库位的物品级分组非常直观。参与者流畅地完成了整个流程，无需回退。部分参与者对任务如何分派给现场仓库操作员提出了疑问，尤其是在大型仓库中。',
   'Mobile work queue to allow managers to assign and dispatch tasks directly from the warehouse floor': '移动端工作队列，让仓库管理员直接在仓库现场分配和派发任务',
   'Report a discrepancy': '报告差异',
   'Participants identified and filtered discrepant items without difficulty. The Reconcile Stock deep-link was well received. However, when root causes were ambiguous, participants paused and expressed uncertainty about what to do next.': '参与者能够顺利识别和筛选差异物品。Reconcile Stock深层链接受到好评。但当根本原因不明确时，参与者会停顿，对下一步操作感到不确定。',
@@ -1965,7 +2016,7 @@ const ZH_TEXT = {
   'Unavailable Popover': '不可用弹窗',
   'Click "Unavailable for counting" tag — shows reason & related in-progress documents': '点击「不可用于盘点」标签——显示原因及相关进行中的单据',
   'Create Dialog': '创建对话框',
-  'Click "Create Physical Inventory task" — confirm type, date & description': '点击「创建实物库存任务」——确认类型、日期和描述',
+  'Click "Create Physical Inventory task" — confirm type, date & description': '点击「创建库存盘点任务」——确认类型、日期和描述',
   'Count Task List': '盘点任务列表',
   'Main screen — overview of all counting tasks with progress. Filter by number of items helps temporary workers quickly pick up small-volume counting tasks.': '主界面——所有盘点任务及进度总览。按物品数量筛选，帮助临时工快速接取小体量盘点任务。',
   'Task Detail': '任务详情',
@@ -2016,7 +2067,7 @@ function setLang(lang) {
     '.divider-label', '.card-label', '.card-title', '.card-body',
     '.quote-text', '.quote-src', '.next-card-label', '.next-card-title', '.next-card-body',
     '.outcome-label', '.hmw-text', '.hmw-text strong',
-    '.topic-card-title', '.topic-card-body li',
+    '.topic-card-title', '.topic-card-label', '.topic-card-qs li',
     '.persona-name', '.persona-role-tag', '.persona-quote-box',
     '.persona-goals-title', '.tag.tag-pain',
     '.story-badge',
